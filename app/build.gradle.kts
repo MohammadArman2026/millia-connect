@@ -74,8 +74,7 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.core.coroutines)
-    // Jetpack WorkManager
-    implementation(libs.koin.androidx.workmanager)
+
     //implementation("io.insert-koin:koin-androidx-startup")
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.androidx.compose.navigation)
@@ -85,7 +84,12 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.jsoup)
-    implementation("net.sourceforge.htmlunit:htmlunit-android:2.63.0")  // screen scraping
+    implementation(libs.htmlunit.android)  // screen scraping
+
+    // worker
+    implementation(libs.androidx.work.runtime.ktx)
+    // koin-Jetpack WorkManager
+    implementation(libs.koin.androidx.workmanager)
 
 
 }

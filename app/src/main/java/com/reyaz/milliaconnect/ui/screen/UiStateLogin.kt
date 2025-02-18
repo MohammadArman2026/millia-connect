@@ -1,12 +1,13 @@
 package com.reyaz.milliaconnect.ui.screen
 
 data class UiStateLogin(
-//    var isLoading:Boolean = true,
-    var loadingMessage: String? = null,
-    var username: String = "",
-    var password: String = "",
-    var message:String? = null,
-    var isLoggedIn:Boolean = false
-) {
+    val username: String = "",
+    val password: String = "",
+    val message: String? = null,
+    val loadingMessage: String? = null,
+    val isLoggedIn: Boolean = false,
+    val showNoWifiDialog: Boolean = false,
+    val autoConnect: Boolean = false
+){
     val loginEnabled: Boolean = username.isNotEmpty() && password.isNotEmpty()
 }

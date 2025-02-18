@@ -1,12 +1,12 @@
 package com.reyaz.milliaconnect.ui.screen
 
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.reyaz.milliaconnect.data.UserPreferences
 import com.reyaz.milliaconnect.data.WebLoginManager
+import com.reyaz.milliaconnect.util.NetworkConnectivityObserver
+import com.reyaz.milliaconnect.util.NotificationHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,12 +17,30 @@ import kotlinx.coroutines.launch
 class VMLogin(
     private val userPreferences: UserPreferences,
     private val webLoginManager: WebLoginManager,
+    private val notificationHelper: NotificationHelper,
+    private val networkObserver: NetworkConnectivityObserver // Add this
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiStateLogin())
     val uiState: StateFlow<UiStateLogin> = _uiState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            // Observe WiFi connectivity
+            networkObserver.observeWifiConnectivity()
+                .collect { isWifiConnected ->
+                    _uiState.update {
+                        it.copy(
+                            showNoWifiDialog = !isWifiConnected,
+                            message = if (!isWifiConnected) "Please connect to WiFi" else null
+                        )
+                    }
+                    if (isWifiConnected) {
+                       // handleLogin()
+                    }
+                }
+        }
+
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
@@ -31,20 +49,21 @@ class VMLogin(
                     isLoggedIn = userPreferences.loginStatus.first()
                 )
             }
-            handleLogin()
+            Log.d("VMLogin", "init: ${_uiState.value.username}")
+//            handleLogin()
         }
     }
 
-    fun updateUsername(newUsername: String) {
-        _uiState.update { it.copy(username = newUsername) }
+    fun dismissNoWifiDialog() {
+        _uiState.update { it.copy(showNoWifiDialog = false) }
+    }
+
+    fun updateUsername(username: String) {
+        _uiState.update { it.copy(username = username) }
     }
 
     fun updatePassword(newPassword: String) {
         _uiState.update { it.copy(password = newPassword) }
-    }
-
-    fun updateMessage(newMessage: String?) {
-        _uiState.update { it.copy(message = newMessage) }
     }
 
     private fun saveCredentials(isLoggedIn: Boolean) {
@@ -70,6 +89,7 @@ class VMLogin(
                             loadingMessage = null
                         )
                     }
+                    //notificationHelper.showNotification("Auto Login", "Logged in Successfully")   TODO: notification
                     saveCredentials(true)
                 }
                 .onFailure { exception ->
@@ -98,6 +118,10 @@ class VMLogin(
                     _uiState.update { it.copy(loadingMessage = null, message = exception.message) }
                 }
         }
+    }
+
+    fun updateAutoConnect(autoConnect: Boolean) {
+        _uiState.update { it.copy(autoConnect = autoConnect) }
     }
 }
 
