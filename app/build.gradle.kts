@@ -84,4 +84,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
 
+    implementation(libs.jsoup)
+    implementation("net.sourceforge.htmlunit:htmlunit-android:2.63.0")  // screen scraping
+
+
 }
