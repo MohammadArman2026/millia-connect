@@ -1,4 +1,4 @@
-package com.reyaz.wifiautoconnect
+package com.reyaz.milliaconnect
 
 import org.junit.Test
 

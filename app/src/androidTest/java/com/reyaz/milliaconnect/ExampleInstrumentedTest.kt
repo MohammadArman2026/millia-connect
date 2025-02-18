@@ -1,4 +1,4 @@
-package com.reyaz.wifiautoconnect
+package com.reyaz.milliaconnect
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

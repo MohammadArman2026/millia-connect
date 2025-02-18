@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.reyaz.wifiautoconnect"
+    namespace = "com.reyaz.milliaconnect"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.reyaz.wifiautoconnect"
+        applicationId = "com.reyaz.milliaconnect"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

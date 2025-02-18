@@ -1,4 +1,4 @@
-package com.reyaz.wifiautoconnect.ui.screen
+package com.reyaz.milliaconnect.ui.screen
 
 import android.util.Log
 import android.webkit.WebView
@@ -15,6 +15,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,9 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.ViewModel
-import com.reyaz.wifiautoconnect.data.UserPreferences
+import com.reyaz.milliaconnect.data.UserPreferences
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -38,26 +37,13 @@ fun WebViewScreen(
     modifier: Modifier = Modifier,
     viewModel: VMLogin = koinViewModel()
 ) {
-    val context = LocalContext.current
+    val uiState by viewModel.uiState.collectAsState()
+
     val scope = rememberCoroutineScope()
-    val userPreferences = remember { UserPreferences(context) }
     val webViewRef = remember { mutableStateOf<WebView?>(null) }
     val hasSubmitted = remember { mutableStateOf(false) }
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var baseUrl by remember { mutableStateOf("") }
-    var message by remember { mutableStateOf<String?>(null) }
     var isLoggedIn by remember { mutableStateOf(false) }
     var autoLoginAttempted by remember { mutableStateOf(false) }
-
-    // Load saved credentials when screen starts
-    LaunchedEffect(Unit) {
-        delay(1000)
-        username = userPreferences.username.first()
-        password = userPreferences.password.first()
-        baseUrl = userPreferences.baseUrl.first()
-        Log.d("WebViewScreen", "Loaded credentials: $username, $password")
-    }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -73,20 +59,20 @@ fun WebViewScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         OutlinedTextField(
-            value = baseUrl,
-            onValueChange = { baseUrl = it },
+            value = uiState.baseUrl,
+            onValueChange = { viewModel.updateBaseUrl(it)},
             label = { Text("Wifi Url") },
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
+            value = uiState.username,
+            onValueChange = { viewModel.updateUsername(it) },
             label = { Text("Username") },
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
+            value = uiState.password,
+            onValueChange = { viewModel.updatePassword(it) },
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -94,18 +80,19 @@ fun WebViewScreen(
             onClick = {
                 webViewRef.value?.let { webView ->
                     if (!isLoggedIn) {
-                        loginScript(webView, username, password)
+                        loginScript(webView, uiState.username, uiState.password)
                         // Save credentials when user clicks login
                         scope.launch {
-                            userPreferences.saveCredentials(username, password)
-                            message = "Credentials saved for auto-login"
+                            viewModel.saveCredentials()
+                            viewModel.updateMessage("Credentials saved for auto-login")
                         }
                     }
                 }
             },
             modifier = Modifier
                 .padding(top = 16.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            enabled = uiState.loginEnabled
         ) {
             Text(if (isLoggedIn) "Logged In" else "Login")
         }
@@ -123,7 +110,7 @@ fun WebViewScreen(
         ) {
             Text("Logout")
         }
-        message?.let { Text(it) }
+        uiState.message?.let { Text(it) }
 
         AndroidView(
             modifier = modifier.fillMaxSize(),
@@ -136,19 +123,18 @@ fun WebViewScreen(
                             webViewRef.value = view
 
                             // Try auto-login if credentials exist and haven't attempted yet
-                            if (!autoLoginAttempted && username.isNotEmpty() && password.isNotEmpty()) {
+                            /*if (!autoLoginAttempted && username.isNotEmpty() && password.isNotEmpty()) {
                                 view?.let {
                                     loginScript(it, username, password)
                                     autoLoginAttempted = true
                                 }
-                            }
+                            }*/
 
                             // Extract current field values
                             extractFieldValues(view) { user, pass, loggedIn ->
-                                username = user
-                                password = pass
-                                isLoggedIn = loggedIn
-                                message = if (loggedIn) "Successfully logged in" else null
+                                viewModel.updateUsername(user)
+                                viewModel.updatePassword(pass)
+                                viewModel.updateMessage(if (loggedIn) "Successfully logged in" else null)
                             }
                         }
                     }

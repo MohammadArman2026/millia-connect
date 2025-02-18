@@ -1,7 +1,7 @@
-package com.reyaz.wifiautoconnect
+package com.reyaz.milliaconnect
 
 import android.app.Application
-import com.reyaz.wifiautoconnect.di.appModule
+import com.reyaz.milliaconnect.di.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 

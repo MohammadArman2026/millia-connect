@@ -1,4 +1,4 @@
-package com.reyaz.wifiautoconnect.ui.navigation
+package com.reyaz.milliaconnect.ui.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -11,8 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.reyaz.wifiautoconnect.ui.screen.VMLogin
-import com.reyaz.wifiautoconnect.ui.screen.WebViewScreen
+import com.reyaz.milliaconnect.ui.screen.WebViewScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,4 +1,4 @@
-package com.reyaz.wifiautoconnect.ui.screen
+package com.reyaz.milliaconnect.ui.screen
 
 import android.content.Context
 import android.net.ConnectivityManager

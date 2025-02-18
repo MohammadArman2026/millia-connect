@@ -1,4 +1,4 @@
-package com.reyaz.wifiautoconnect.data
+package com.reyaz.milliaconnect.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -22,7 +22,7 @@ class UserPreferences(private val context: Context) {
     // Get saved username
     val username: Flow<String> = context.dataStore.data
         .map { preferences ->
-            preferences[USERNAME] ?: ""
+            preferences[USERNAME] ?: "empty"
         }
 
     // Get saved password
@@ -36,10 +36,11 @@ class UserPreferences(private val context: Context) {
         }
 
     // Save credentials
-    suspend fun saveCredentials(username: String, password: String) {
+    suspend fun saveCredentials(username: String, password: String, baseUrl:String) {
         context.dataStore.edit { preferences ->
             preferences[USERNAME] = username
             preferences[PASSWORD] = password
+            preferences[BASE_URL] = baseUrl
         }
     }
 
