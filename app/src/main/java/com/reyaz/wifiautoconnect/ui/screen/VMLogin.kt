@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class VMLogin(
-    private val userPreferences: UserPreferences
+//    private val userPreferences: UserPreferences
 ) : ViewModel() {
     init {
-        viewModelScope.launch { Log.d("VM", userPreferences.username.first().toString()) }
+//        viewModelScope.launch { Log.d("VM", userPreferences.username.first().toString()) }
     }
 }
 

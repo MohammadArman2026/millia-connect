@@ -59,12 +59,29 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // OkHttp for network requests
-    implementation (libs.okhttp)
+    implementation(libs.okhttp)
 
     // Coroutines for asynchronous tasks
-    implementation (libs.kotlinx.coroutines.core)
-    implementation (libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
     // datastore
     implementation(libs.androidx.datastore.preferences)
+
+    // koin
+    //you can use BOM-version to manage all Koin library versions. When using the BOM in your app, you don't need to add any version to the Koin library dependencies themselves. When you update the BOM version, all the libraries that you're using are automatically updated to their new versions.
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.core.coroutines)
+    // Jetpack WorkManager
+    implementation(libs.koin.androidx.workmanager)
+    //implementation("io.insert-koin:koin-androidx-startup")
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.compose.navigation)
+
+    // ViewModel and Navigation
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.navigation.compose)
+
 }

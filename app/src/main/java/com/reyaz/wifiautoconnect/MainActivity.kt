@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.reyaz.wifiautoconnect.ui.navigation.AppNavHost
 import com.reyaz.wifiautoconnect.ui.screen.WifiLoginApp
 import com.reyaz.wifiautoconnect.ui.theme.WifiAutoConnectTheme
 
@@ -20,11 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             WifiAutoConnectTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    WifiLoginApp(
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                AppNavHost()
             }
         }
     }

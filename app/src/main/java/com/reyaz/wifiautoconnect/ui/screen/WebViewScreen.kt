@@ -26,13 +26,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.ViewModel
 import com.reyaz.wifiautoconnect.data.UserPreferences
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun WebViewScreen(modifier: Modifier) {
+fun WebViewScreen(
+    modifier: Modifier = Modifier,
+    viewModel: VMLogin = koinViewModel()
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val userPreferences = remember { UserPreferences(context) }
@@ -147,7 +152,7 @@ fun WebViewScreen(modifier: Modifier) {
                             }
                         }
                     }
-                    loadUrl(baseUrl)
+                    loadUrl(/*baseUrl*/"www.google.com")
                 }
             }
         )
