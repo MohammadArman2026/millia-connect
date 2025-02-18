@@ -3,12 +3,24 @@ package com.reyaz.milliaconnect.ui.screen
 import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -23,9 +35,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.reyaz.milliaconnect.R
 import com.reyaz.milliaconnect.data.UserPreferences
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -39,172 +59,127 @@ fun WebViewScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    val scope = rememberCoroutineScope()
-    val webViewRef = remember { mutableStateOf<WebView?>(null) }
-    val hasSubmitted = remember { mutableStateOf(false) }
-    var isLoggedIn by remember { mutableStateOf(false) }
-    var autoLoginAttempted by remember { mutableStateOf(false) }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            webViewRef.value?.destroy()
-        }
-    }
-
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        OutlinedTextField(
-            value = uiState.baseUrl,
-            onValueChange = { viewModel.updateBaseUrl(it)},
-            label = { Text("Wifi Url") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = uiState.username,
-            onValueChange = { viewModel.updateUsername(it) },
-            label = { Text("Username") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = uiState.password,
-            onValueChange = { viewModel.updatePassword(it) },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Button(
-            onClick = {
-                webViewRef.value?.let { webView ->
-                    if (!isLoggedIn) {
-                        loginScript(webView, uiState.username, uiState.password)
-                        // Save credentials when user clicks login
-                        scope.launch {
-                            viewModel.saveCredentials()
-                            viewModel.updateMessage("Credentials saved for auto-login")
-                        }
-                    }
-                }
-            },
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .fillMaxWidth(),
-            enabled = uiState.loginEnabled
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(if (isLoggedIn) "Logged In" else "Login")
-        }
-
-        //logout
-        TextButton(
-            onClick = {
-                webViewRef.value?.let { webView ->
-                    if (isLoggedIn) {
-                        logoutScript(webView)
-                        isLoggedIn = false
-                    }
-                }
+            /* OutlinedTextField(
+                 value = uiState.baseUrl,
+                 onValueChange = { viewModel.updateBaseUrl(it)},
+                 label = { Text("Wifi Url") },
+                 modifier = Modifier.fillMaxWidth()
+             )*/
+            Spacer(Modifier.weight(1f))
+            Image(
+                painter = painterResource(R.drawable.millia_connect_logo),
+                "logo",
+                modifier = Modifier.fillMaxWidth(0.8f)
+            )
+            OutlinedTextField(
+                value = uiState.username,
+                onValueChange = { viewModel.updateUsername(it) },
+                label = { Text("Username") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Number
+                )
+            )
+            OutlinedTextField(
+                value = uiState.password,
+                onValueChange = { viewModel.updatePassword(it) },
+                label = { Text("Password") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Text
+                )
+            )
+            // login btn
+            Button(
+                onClick = {
+                    viewModel.handleLogin()
+                },
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .fillMaxWidth(),
+                enabled = uiState.loginEnabled
+            ) {
+                Text("Login")
             }
-        ) {
-            Text("Logout")
-        }
-        uiState.message?.let { Text(it) }
+            //logout
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                enabled = uiState.isLoggedIn,
+                onClick = { viewModel.logout() }) {
+                Text("Logout")
+            }
 
-        AndroidView(
-            modifier = modifier.fillMaxSize(),
-            factory = { context ->
-                WebView(context).apply {
-                    settings.javaScriptEnabled = true
-                    webViewClient = object : WebViewClient() {
-                        override fun onPageFinished(view: WebView?, url: String?) {
-                            super.onPageFinished(view, url)
-                            webViewRef.value = view
+            uiState.message?.let {
+                Text(
+                    it,
+                    color = MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 24.dp)
+                )
+            }
+            Spacer(Modifier.weight(1.2f))
 
-                            // Try auto-login if credentials exist and haven't attempted yet
-                            /*if (!autoLoginAttempted && username.isNotEmpty() && password.isNotEmpty()) {
+            /*AndroidView(
+                modifier = modifier.padding(top = 100.dp),
+                factory = { context ->
+                    WebView(context).apply {
+                        settings.javaScriptEnabled = true
+                        webViewClient = object : WebViewClient() {
+                            override fun onPageFinished(view: WebView?, url: String?) {
+                                super.onPageFinished(view, url)
+                                webViewRef.value = view
+
+                                // Try auto-login if credentials exist and haven't attempted yet
+                                *//*if (!autoLoginAttempted && username.isNotEmpty() && password.isNotEmpty()) {
                                 view?.let {
                                     loginScript(it, username, password)
                                     autoLoginAttempted = true
                                 }
-                            }*/
+                            }
 
                             // Extract current field values
                             extractFieldValues(view) { user, pass, loggedIn ->
                                 viewModel.updateUsername(user)
                                 viewModel.updatePassword(pass)
                                 viewModel.updateMessage(if (loggedIn) "Successfully logged in" else null)
-                            }
+                            }*//*
                         }
                     }
-                    loadUrl(/*baseUrl*/"www.google.com")
+                    loadUrl(*//*baseUrl*//*"www.google.com")
                 }
             }
-        )
-    }
-}
+        )*/
+        }
+        uiState.loadingMessage?.let {
 
-private fun extractFieldValues(webView: WebView?, callback: (String, String, Boolean) -> Unit) {
-    val jsCode = """
-        (function() {
-            const username = document.getElementById('ft_un')?.value || '';
-            const password = document.getElementById('ft_pd')?.value || '';
-            const loginBtn = document.querySelector('button.primary');
-            const isLoggedIn = loginBtn ? loginBtn.textContent.toLowerCase().includes('logged in') : false;
-            return JSON.stringify({username, password, isLoggedIn});
-        })();
-    """.trimIndent()
 
-    webView?.evaluateJavascript(jsCode) { result ->
-        try {
-            val json = result.removeSurrounding("\"").replace("\\\"", "\"")
-            val regex =
-                """.*"username":"(.*)","password":"(.*)","isLoggedIn":(true|false).*""".toRegex()
-            val match = regex.find(json)
-            if (match != null) {
-                val (user, pass, loggedIn) = match.destructured
-                callback(user, pass, loggedIn.toBoolean())
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8f))
+                    .clickable(enabled = false, role = Role.Button, onClick = {}),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                )
+                Text(it, modifier = Modifier.padding(top = 16.dp))
             }
-        } catch (e: Exception) {
-            callback("", "", false)
         }
     }
-}
-
-private fun loginScript(webView: WebView, username: String, password: String) {
-    val jsCode = """
-        (function() {
-            const unField = document.getElementById('ft_un');
-            const pwField = document.getElementById('ft_pd');
-            const loginBtn = document.querySelector('button.primary');
-            
-            if (unField && pwField && loginBtn) {
-                unField.value = '$username';
-                pwField.value = '$password';
-                loginBtn.click();
-                return true;
-            }
-            return false;
-        })();
-    """.trimIndent()
-
-    webView.evaluateJavascript(jsCode, null)
-}
-
-private fun logoutScript(webView: WebView) {
-    val jsCode = """
-        (function() {
-            const logoutBtn = document.querySelector('button.logout') || 
-                             document.querySelector('a.logout') ||
-                             Array.from(document.querySelectorAll('button')).find(b => b.textContent.toLowerCase().includes('logout'));
-            if (logoutBtn) {
-                logoutBtn.click();
-                return true;
-            }
-            return false;
-        })();
-    """.trimIndent()
-
-    webView.evaluateJavascript(jsCode, null)
 }

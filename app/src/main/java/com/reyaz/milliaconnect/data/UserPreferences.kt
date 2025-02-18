@@ -3,6 +3,7 @@ package com.reyaz.milliaconnect.data
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -13,16 +14,16 @@ import kotlinx.coroutines.flow.map
 class UserPreferences(private val context: Context) {
     companion object {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
-        
+
         val USERNAME = stringPreferencesKey("username")
         val PASSWORD = stringPreferencesKey("password")
-        val BASE_URL = stringPreferencesKey("base_url")
+        val LOGIN_STATUS = booleanPreferencesKey("status")
     }
 
     // Get saved username
     val username: Flow<String> = context.dataStore.data
         .map { preferences ->
-            preferences[USERNAME] ?: "empty"
+            preferences[USERNAME] ?: ""
         }
 
     // Get saved password
@@ -30,17 +31,21 @@ class UserPreferences(private val context: Context) {
         .map { preferences ->
             preferences[PASSWORD] ?: ""
         }
-    val baseUrl: Flow<String> = context.dataStore.data
+    val loginStatus: Flow<Boolean> = context.dataStore.data
         .map { preferences ->
-            preferences[BASE_URL] ?: "http://10.2.0.10:8090/login?"
+            preferences[LOGIN_STATUS] ?: false
         }
 
     // Save credentials
-    suspend fun saveCredentials(username: String, password: String, baseUrl:String) {
+    suspend fun saveCredentials(
+        username: String,
+        password: String,
+        isLoggedIn: Boolean
+    ) {
         context.dataStore.edit { preferences ->
             preferences[USERNAME] = username
             preferences[PASSWORD] = password
-            preferences[BASE_URL] = baseUrl
+            preferences[LOGIN_STATUS] = isLoggedIn
         }
     }
 

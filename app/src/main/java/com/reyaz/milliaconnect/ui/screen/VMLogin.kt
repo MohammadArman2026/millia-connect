@@ -1,6 +1,8 @@
 package com.reyaz.milliaconnect.ui.screen
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.reyaz.milliaconnect.data.UserPreferences
@@ -14,7 +16,7 @@ import kotlinx.coroutines.launch
 
 class VMLogin(
     private val userPreferences: UserPreferences,
-    private val webLoginManager: WebLoginManager
+    private val webLoginManager: WebLoginManager,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiStateLogin())
@@ -22,14 +24,14 @@ class VMLogin(
 
     init {
         viewModelScope.launch {
-            handleLogin("202207696", "ique@7696595")
             _uiState.update {
                 it.copy(
                     username = userPreferences.username.first(),
                     password = userPreferences.password.first(),
-                    baseUrl = userPreferences.baseUrl.first()
+                    isLoggedIn = userPreferences.loginStatus.first()
                 )
             }
+            handleLogin()
         }
     }
 
@@ -41,41 +43,60 @@ class VMLogin(
         _uiState.update { it.copy(password = newPassword) }
     }
 
-    fun updateBaseUrl(newBaseUrl: String) {
-        _uiState.update { it.copy(baseUrl = newBaseUrl) }
-    }
-
     fun updateMessage(newMessage: String?) {
         _uiState.update { it.copy(message = newMessage) }
     }
 
-    fun saveCredentials() {
+    private fun saveCredentials(isLoggedIn: Boolean) {
         viewModelScope.launch {
             userPreferences.saveCredentials(
                 _uiState.value.username,
                 _uiState.value.password,
-                _uiState.value.baseUrl
+                isLoggedIn
             )
         }
     }
 
-    fun handleLogin(username: String, password: String) {
+    fun handleLogin() {
         viewModelScope.launch {
-            Log.d("VMLogin", "Handling login for username: $username")
-            webLoginManager.performLogin(username, password)
+            _uiState.update { it.copy(loadingMessage = "Logging in...") }
+            webLoginManager.performLogin(_uiState.value.username, _uiState.value.password)
                 .onSuccess { message ->
-                    Log.d("VMLogin", "Login successful")
+//                    Log.d("VMLogin", "Login successful")
+                    _uiState.update {
+                        it.copy(
+                            message = message,
+                            isLoggedIn = true,
+                            loadingMessage = null
+                        )
+                    }
+                    saveCredentials(true)
                 }
                 .onFailure { exception ->
-//                    onLoginError("Network error: ${exception.message}")
-                    Log.e("VMLogin", "Login failed", exception)
+                    _uiState.update { it.copy(message = exception.message, loadingMessage = null) }
                 }
         }
     }
 
     fun logout() {
         viewModelScope.launch {
+            _uiState.update { it.copy(loadingMessage = "Logging Out...") }
             webLoginManager.performLogout()
+                .onSuccess { message ->
+                    Log.d("VMLogin", "Logout successful")
+                    _uiState.update {
+                        it.copy(
+                            isLoggedIn = false,
+                            loadingMessage = null,
+                            message = message
+                        )
+                    }
+                    saveCredentials(false)
+                }
+                .onFailure { exception ->
+                    Log.e("VMLogin", "Logout failed", exception)
+                    _uiState.update { it.copy(loadingMessage = null, message = exception.message) }
+                }
         }
     }
 }

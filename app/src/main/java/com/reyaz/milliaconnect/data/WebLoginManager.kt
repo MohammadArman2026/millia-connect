@@ -15,6 +15,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput
 import com.gargoylesoftware.htmlunit.javascript.host.html.HTMLButtonElement
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.internal.userAgent
@@ -24,10 +25,7 @@ import org.jsoup.nodes.Document
 import java.net.HttpURLConnection
 import java.net.URL
 
-class WebLoginManager(
-) {
-    private val userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-
+class WebLoginManager() {
     val webClient = WebClient(BrowserVersion.CHROME).apply {
         options.isJavaScriptEnabled = true
         options.isCssEnabled = false
@@ -41,7 +39,65 @@ class WebLoginManager(
     suspend fun performLogin(username: String, password: String): Result<String> =
         withContext(Dispatchers.IO) {
             val loginUrl = "http://10.2.0.10:8090/login?dummy"
-            /*try {
+            Log.d("WebScrapingService", "it is login portal")
+            return@withContext isCaptivePortal()
+                .fold(
+                    onSuccess = { isLoggedIn ->
+                        if (isLoggedIn) {
+                            try {
+                                Log.d("WebScrapingService", "1")
+                                val page: HtmlPage = webClient.getPage(loginUrl)
+                                val usernameField: HtmlTextInput =
+                                    page.getFirstByXPath("//input[@type='text']")
+                                val passwordField: HtmlPasswordInput =
+                                    page.getFirstByXPath("//input[@type='password']")
+                                val loginButton: HtmlElement =
+                                    page.getFirstByXPath("/html/body/div[1]/form/div[3]/button")
+                                Log.d("WebScrapingService", "$username, $password")
+
+                                usernameField.setValueAttribute(username)
+                                passwordField.setValueAttribute(password)
+                                val responsePage: HtmlPage = loginButton.click()
+//                                delay(2000)
+                                val pageText = responsePage.asNormalizedText()
+                                // Closing the webClient to release resources.
+                                // The WebClient is used to simulate a web browser.
+                                // It is important to close it after use to free up resources.
+                                Log.d("WebScrapingService", "Response Page: $pageText")
+
+                                if (pageText.contains("Note: Please enter your valid credentials.")) {
+                                    return@fold Result.failure(Exception("Wrong Username or Password"))
+                                }
+
+                                if (pageText.contains("This browser window is used to keep your authentication session active. Please leave it open in the background and open a new window to continue.") || pageText.contains(
+                                        "Authentication refresh in 7200 seconds ..."
+                                    )
+                                ) {
+                                    return@fold Result.success("Successfully Logged in!")
+                                } else
+                                    return@fold Result.failure(Exception("Unable to detect login status"))
+                            } catch (e: Exception) {
+                                Log.d("WebScrapingService", "3")
+                                Log.e("WebScrapingService", "Error While Connecting", e)
+                                return@fold Result.failure(e)
+                            } finally {
+                                webClient.close()
+                            }
+                        } else {
+                            Log.d("WebScrapingService", "2")
+                            return@fold Result.success("You are Already Connected")
+                        }
+                    },
+                    onFailure = {
+                        return@fold Result.success("You are not Connected to the internet")
+                    }
+                )
+        }
+
+    /*suspend fun performLogin(username: String, password: String): Result<String> =
+        withContext(Dispatchers.IO) {
+            val loginUrl = "http://10.2.0.10:8090/login?dummy"
+            *//*try {
                 val connection = URL(loginUrl).openConnection() as HttpURLConnection
                 connection.connect()
                 Log.d("WebScrapingService", "Response Code: ${connection.responseCode}")
@@ -50,72 +106,75 @@ class WebLoginManager(
                 Log.e("WebScrapingService", "Error connecting to login page", e)
                 Log.e("WebScrapingService", "not university network", e)
             }*/
+    /*
 
-            if (isCaptivePortal()) {
-                try {
-                    // Load the login page
-                    val page: HtmlPage = webClient.getPage(loginUrl)
+            isCaptivePortal()
+                .onSuccess { isCaptive ->
+                    if (isCaptive) {
+                        try {
+                            // Load the login page
+                            val page: HtmlPage = webClient.getPage(loginUrl)
 
-                    // Get input fields correctly
-                    val usernameField: HtmlTextInput = page.getFirstByXPath("//input[@type='text']")
-                    val passwordField: HtmlPasswordInput =
-                        page.getFirstByXPath("//input[@type='password']")  // Correct type
-                    val loginButton: HtmlElement =
-                        page.getFirstByXPath("/html/body/div[1]/form/div[3]/button")
+                            // Get input fields correctly
+                            val usernameField: HtmlTextInput =
+                                page.getFirstByXPath("//input[@type='text']")
+                            val passwordField: HtmlPasswordInput =
+                                page.getFirstByXPath("//input[@type='password']")  // Correct type
+                            val loginButton: HtmlElement =
+                                page.getFirstByXPath("/html/body/div[1]/form/div[3]/button")
 
-                    // Fill the login form
-                    usernameField.setValueAttribute(username)
-                    passwordField.setValueAttribute(password)
+                            // Fill the login form
+                            usernameField.setValueAttribute(username)
+                            passwordField.setValueAttribute(password)
 
-                    // Submit the form
-                    val responsePage: HtmlPage = loginButton.click()
+                            // Submit the form
+                            val responsePage: HtmlPage = loginButton.click()
 
-                    Log.d("WebScrapingService", "Response Page: ${responsePage.asNormalizedText()}")
-                    Log.d("WebScrapingService", "Response Page: ${responsePage.asXml()}")
+                            Log.d(
+                                "WebScrapingService",
+                                "Response Page: ${responsePage.asNormalizedText()}"
+                            )
+                            Log.d("WebScrapingService", "Response Page: ${responsePage.asXml()}")
 
-                    val pageText = responsePage.asNormalizedText()
+                            val pageText = responsePage.asNormalizedText()
 
-                    if(pageText.contains("Note: Please enter your valid credentials.")){
-                        return@withContext Result.failure(Exception("Wrong Username or Password"))
+                            if (pageText.contains("Note: Please enter your valid credentials.")) {
+                                return@withContext Result.failure(Exception("Wrong Username or Password"))
+                            }
+                            Result.success("Successfully Logged in!")
+                        } catch (e: Exception) {
+                            Log.e("WebScrapingService", "Error While Connecting", e)
+                            return@withContext Result.failure(e)
+                        } finally {
+                            webClient.close()
+                        }
+                    } else {
+                        return@withContext Result.success("You are Already Connected")
                     }
-                    /*else if (){
-
-                    }*/
-
-                    Result.success("s")
-                } catch (e: Exception) {
-                    Log.e("WebScrapingService", "Error While Connecting", e)
-                    return@withContext Result.failure(e)
-
-                } finally {
-                    webClient.close()
-
-
                 }
-                return@withContext Result.success("s")
+                .onFailure {
+                    return@withContext Result.success("You are not Connected to the internet")
+                }
+            return@withContext Result.failure(Exception("Unknown Error"))
+        }*/
 
-            }else{
-                Result.failure(exception = Exception("Already Connected"))
-            }
-        }
-
-    suspend fun performLogout(): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun performLogout(): Result<String> = withContext(Dispatchers.IO) {
         try {
-            // Execute the logout request
-            Jsoup.connect("http://10.2.0.10:8090/logout?2335222233")
-                .userAgent(userAgent)
-                .method(Connection.Method.GET)
-                .followRedirects(true)
-                .execute()
+            val logoutUrl = "http://10.2.0.10:8090/logout?dummy"
+            val page: HtmlPage = webClient.getPage(logoutUrl)
 
-            Result.success(Unit)
+            if (page.asNormalizedText().contains("Successfully logged out")){
+                return@withContext Result.success("Successfully Logged out!")
+            }
+//            Log.d("WebScrapingService", "Logout Response Page text\n: ${page.asNormalizedText()}")
+//            Log.d("WebScrapingService", "Logout Response Page xml: ${page.asXml()}")
+            Result.success("Successfully Logged out!")
         } catch (e: Exception) {
             Result.failure(e)
+        }finally {
+            webClient.close()
         }
     }
-
-    // Check if we have a logout URL (indicates logged in state)
-    fun isLoggedIn(): Boolean = logoutUrl != null
 
     /**
      * Checks if the current network is a captive portal.
@@ -135,8 +194,9 @@ class WebLoginManager(
      * @return `true` if a captive portal is detected, `false` otherwise.
      *         Returns `false` in case of any exception during the connection attempt.
      */
-    private fun isCaptivePortal(): Boolean {
+    private fun isCaptivePortal(): Result<Boolean> {
         return try {
+            Log.d("WebScrapingService", "isCaptive checking...")
             val url = "http://clients3.google.com/generate_204"
             val connection = URL(url).openConnection() as HttpURLConnection
             connection.instanceFollowRedirects = false
@@ -144,10 +204,10 @@ class WebLoginManager(
             val responseCode = connection.responseCode
             connection.disconnect()
             Log.d("WebScrapingService", "Response Code: $responseCode")
-            responseCode != 204  // If it is NOT 204, it's a captive portal. The Google server receives the request and responds with an HTTP status code of 204 (No Content)
-
+            Result.success(responseCode != 204)  // If it is NOT 204, it's a captive portal. The Google server receives the request and responds with an HTTP status code of 204 (No Content)
         } catch (e: Exception) {
-            false
+            Log.e("WebScrapingService", "Error connecting to Google", e)
+            Result.failure(e)
         }
     }
 }
