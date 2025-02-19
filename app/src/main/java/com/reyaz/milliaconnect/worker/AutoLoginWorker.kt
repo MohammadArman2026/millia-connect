@@ -4,8 +4,6 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
@@ -13,8 +11,6 @@ import com.reyaz.milliaconnect.data.UserPreferences
 import com.reyaz.milliaconnect.data.WebLoginManager
 import com.reyaz.milliaconnect.util.NotificationHelper
 import kotlinx.coroutines.flow.first
-import java.time.Duration
-
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.TimeUnit
@@ -47,7 +43,7 @@ class AutoLoginWorker(
                 .fold(
                     onSuccess = {
                         Log.d("AutoLoginWorker", "Auto login successful")
-                        schedule(context = applicationContext)
+//                        schedule(context = applicationContext)
                         userPreferences.setLoginStatus(true)
                         notificationHelper.showNotification(
                             "Session Restored",
@@ -63,13 +59,13 @@ class AutoLoginWorker(
                             "You were not connected to Jamia Wifi."
                         )
                         cancel(applicationContext)
-                        Result.retry()
+                        Result.failure()
                     }
                 )
         } catch (e: Exception) {
             Log.e("AutoLoginWorker", "Error during auto login", e)
             userPreferences.setLoginStatus(false)
-            Result.retry()
+            Result.failure()
         }
     }
 
@@ -108,7 +104,7 @@ class AutoLoginWorker(
 //          WorkManager.getInstance(context).enqueueUniqueWork(
                 UNIQUE_WORK_NAME,
 //                System.currentTimeMillis().toString(),
-                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                ExistingPeriodicWorkPolicy.KEEP,    //This ensures that if a periodic work request already exists, it won't create a new one and execute it immediately.
 //              ExistingWorkPolicy.KEEP,
                 autoLoginTask
             )
