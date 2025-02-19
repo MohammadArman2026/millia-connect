@@ -94,6 +94,7 @@ class VMLogin(
                         AutoLoginWorker.schedule(context = appContext)
                 }
                 .onFailure { exception ->
+                    AutoLoginWorker.cancel(appContext)
                     onError(exception)
                 }
         }
