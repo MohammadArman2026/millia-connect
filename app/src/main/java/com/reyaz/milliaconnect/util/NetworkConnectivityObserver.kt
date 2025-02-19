@@ -21,6 +21,25 @@ class NetworkConnectivityObserver(private val context: Context) {
     private val wifiManager =
         context.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
+    fun forceUseWifi() {
+        Log.d("WifiNetworkManager", "Forcing Wi-Fi usage...")
+        val request = NetworkRequest.Builder()
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .build()
+
+        connectivityManager.requestNetwork(request, object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                connectivityManager.bindProcessToNetwork(network) // Force Wi-Fi usage
+            }
+
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                connectivityManager.bindProcessToNetwork(null) // Reset to default
+            }
+        })
+    }
+
     fun observeWifiConnectivity(): Flow<Boolean> = callbackFlow {
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {

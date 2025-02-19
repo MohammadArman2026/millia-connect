@@ -8,6 +8,7 @@ import androidx.annotation.RequiresApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+/*
 class WifiNetworkManager(private val context: Context) {
 
     private val connectivityManager =
@@ -32,3 +33,4 @@ class WifiNetworkManager(private val context: Context) {
         })
     }
 }
+*/

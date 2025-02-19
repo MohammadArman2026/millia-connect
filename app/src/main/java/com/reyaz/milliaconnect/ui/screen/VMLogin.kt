@@ -20,8 +20,8 @@ import java.lang.Exception
 class VMLogin(
     private val userPreferences: UserPreferences,
     private val webLoginManager: WebLoginManager,
-    private val notificationHelper: NotificationHelper,
-    private val networkObserver: NetworkConnectivityObserver
+    private val networkObserver: NetworkConnectivityObserver,
+    private val appContext: Context,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiStateLogin())
@@ -38,20 +38,18 @@ class VMLogin(
                         )
                     }
                     if (isWifiConnected) {
-                        // handleLogin()
+                        _uiState.update {
+                            it.copy(
+                                username = userPreferences.username.first(),
+                                password = userPreferences.password.first(),
+                                isLoggedIn = userPreferences.loginStatus.first(),
+                                autoConnect = userPreferences.autoConnect.first()
+                            )
+                        }
+                        if (uiState.value.loginEnabled) handleLogin()
+                        else _uiState.update { it.copy(message = "One time credential needed to login automatically.") }
                     }
                 }
-        }
-
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(
-                    username = userPreferences.username.first(),
-                    password = userPreferences.password.first(),
-                    isLoggedIn = userPreferences.loginStatus.first(),
-                    autoConnect = userPreferences.autoConnect.first()
-                )
-            }
         }
     }
 
@@ -78,7 +76,7 @@ class VMLogin(
         }
     }
 
-    fun handleLogin(context: Context) {
+    fun handleLogin() {
         viewModelScope.launch {
             _uiState.update { it.copy(loadingMessage = "Logging in...") }
             webLoginManager.performLogin(_uiState.value.username, _uiState.value.password)
@@ -91,10 +89,9 @@ class VMLogin(
                             loadingMessage = null
                         )
                     }
-                    //notificationHelper.showNotification("Auto Login", "Logged in Successfully")   //TODO: notification
                     saveCredentials(true)
                     if (_uiState.value.autoConnect)
-                        AutoLoginWorker.schedule(context = context)
+                        AutoLoginWorker.schedule(context = appContext)
                 }
                 .onFailure { exception ->
                     onError(exception)
@@ -125,29 +122,29 @@ class VMLogin(
     }
 
     private fun onError(exception: Throwable) {
-        if (exception.message?.contains("10.2.0.10:8090") == true)
+        viewModelScope.launch {
+            val error = if (exception.message?.contains("10.2.0.10:8090") == true)
+                "You're not connected to Jamia Wifi.\nPlease connect and try again."
+            else if (exception.message?.contains("Wrong Username or Password") == true)
+                "Wrong Username or Password"
+            else /*exception.message ?: */ "Oops! An error occurred."
+
             _uiState.update {
                 it.copy(
                     loadingMessage = null,
-                    message = "You're not connected to Jamia Wifi.\nPlease connect and try again."
+                    message = error
                 )
             }
-        else
-            _uiState.update {
-                it.copy(
-                    loadingMessage = null,
-                    message = exception.message ?: "An error occurred during logout"
-                )
-            }
+
+        }
     }
 
     fun updateAutoConnect(autoConnect: Boolean, context: Context) {
-        _uiState.update { it.copy(autoConnect = autoConnect) }
         viewModelScope.launch {
-            if (!uiState.value.autoConnect) {
+            _uiState.update { it.copy(autoConnect = autoConnect) }
+            if (!uiState.value.autoConnect)
                 AutoLoginWorker.cancel(context = context)
-                userPreferences.setAutoConnect(autoConnect)
-            }
+            userPreferences.setAutoConnect(autoConnect)
         }
     }
 }

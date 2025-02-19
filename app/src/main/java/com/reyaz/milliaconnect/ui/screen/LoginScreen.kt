@@ -1,7 +1,5 @@
 package com.reyaz.milliaconnect.ui.screen
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,16 +15,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,7 +42,6 @@ import androidx.compose.ui.window.Dialog
 import com.reyaz.milliaconnect.R
 import org.koin.androidx.compose.koinViewModel
 
-//@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun WebViewScreen(
     modifier: Modifier = Modifier,
@@ -104,7 +100,9 @@ fun WebViewScreen(
                     modifier = Modifier.weight(1f),
                     text = if (uiState.autoConnect) "Your device will automatically connect when session expired." else "Auto Connect",
                     textAlign = TextAlign.End,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.secondary,
+                    lineHeight = 16.sp
                 )
                 Spacer(Modifier.width(16.dp))
                 Switch(
@@ -117,7 +115,7 @@ fun WebViewScreen(
             // login btn
             Button(
                 onClick = {
-                    viewModel.handleLogin(context)
+                    viewModel.handleLogin()
                 },
                 modifier = Modifier
 //                    .padding(top = 16.dp)
@@ -129,7 +127,7 @@ fun WebViewScreen(
             //logout
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                //enabled = uiState.isLoggedIn,
+                enabled = uiState.isLoggedIn,
                 onClick = { viewModel.logout() }) {
                 Text("Logout")
             }
@@ -142,37 +140,6 @@ fun WebViewScreen(
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.weight(1.2f))
-
-            /*AndroidView(
-                modifier = modifier.padding(top = 100.dp),
-                factory = { context ->
-                    WebView(context).apply {
-                        settings.javaScriptEnabled = true
-                        webViewClient = object : WebViewClient() {
-                            override fun onPageFinished(view: WebView?, url: String?) {
-                                super.onPageFinished(view, url)
-                                webViewRef.value = view
-
-                                // Try auto-login if credentials exist and haven't attempted yet
-                                *//*if (!autoLoginAttempted && username.isNotEmpty() && password.isNotEmpty()) {
-                                view?.let {
-                                    loginScript(it, username, password)
-                                    autoLoginAttempted = true
-                                }
-                            }
-
-                            // Extract current field values
-                            extractFieldValues(view) { user, pass, loggedIn ->
-                                viewModel.updateUsername(user)
-                                viewModel.updatePassword(pass)
-                                viewModel.updateMessage(if (loggedIn) "Successfully logged in" else null)
-                            }*//*
-                        }
-                    }
-                    loadUrl(*//*baseUrl*//*"www.google.com")
-                }
-            }
-        )*/
         }
         uiState.loadingMessage?.let {
             Column(
@@ -191,9 +158,7 @@ fun WebViewScreen(
         }
         if (uiState.showNoWifiDialog)
             Dialog(
-                onDismissRequest = {
-                    // viewModel.dismissNoWifiDialog()
-                }
+                onDismissRequest = { /* viewModel.dismissNoWifiDialog() */ }
             ) {
                 Card(
                     modifier = Modifier
@@ -215,19 +180,12 @@ fun WebViewScreen(
                         Text(
                             text = "Wifi Not Connected",
                             fontSize = 20.sp,
-//                            modifier = Modifier.padding(vertical = 8.dp),
                             fontWeight = FontWeight.Bold, textAlign = TextAlign.Center
                         )
                         Text(
                             text = "Please connect JMI Wifi and try again.",
                             textAlign = TextAlign.Center
                         )
-                        /*TextButton(
-                            onClick = {
-                            }
-                        ) {
-                            Text(text = "OK")
-                        }*/
                     }
                 }
             }

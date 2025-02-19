@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Wifi Auto Connect"
+rootProject.name = "Millia Connect"
 include(":app")
