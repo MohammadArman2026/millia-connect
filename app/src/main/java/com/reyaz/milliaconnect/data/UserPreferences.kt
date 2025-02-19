@@ -18,6 +18,7 @@ class UserPreferences(private val context: Context) {
         val USERNAME = stringPreferencesKey("username")
         val PASSWORD = stringPreferencesKey("password")
         val LOGIN_STATUS = booleanPreferencesKey("status")
+        val AUTO_CONNECT = booleanPreferencesKey("auto_connect")
     }
 
     // Get saved username
@@ -31,21 +32,32 @@ class UserPreferences(private val context: Context) {
         .map { preferences ->
             preferences[PASSWORD] ?: ""
         }
+
     val loginStatus: Flow<Boolean> = context.dataStore.data
         .map { preferences ->
             preferences[LOGIN_STATUS] ?: false
         }
 
+    // Get Auto Connect Status
+    val autoConnect: Flow<Boolean> = context.dataStore.data
+        .map { preferences ->
+            preferences[AUTO_CONNECT] ?: false
+        }
+
+
+
     // Save credentials
     suspend fun saveCredentials(
         username: String,
         password: String,
-        isLoggedIn: Boolean
+        isLoggedIn: Boolean,
+        autoConnect: Boolean
     ) {
         context.dataStore.edit { preferences ->
             preferences[USERNAME] = username
             preferences[PASSWORD] = password
             preferences[LOGIN_STATUS] = isLoggedIn
+            preferences[AUTO_CONNECT] = autoConnect
         }
     }
 
@@ -54,6 +66,12 @@ class UserPreferences(private val context: Context) {
         context.dataStore.edit { preferences ->
             preferences.remove(USERNAME)
             preferences.remove(PASSWORD)
+        }
+    }
+
+    suspend fun setAutoConnect(autoConnect: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[AUTO_CONNECT] = autoConnect
         }
     }
 }

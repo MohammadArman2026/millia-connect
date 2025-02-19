@@ -1,5 +1,7 @@
 package com.reyaz.milliaconnect.ui.screen
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -42,12 +45,14 @@ import androidx.compose.ui.window.Dialog
 import com.reyaz.milliaconnect.R
 import org.koin.androidx.compose.koinViewModel
 
+//@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun WebViewScreen(
     modifier: Modifier = Modifier,
     viewModel: VMLogin = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     Box(
         modifier = modifier
@@ -60,12 +65,6 @@ fun WebViewScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            /* OutlinedTextField(
-                 value = uiState.baseUrl,
-                 onValueChange = { viewModel.updateBaseUrl(it)},
-                 label = { Text("Wifi Url") },
-                 modifier = Modifier.fillMaxWidth()
-             )*/
             Spacer(Modifier.weight(1f))
             Image(
                 painter = painterResource(R.drawable.millia_connect_logo),
@@ -110,7 +109,7 @@ fun WebViewScreen(
                 Spacer(Modifier.width(16.dp))
                 Switch(
                     checked = uiState.autoConnect,
-                    onCheckedChange = { viewModel.updateAutoConnect(it) },
+                    onCheckedChange = { viewModel.updateAutoConnect(it, context) },
                     colors = SwitchDefaults.colors()
                 )
             }
@@ -118,7 +117,7 @@ fun WebViewScreen(
             // login btn
             Button(
                 onClick = {
-                    viewModel.handleLogin()
+                    viewModel.handleLogin(context)
                 },
                 modifier = Modifier
 //                    .padding(top = 16.dp)
@@ -135,14 +134,13 @@ fun WebViewScreen(
                 Text("Logout")
             }
 
-            uiState.message?.let {
-                Text(
-                    it,
-                    color = MaterialTheme.colorScheme.error,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 24.dp)
-                )
-            }
+            Text(
+                text = uiState.message,
+                color = MaterialTheme.colorScheme.error,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 24.dp),
+                textAlign = TextAlign.Center
+            )
             Spacer(Modifier.weight(1.2f))
 
             /*AndroidView(
