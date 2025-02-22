@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.reyaz.milliaconnect.data.UserPreferences
 import com.reyaz.milliaconnect.data.WebLoginManager
 import com.reyaz.milliaconnect.util.NetworkConnectivityObserver
-import com.reyaz.milliaconnect.util.NotificationHelper
 import com.reyaz.milliaconnect.worker.AutoLoginWorker
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class VMLogin(
     private val userPreferences: UserPreferences,
@@ -50,29 +48,6 @@ class VMLogin(
                         else _uiState.update { it.copy(message = "One time credential needed to login automatically.") }
                     }
                 }
-        }
-    }
-
-    fun dismissNoWifiDialog() {
-        _uiState.update { it.copy(showNoWifiDialog = false) }
-    }
-
-    fun updateUsername(username: String) {
-        _uiState.update { it.copy(username = username) }
-    }
-
-    fun updatePassword(newPassword: String) {
-        _uiState.update { it.copy(password = newPassword) }
-    }
-
-    private fun saveCredentials(isLoggedIn: Boolean) {
-        viewModelScope.launch {
-            userPreferences.saveCredentials(
-                _uiState.value.username,
-                _uiState.value.password,
-                isLoggedIn,
-                _uiState.value.autoConnect
-            )
         }
     }
 
@@ -119,6 +94,7 @@ class VMLogin(
                     Log.e("VMLogin", "Logout failed", exception)
                     onError(exception)
                 }
+            AutoLoginWorker.cancel(appContext)
         }
     }
 
@@ -140,12 +116,38 @@ class VMLogin(
         }
     }
 
+    fun dismissNoWifiDialog() {
+        _uiState.update { it.copy(showNoWifiDialog = false) }
+    }
+
+    fun updateUsername(username: String) {
+        _uiState.update { it.copy(username = username) }
+    }
+
+    fun updatePassword(newPassword: String) {
+        _uiState.update { it.copy(password = newPassword) }
+    }
+
     fun updateAutoConnect(autoConnect: Boolean, context: Context) {
         viewModelScope.launch {
             _uiState.update { it.copy(autoConnect = autoConnect) }
             if (!uiState.value.autoConnect)
                 AutoLoginWorker.cancel(context = context)
+            else if (uiState.value.isLoggedIn && uiState.value.loginEnabled){
+                AutoLoginWorker.schedule(context = context)
+            }
             userPreferences.setAutoConnect(autoConnect)
+        }
+    }
+
+    private fun saveCredentials(isLoggedIn: Boolean) {
+        viewModelScope.launch {
+            userPreferences.saveCredentials(
+                _uiState.value.username,
+                _uiState.value.password,
+                isLoggedIn,
+                _uiState.value.autoConnect
+            )
         }
     }
 }
