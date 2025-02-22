@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
@@ -65,6 +67,7 @@ class AutoLoginWorker(
         } catch (e: Exception) {
             Log.e("AutoLoginWorker", "Error during auto login", e)
             userPreferences.setLoginStatus(false)
+            cancel(applicationContext)
             Result.failure()
         }
     }
@@ -93,19 +96,37 @@ class AutoLoginWorker(
          * @see PeriodicWorkRequestBuilder
          * @see ExistingPeriodicWorkPolicy
          */
+
+        //periodic work
         fun schedule(context: Context) {
             Log.d("AutoLoginWorker", "Scheduling auto login work")
             val autoLoginTask = PeriodicWorkRequestBuilder<AutoLoginWorker>(100, TimeUnit.MINUTES)
-//          val autoLoginTask = OneTimeWorkRequestBuilder<AutoLoginWorker>()
 //                .setInitialDelay(5, TimeUnit.SECONDS)
                 .build()
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-//          WorkManager.getInstance(context).enqueueUniqueWork(
+                uniqueWorkName =
                 UNIQUE_WORK_NAME,
 //                System.currentTimeMillis().toString(),
                 ExistingPeriodicWorkPolicy.KEEP,    //This ensures that if a periodic work request already exists, it won't create a new one and execute it immediately.
-//              ExistingWorkPolicy.KEEP,
+                autoLoginTask
+            )
+        }
+
+        // one time work
+        fun schedule1(context: Context) {
+            Log.d("AutoLoginWorker", "Scheduling auto login work")
+//            val autoLoginTask = PeriodicWorkRequestBuilder<AutoLoginWorker>(100, TimeUnit.MINUTES)
+          val autoLoginTask = OneTimeWorkRequestBuilder<AutoLoginWorker>()
+                .setInitialDelay(10, TimeUnit.SECONDS)
+                .build()
+
+//            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+          WorkManager.getInstance(context).enqueueUniqueWork(
+                uniqueWorkName = UNIQUE_WORK_NAME,
+//                System.currentTimeMillis().toString(),
+//                ExistingPeriodicWorkPolicy.KEEP,    //This ensures that if a periodic work request already exists, it won't create a new one and execute it immediately.
+              ExistingWorkPolicy.KEEP,
                 autoLoginTask
             )
         }
