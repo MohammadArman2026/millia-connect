@@ -45,7 +45,6 @@ class AutoLoginWorker(
                 .fold(
                     onSuccess = {
                         Log.d("AutoLoginWorker", "Auto login successful")
-//                        schedule(context = applicationContext)
                         userPreferences.setLoginStatus(true)
                         notificationHelper.showNotification(
                             "Session Restored",
@@ -99,17 +98,23 @@ class AutoLoginWorker(
 
         //periodic work
         fun schedule(context: Context) {
-            Log.d("AutoLoginWorker", "Scheduling auto login work")
+            Log.d("AutoLoginWorker", "scheduling auto login work")
+            AutoLoginWorker.cancel(context)
             val autoLoginTask = PeriodicWorkRequestBuilder<AutoLoginWorker>(100, TimeUnit.MINUTES)
-//                .setInitialDelay(5, TimeUnit.SECONDS)
+                .setInitialDelay(100, TimeUnit.MINUTES)
                 .build()
+            val id = autoLoginTask.id
+            Log.d("AutoLoginWorker", "id: $id")
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 uniqueWorkName =
                 UNIQUE_WORK_NAME,
 //                System.currentTimeMillis().toString(),
-                ExistingPeriodicWorkPolicy.KEEP,    //This ensures that if a periodic work request already exists, it won't create a new one and execute it immediately.
-                autoLoginTask
+                existingPeriodicWorkPolicy =
+//                ExistingPeriodicWorkPolicy.UPDATE,
+                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+//                ExistingPeriodicWorkPolicy.KEEP,
+                request = autoLoginTask
             )
         }
 
@@ -125,8 +130,7 @@ class AutoLoginWorker(
           WorkManager.getInstance(context).enqueueUniqueWork(
                 uniqueWorkName = UNIQUE_WORK_NAME,
 //                System.currentTimeMillis().toString(),
-//                ExistingPeriodicWorkPolicy.KEEP,    //This ensures that if a periodic work request already exists, it won't create a new one and execute it immediately.
-              ExistingWorkPolicy.KEEP,
+              ExistingWorkPolicy.APPEND_OR_REPLACE,
                 autoLoginTask
             )
         }
@@ -134,7 +138,7 @@ class AutoLoginWorker(
         fun cancel(context: Context) {
             Log.d("AutoLoginWorker", "Cancelling auto login work")
 //            WorkManager.getInstance(context).cancelUniqueWork(UNIQUE_WORK_NAME)
-            WorkManager.getInstance(context).cancelAllWork()
+            //WorkManager.getInstance(context).cancelAllWork()
 //            WorkManager.getInstance(context).pruneWork()
         }
     }
