@@ -44,7 +44,7 @@ class VMLogin(
                                 autoConnect = userPreferences.autoConnect.first()
                             )
                         }
-                        if (uiState.value.loginEnabled) //handleLogin()
+                        if (uiState.value.loginEnabled) handleLogin()
                         else _uiState.update { it.copy(message = "One time credential needed to login automatically.") }
                     }
                 }

@@ -1,5 +1,7 @@
 package com.reyaz.milliaconnect.ui.screen
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -156,7 +159,11 @@ fun WebViewScreen(
                 Text(it, modifier = Modifier.padding(top = 16.dp))
             }
         }
-        if (uiState.showNoWifiDialog)
+        if (uiState.showNoWifiDialog) {
+            BackHandler {
+                // Exit the app when back button is pressed and the dialog is displayed
+                (context as? Activity)?.finish()
+            }
             Dialog(
                 onDismissRequest = { /* viewModel.dismissNoWifiDialog() */ }
             ) {
@@ -189,5 +196,6 @@ fun WebViewScreen(
                     }
                 }
             }
+        }
     }
 }
