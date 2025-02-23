@@ -122,10 +122,16 @@ class VMLogin(
 
     fun updateUsername(username: String) {
         _uiState.update { it.copy(username = username) }
+        viewModelScope.launch {
+            saveCredentials(isLoggedIn = false)
+        }
     }
 
     fun updatePassword(newPassword: String) {
         _uiState.update { it.copy(password = newPassword) }
+        viewModelScope.launch {
+            saveCredentials(isLoggedIn = false)
+        }
     }
 
     fun updateAutoConnect(autoConnect: Boolean, context: Context) {
@@ -137,6 +143,9 @@ class VMLogin(
                 AutoLoginWorker.schedule(context = context)
             }
             userPreferences.setAutoConnect(autoConnect)
+        }
+        viewModelScope.launch {
+            saveCredentials(isLoggedIn = false)
         }
     }
 
