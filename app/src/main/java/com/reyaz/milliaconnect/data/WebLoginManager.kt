@@ -12,6 +12,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextInput
 import com.reyaz.milliaconnect.util.NetworkConnectivityObserver
 import com.reyaz.milliaconnect.util.NotificationHelper
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 class WebLoginManager(
@@ -31,6 +32,15 @@ class WebLoginManager(
 
     suspend fun performLogin(username: String, password: String): Result<String> =
         withContext(Dispatchers.IO) {
+//            return@withContext Result.failure<String>(Exception("dummy errorrr"))
+//            return@withContext Result.success<String>("Successfully Logged in!")
+
+            Log.d("WebScrapingService", "DUMMY login begins")
+            if(username == "99999" && password == "milliaPassword") {
+                delay(2_000)
+                return@withContext Result.success("Successfully Logged in!")
+            }
+            Log.d("WebScrapingService", "DUMMY login")
             wifiNetworkManager.forceUseWifi()
             //notificationHelper.showNotification("performing login", "in weblogin manager")
             val loginUrl = "http://10.2.0.10:8090/login?dummy"
@@ -55,7 +65,6 @@ class WebLoginManager(
                 // The WebClient is used to simulate a web browser.
                 // It is important to close it after use to free up resources.
                 Log.d("WebScrapingService", "Response Page: $pageText")
-
                 if (pageText.contains("Note: Please enter your valid credentials."))
                     Result.failure(Exception("Wrong Username or Password"))
                 else Result.success("Successfully Logged in!")
@@ -67,6 +76,8 @@ class WebLoginManager(
         }
 
     suspend fun performLogout(): Result<String> = withContext(Dispatchers.IO) {
+//                    return@withContext Result.failure<String>(Exception("dummy errorrr"))
+//        return@withContext Result.success<String>("dummy errorrr")
         try {
             wifiNetworkManager.forceUseWifi()
             val logoutUrl = "http://10.2.0.10:8090/logout?dummy"

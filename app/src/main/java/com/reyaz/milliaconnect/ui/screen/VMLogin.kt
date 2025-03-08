@@ -32,7 +32,7 @@ class VMLogin(
                 .collect { isWifiConnected ->
                     _uiState.update {
                         it.copy(
-                            showNoWifiDialog = !isWifiConnected
+                            isWifiConnected = !isWifiConnected
                         )
                     }
                     if (isWifiConnected) {
@@ -45,7 +45,7 @@ class VMLogin(
                             )
                         }
                         if (uiState.value.loginEnabled) handleLogin()
-                        else _uiState.update { it.copy(message = "One time credential needed to login automatically.") }
+                        else _uiState.update { it.copy(errorMessage = "You only need to enter your credentials once.") }
                     }
                 }
         }
@@ -53,13 +53,13 @@ class VMLogin(
 
     fun handleLogin() {
         viewModelScope.launch {
-            _uiState.update { it.copy(loadingMessage = "Logging in...") }
+            _uiState.update { it.copy(loadingMessage = "Connecting...") }
             webLoginManager.performLogin(_uiState.value.username, _uiState.value.password)
-                .onSuccess { message ->
+                .onSuccess {
 //                    Log.d("VMLogin", "Login successful")
                     _uiState.update {
                         it.copy(
-                            message = message,
+                            errorMessage = null,
                             isLoggedIn = true,
                             loadingMessage = null
                         )
@@ -76,7 +76,7 @@ class VMLogin(
 
     fun logout() {
         viewModelScope.launch {
-            _uiState.update { it.copy(loadingMessage = "Logging Out...") }
+            _uiState.update { it.copy(loadingMessage = "Disconnecting...") }
             webLoginManager.performLogout()
                 .onSuccess { message ->
                     Log.d("VMLogin", "Logout successful")
@@ -84,7 +84,7 @@ class VMLogin(
                         it.copy(
                             isLoggedIn = false,
                             loadingMessage = null,
-                            message = message
+                            errorMessage = null
                         )
                     }
                     saveCredentials(false)
@@ -108,7 +108,7 @@ class VMLogin(
             _uiState.update {
                 it.copy(
                     loadingMessage = null,
-                    message = error
+                    errorMessage = error
                 )
             }
 
@@ -116,7 +116,7 @@ class VMLogin(
     }
 
     fun dismissNoWifiDialog() {
-        _uiState.update { it.copy(showNoWifiDialog = false) }
+        _uiState.update { it.copy(isWifiConnected = false) }
     }
 
     fun updateUsername(username: String) {

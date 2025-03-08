@@ -19,11 +19,11 @@ class NotificationHelper(private val applicationContext: Context) {
         // Create a notification channel for Android O and above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                "auto_login_channel",
-                "Auto Login Notifications",
+                "auto_connect_channel",
+                "Auto Connect Notifications",
                 NotificationManager.IMPORTANCE_DEFAULT
             ).apply {
-                description = "Notifications for auto login status"
+                description = "Notifications for auto connect status"
             }
             notificationManager.createNotificationChannel(channel)
         }
@@ -42,7 +42,7 @@ class NotificationHelper(private val applicationContext: Context) {
         )
 
         // Build the notification with the pendingIntent
-        val notification = NotificationCompat.Builder(applicationContext, "auto_login_channel")
+        val notification = NotificationCompat.Builder(applicationContext, "auto_connect_channel")
             .setSmallIcon(R.drawable.notification)
             .setContentTitle(title)
             .setContentText(message)
