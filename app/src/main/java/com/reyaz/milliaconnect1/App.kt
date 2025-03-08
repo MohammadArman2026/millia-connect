@@ -1,9 +1,7 @@
-package com.reyaz.milliaconnect
+package com.reyaz.milliaconnect1
 
 import android.app.Application
-import android.content.IntentFilter
-import android.net.ConnectivityManager
-import com.reyaz.milliaconnect.di.appModule
+import com.reyaz.milliaconnect1.di.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 

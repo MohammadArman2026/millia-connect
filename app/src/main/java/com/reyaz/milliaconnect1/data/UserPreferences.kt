@@ -1,4 +1,4 @@
-package com.reyaz.milliaconnect.data
+package com.reyaz.milliaconnect1.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore

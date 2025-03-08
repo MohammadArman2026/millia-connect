@@ -1,4 +1,4 @@
-package com.reyaz.milliaconnect
+package com.reyaz.milliaconnect1
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.reyaz.milliaconnect.ui.screen
+package com.reyaz.milliaconnect1.ui.screen
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.InputTransformation.Companion.keyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
@@ -59,8 +58,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.reyaz.milliaconnect.R
-import com.reyaz.milliaconnect.ui.screen.components.FeedBackContent
+import com.reyaz.milliaconnect1.R
+import com.reyaz.milliaconnect1.ui.screen.components.FeedBackContent
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

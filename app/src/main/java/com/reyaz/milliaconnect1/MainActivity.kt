@@ -1,4 +1,4 @@
-package com.reyaz.milliaconnect
+package com.reyaz.milliaconnect1
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -10,8 +10,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import com.reyaz.milliaconnect.ui.navigation.AppNavHost
-import com.reyaz.milliaconnect.ui.theme.WifiAutoConnectTheme
+import com.reyaz.milliaconnect1.ui.navigation.AppNavHost
+import com.reyaz.milliaconnect1.ui.theme.WifiAutoConnectTheme
 
 class MainActivity : ComponentActivity() {
     // Register the permission request launcher

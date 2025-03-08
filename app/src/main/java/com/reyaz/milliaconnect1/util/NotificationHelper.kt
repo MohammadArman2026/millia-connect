@@ -1,4 +1,4 @@
-package com.reyaz.milliaconnect.util
+package com.reyaz.milliaconnect1.util
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -7,8 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.reyaz.milliaconnect.R
-import com.reyaz.milliaconnect.MainActivity // Import your main activity
+import com.reyaz.milliaconnect1.R
+import com.reyaz.milliaconnect1.MainActivity // Import your main activity
 
 class NotificationHelper(private val applicationContext: Context) {
 

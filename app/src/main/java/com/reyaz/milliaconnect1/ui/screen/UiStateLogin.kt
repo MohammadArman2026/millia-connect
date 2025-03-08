@@ -1,4 +1,4 @@
-package com.reyaz.milliaconnect.ui.screen
+package com.reyaz.milliaconnect1.ui.screen
 
 data class UiStateLogin(
     val username: String = "",

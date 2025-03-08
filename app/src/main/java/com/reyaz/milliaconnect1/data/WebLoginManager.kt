@@ -1,4 +1,4 @@
-package com.reyaz.milliaconnect.data
+package com.reyaz.milliaconnect1.data
 
 import android.util.Log
 import com.gargoylesoftware.htmlunit.BrowserVersion
@@ -9,8 +9,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput
-import com.reyaz.milliaconnect.util.NetworkConnectivityObserver
-import com.reyaz.milliaconnect.util.NotificationHelper
+import com.reyaz.milliaconnect1.util.NetworkConnectivityObserver
+import com.reyaz.milliaconnect1.util.NotificationHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext

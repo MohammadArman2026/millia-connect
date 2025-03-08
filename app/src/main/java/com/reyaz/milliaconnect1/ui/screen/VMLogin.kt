@@ -1,13 +1,13 @@
-package com.reyaz.milliaconnect.ui.screen
+package com.reyaz.milliaconnect1.ui.screen
 
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.reyaz.milliaconnect.data.UserPreferences
-import com.reyaz.milliaconnect.data.WebLoginManager
-import com.reyaz.milliaconnect.util.NetworkConnectivityObserver
-import com.reyaz.milliaconnect.worker.AutoLoginWorker
+import com.reyaz.milliaconnect1.data.UserPreferences
+import com.reyaz.milliaconnect1.data.WebLoginManager
+import com.reyaz.milliaconnect1.util.NetworkConnectivityObserver
+import com.reyaz.milliaconnect1.worker.AutoLoginWorker
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

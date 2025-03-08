@@ -1,4 +1,4 @@
-package com.reyaz.milliaconnect.worker
+package com.reyaz.milliaconnect1.worker
 
 import android.content.Context
 import android.util.Log
@@ -9,9 +9,9 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.reyaz.milliaconnect.data.UserPreferences
-import com.reyaz.milliaconnect.data.WebLoginManager
-import com.reyaz.milliaconnect.util.NotificationHelper
+import com.reyaz.milliaconnect1.data.UserPreferences
+import com.reyaz.milliaconnect1.data.WebLoginManager
+import com.reyaz.milliaconnect1.util.NotificationHelper
 import kotlinx.coroutines.flow.first
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

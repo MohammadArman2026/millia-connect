@@ -5,15 +5,15 @@ plugins {
 }
 
 android {
-    namespace = "com.reyaz.milliaconnect"
+    namespace = "com.reyaz.milliaconnect1"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.reyaz.milliaconnect"
+        applicationId = "com.reyaz.milliaconnect1"
         minSdk = 24
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.4"
+        versionCode = 1
+        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

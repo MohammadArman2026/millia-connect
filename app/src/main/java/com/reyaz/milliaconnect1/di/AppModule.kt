@@ -1,11 +1,11 @@
-package com.reyaz.milliaconnect.di
+package com.reyaz.milliaconnect1.di
 
 import androidx.work.WorkManager
-import com.reyaz.milliaconnect.util.NotificationHelper
-import com.reyaz.milliaconnect.data.UserPreferences
-import com.reyaz.milliaconnect.data.WebLoginManager
-import com.reyaz.milliaconnect.ui.screen.VMLogin
-import com.reyaz.milliaconnect.util.NetworkConnectivityObserver
+import com.reyaz.milliaconnect1.util.NotificationHelper
+import com.reyaz.milliaconnect1.data.UserPreferences
+import com.reyaz.milliaconnect1.data.WebLoginManager
+import com.reyaz.milliaconnect1.ui.screen.VMLogin
+import com.reyaz.milliaconnect1.util.NetworkConnectivityObserver
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
