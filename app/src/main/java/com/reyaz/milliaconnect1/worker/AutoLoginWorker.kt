@@ -51,9 +51,7 @@ class AutoLoginWorker(
                             "Session Restored",
                             "Your Jamia Wifi session has been restored automatically"
                         )
-                        schedule(context = applicationContext)  // todo remove in production
-
-//                        Result.failure()    // todo
+//                        schedule(context = applicationContext)  //
                         Result.success()
                     },
                     onFailure = {
@@ -101,7 +99,7 @@ class AutoLoginWorker(
          */
 
         //periodic work
-        fun schedule1(context: Context) {
+        fun schedule(context: Context) {
             Log.d("AutoLoginWorker", "scheduling auto login work")
             AutoLoginWorker.cancel(context)
             val autoLoginTask = PeriodicWorkRequestBuilder<AutoLoginWorker>(100, TimeUnit.MINUTES)
@@ -123,7 +121,7 @@ class AutoLoginWorker(
         }
 
         // one time work
-        fun schedule(context: Context) {
+        fun schedule1(context: Context) {
             Log.d("AutoLoginWorker", "Scheduling auto login work")
 //            val autoLoginTask = PeriodicWorkRequestBuilder<AutoLoginWorker>(100, TimeUnit.MINUTES)
           val autoLoginTask = OneTimeWorkRequestBuilder<AutoLoginWorker>()

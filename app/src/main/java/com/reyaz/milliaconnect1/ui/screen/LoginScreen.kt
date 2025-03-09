@@ -6,6 +6,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,14 +46,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -97,7 +98,7 @@ fun WebViewScreen(
                     textAlign = TextAlign.Center,
                     fontSize = 20.sp,
                     modifier = Modifier.padding(16.dp),
-                    color = Color.Green.copy(alpha = 0.7f)
+                    color = if(isSystemInDarkTheme()) Color(0xFF89AC46) else Color(0xFF008000)
                 )
                 Spacer(Modifier.weight(1f))
 
@@ -193,7 +194,6 @@ fun WebViewScreen(
                         colors = SwitchDefaults.colors()
                     )
                 }
-                FeedBackContent(modifier = Modifier.padding(top = 8.dp, start = 24.dp, end = 24.dp))
                 // login btn
                 Button(
                     onClick = {
@@ -219,6 +219,8 @@ fun WebViewScreen(
 
 //                Spacer(Modifier.weight(1.2f))
             }
+            FeedBackContent(modifier = Modifier.padding(top = 12.dp, start = 24.dp, end = 24.dp))
+
             uiState.errorMessage?.let {
                 Text(
                     text = it,

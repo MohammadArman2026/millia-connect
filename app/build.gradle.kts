@@ -12,8 +12,8 @@ android {
         applicationId = "com.reyaz.milliaconnect1"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 4
+        versionName = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -21,6 +21,7 @@ android {
     buildTypes {
         release {
             isDebuggable = false
+            isShrinkResources = false
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -85,12 +86,13 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.jsoup)
-    implementation(libs.htmlunit.android)  // screen scraping
+    // screen scraping
+    implementation(libs.htmlunit.android)
+
+
 
     // worker
     implementation(libs.androidx.work.runtime.ktx)
     // koin-Jetpack WorkManager
     implementation(libs.koin.androidx.workmanager)
-
-
 }
