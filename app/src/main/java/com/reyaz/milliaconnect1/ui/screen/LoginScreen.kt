@@ -72,6 +72,7 @@ fun WebViewScreen(
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     var isPasswordVisible by rememberSaveable { mutableStateOf(false) }
+
     Box(
         modifier = modifier
             .fillMaxSize()

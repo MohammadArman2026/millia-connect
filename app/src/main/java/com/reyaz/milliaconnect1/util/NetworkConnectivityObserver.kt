@@ -6,8 +6,10 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.net.wifi.WifiManager
+import android.os.Build
 import android.util.Log
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -15,13 +17,12 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 class NetworkConnectivityObserver(private val context: Context) {
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    private val wifiManager =
-        context.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
     fun forceUseWifi() {
         Log.d("WifiNetworkManager", "Forcing Wi-Fi usage...")
         val request = NetworkRequest.Builder()
             .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
 
         connectivityManager.requestNetwork(request, object : ConnectivityManager.NetworkCallback() {

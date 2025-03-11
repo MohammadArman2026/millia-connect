@@ -1,5 +1,6 @@
 package com.reyaz.milliaconnect1.data
 
+import android.provider.Settings
 import android.util.Log
 import com.gargoylesoftware.htmlunit.BrowserVersion
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController
@@ -67,7 +68,9 @@ class WebLoginManager(
                 Log.d("WebScrapingService", "Response Page: $pageText")
                 if (pageText.contains("Note: Please enter your valid credentials."))
                     Result.failure(Exception("Wrong Username or Password"))
-                else Result.success("Successfully Logged in!")
+                else {
+                    Result.success("Successfully Logged in!")
+                }
             } catch (e: Exception) {
                 Log.d("WebScrapingService", "3")
                 Log.e("WebScrapingService", "Error While Connecting", e)
