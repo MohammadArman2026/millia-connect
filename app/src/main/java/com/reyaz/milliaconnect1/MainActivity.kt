@@ -25,7 +25,6 @@ class MainActivity : ComponentActivity() {
                 showToast("Notification permission denied!")
             }
         }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         checkAndRequestNotificationPermission()

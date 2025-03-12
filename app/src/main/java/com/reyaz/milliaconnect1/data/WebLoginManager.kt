@@ -18,9 +18,9 @@ import kotlinx.coroutines.withContext
 
 class WebLoginManager(
     private val notificationHelper: NotificationHelper,
-//    private val wifiNetworkManager: WifiNetworkManager,
-    private val wifiNetworkManager: NetworkConnectivityObserver,
+    private val wifiNetworkManager: NetworkConnectivityObserver
 ) {
+
     val webClient = WebClient(BrowserVersion.CHROME).apply {
         options.isJavaScriptEnabled = true
         options.isCssEnabled = false
@@ -37,7 +37,7 @@ class WebLoginManager(
 //            return@withContext Result.success<String>("Successfully Logged in!")
 
             Log.d("WebScrapingService", "DUMMY login begins")
-            if(username == "99999" && password == "sssss") {
+            if (username == "99999" && password == "sssss") {
                 delay(2_000)
                 return@withContext Result.success("Successfully Logged in!")
             }
@@ -69,6 +69,7 @@ class WebLoginManager(
                 if (pageText.contains("Note: Please enter your valid credentials."))
                     Result.failure(Exception("Wrong Username or Password"))
                 else {
+                    //captivePortal.reportCaptivePortalDismissed()
                     Result.success("Successfully Logged in!")
                 }
             } catch (e: Exception) {
