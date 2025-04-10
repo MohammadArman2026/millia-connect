@@ -1,5 +1,8 @@
 package com.reyaz.milliaconnect1.data
 
+import android.content.Intent
+import android.net.CaptivePortal
+import android.net.ConnectivityManager
 import android.provider.Settings
 import android.util.Log
 import com.gargoylesoftware.htmlunit.BrowserVersion
@@ -16,11 +19,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
+
 class WebLoginManager(
     private val notificationHelper: NotificationHelper,
     private val wifiNetworkManager: NetworkConnectivityObserver
 ) {
-
     val webClient = WebClient(BrowserVersion.CHROME).apply {
         options.isJavaScriptEnabled = true
         options.isCssEnabled = false
@@ -39,6 +42,8 @@ class WebLoginManager(
             Log.d("WebScrapingService", "DUMMY login begins")
             if (username == "99999" && password == "sssss") {
                 delay(2_000)
+                // Report captive portal dismissed for successful dummy login
+                wifiNetworkManager.reportCaptivePortalDismissed()
                 return@withContext Result.success("Successfully Logged in!")
             }
             Log.d("WebScrapingService", "DUMMY login")
@@ -69,7 +74,8 @@ class WebLoginManager(
                 if (pageText.contains("Note: Please enter your valid credentials."))
                     Result.failure(Exception("Wrong Username or Password"))
                 else {
-                    //captivePortal.reportCaptivePortalDismissed()
+                    // Report captive portal dismissed when login is successful
+                    wifiNetworkManager.reportCaptivePortalDismissed()
                     Result.success("Successfully Logged in!")
                 }
             } catch (e: Exception) {

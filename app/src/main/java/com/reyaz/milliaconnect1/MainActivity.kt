@@ -2,8 +2,10 @@ package com.reyaz.milliaconnect1
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.reyaz.milliaconnect1.ui.navigation.AppNavHost
 import com.reyaz.milliaconnect1.ui.theme.WifiAutoConnectTheme
+import com.reyaz.milliaconnect1.util.NetworkConnectivityObserver
 
 class MainActivity : ComponentActivity() {
     // Register the permission request launcher
@@ -28,12 +31,23 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         checkAndRequestNotificationPermission()
+        // Check if this activity was launched from a captive portal notification
+        if (intent?.action == ConnectivityManager.ACTION_CAPTIVE_PORTAL_SIGN_IN) {
+            Log.d("MAIN_ACTIVITY", "Captive portal intent received")
+            val networkConnectivityObserver = NetworkConnectivityObserver(this)
+            networkConnectivityObserver.setCaptivePortal(intent)
+
+            // You might want to automatically trigger login here or wait for user input
+        } else
+            Log.d("MAIN_ACTIVITY", "No Captive Portal Intent Received!")
+
         enableEdgeToEdge()
         setContent {
             WifiAutoConnectTheme {
                 AppNavHost()
             }
         }
+
     }
 
     private fun checkAndRequestNotificationPermission() {
