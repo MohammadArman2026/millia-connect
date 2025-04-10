@@ -1,6 +1,8 @@
 package com.reyaz.milliaconnect1.util
 
 import android.content.Context
+import android.content.Intent
+import android.net.CaptivePortal
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -17,7 +19,23 @@ class NetworkConnectivityObserver(private val context: Context) {
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
+    // Store the CaptivePortal instance when available
+    private var captivePortal: CaptivePortal? = null
 
+    // Method to set the captive portal from the activity receiving ACTION_CAPTIVE_PORTAL_SIGN_IN
+    fun setCaptivePortal(intent: Intent?) {
+        captivePortal = intent?.getParcelableExtra(ConnectivityManager.EXTRA_CAPTIVE_PORTAL)
+        Log.d("NetworkConnectivityObserver", "CaptivePortal object received: ${captivePortal != null}")
+    }
+
+    // Method to report captive portal dismissed
+    fun reportCaptivePortalDismissed() {
+        captivePortal?.let {
+            Log.d("NetworkConnectivityObserver", "Reporting captive portal dismissed")
+            it.reportCaptivePortalDismissed()
+            captivePortal = null
+        }
+    }
 
     fun forceUseWifi() {
         Log.d("WifiNetworkManager", "Forcing Wi-Fi usage...")
@@ -25,8 +43,6 @@ class NetworkConnectivityObserver(private val context: Context) {
             .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
-
-
 
         connectivityManager.requestNetwork(request, object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
