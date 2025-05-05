@@ -144,8 +144,8 @@ class NetworkConnectivityObserver(private val context: Context) {
     ) { isWifiConnected, isMobileDataConnected ->
         when {
             isWifiConnected && isMobileDataConnected -> NetworkPreference.BOTH_CONNECTED
-            isWifiConnected -> NetworkPreference.WIFI_ONLY
-            isMobileDataConnected -> NetworkPreference.MOBILE_DATA_ONLY
+            isWifiConnected && !isMobileDataConnected -> NetworkPreference.WIFI_ONLY
+            //isMobileDataConnected -> NetworkPreference.MOBILE_DATA_ONLY
             else -> NetworkPreference.NONE
         }
     }
@@ -180,7 +180,7 @@ class NetworkConnectivityObserver(private val context: Context) {
 // Enum to represent the network preference status
 enum class NetworkPreference {
     WIFI_ONLY,
-    MOBILE_DATA_ONLY,
+   // MOBILE_DATA_ONLY,
     BOTH_CONNECTED,
     NONE
 }

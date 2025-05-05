@@ -6,10 +6,11 @@ data class UiStateLogin(
     var errorMessage: String? =null,
     val loadingMessage: String? = null,
     val isLoggedIn: Boolean = false,
-    val isWifiConnected: Boolean = true,
+    //val isWifiConnected: Boolean = true,
+    val showNoWifiDialog: Boolean = false,
     val isMobileDataOn: Boolean = false,
     val autoConnect: Boolean = false
 ){
     val loginEnabled: Boolean = username.isNotEmpty() && password.isNotEmpty()
-    val showDialog: Boolean = isWifiConnected
+    //val noWifiDialog: Boolean = isWifiConnected
 }

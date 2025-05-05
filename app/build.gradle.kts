@@ -12,8 +12,8 @@ android {
         applicationId = "com.reyaz.milliaconnect1"
         minSdk = 24
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.1.0"
+        versionCode = 7
+        versionName = "1.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

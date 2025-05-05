@@ -1,6 +1,8 @@
 package com.reyaz.milliaconnect1.ui.screen
 
 import android.app.Activity
+import android.content.Intent
+import android.provider.Settings
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -101,15 +103,25 @@ fun WebViewScreen(
                     modifier = Modifier.padding(16.dp),
                     color = if(isSystemInDarkTheme()) Color(0xFF89AC46) else Color(0xFF008000)
                 )
-                if(uiState.isMobileDataOn)
+                if(uiState.isMobileDataOn) {
                     Text(
-                        text = "Please turn you Mobile Data Off to make Wifi your primary connection.",
+                        text = "Turn Off Mobile Data to make wifi your primary connection.",
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(16.dp),
                         color = MaterialTheme.colorScheme.error
                     )
+                    Button(
+                        onClick = {
+                            val intent = Intent(Settings.ACTION_DATA_ROAMING_SETTINGS)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            context.startActivity(intent)
+                        }
+                    ) {
+                        Text(text = "Go to Setting")
+                    }
+                }
                 Spacer(Modifier.weight(1f))
 
                 // disconnect btn
@@ -140,7 +152,9 @@ fun WebViewScreen(
                     value = uiState.username,
                     onValueChange = { viewModel.updateUsername(it) },
                     label = { Text("Student Id") },
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next,
@@ -211,7 +225,7 @@ fun WebViewScreen(
                         viewModel.handleLogin()
                     },
                     modifier = Modifier
-                    .padding(top = 16.dp)
+                        .padding(top = 16.dp)
                         .fillMaxWidth(),
                     enabled = uiState.loginEnabled
                 ) {
@@ -256,7 +270,7 @@ fun WebViewScreen(
                 Text(it, modifier = Modifier.padding(top = 16.dp))
             }
         }
-        if (uiState.showDialog) {
+        if (uiState.showNoWifiDialog) {
             val onPressedCallback = { (context as? Activity)?.finish() }
             BackHandler { onPressedCallback()/* Exit the app when back button is pressed */ }
             Dialog(
