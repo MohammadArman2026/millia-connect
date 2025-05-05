@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.reyaz.milliaconnect1.data.UserPreferences
 import com.reyaz.milliaconnect1.data.WebLoginManager
 import com.reyaz.milliaconnect1.util.NetworkConnectivityObserver
+import com.reyaz.milliaconnect1.util.NetworkPreference
 import com.reyaz.milliaconnect1.worker.AutoLoginWorker
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,8 +29,7 @@ class VMLogin(
     init {
         viewModelScope.launch {
             // Observe WiFi connectivity
-            networkObserver.observeWifiConnectivity()
-                .collect { isWifiConnected ->
+            networkObserver.observeWifiConnectivity().collect { isWifiConnected ->
                     _uiState.update {
                         it.copy(
                             isWifiConnected = !isWifiConnected
@@ -48,6 +48,30 @@ class VMLogin(
                         else _uiState.update { it.copy(errorMessage = "You only need to enter your credentials once.") }
                     }
                 }
+            networkObserver.observeNetworkPreference().collect() { preference ->
+                when (preference) {
+                    NetworkPreference.BOTH_CONNECTED -> {
+                        // Show alert to user suggesting they turn off mobile data
+                        //showTurnOffMobileDataPrompt()
+                        _uiState.update { it.copy(isMobileDataOn = true) }
+                    }
+
+                    NetworkPreference.WIFI_ONLY -> {
+                        // Ideal state - WiFi only
+                        Log.d("Network", "WiFi connection only - optimal!")
+                    }
+
+                    NetworkPreference.MOBILE_DATA_ONLY -> {
+                        // May want to show different UI or behavior
+                        Log.d("Network", "Mobile data only")
+                    }
+
+                    NetworkPreference.NONE -> {
+                        // No connectivity
+                        //showNoConnectionMessage()
+                    }
+                }
+            }
         }
     }
 
@@ -138,7 +162,7 @@ class VMLogin(
             _uiState.update { it.copy(autoConnect = autoConnect) }
             if (!uiState.value.autoConnect)
                 AutoLoginWorker.cancel(context = context)
-            else if (uiState.value.isLoggedIn && uiState.value.loginEnabled){
+            else if (uiState.value.isLoggedIn && uiState.value.loginEnabled) {
                 AutoLoginWorker.schedule(context = context)
             }
             userPreferences.setAutoConnect(autoConnect)

@@ -7,6 +7,7 @@ data class UiStateLogin(
     val loadingMessage: String? = null,
     val isLoggedIn: Boolean = false,
     val isWifiConnected: Boolean = true,
+    val isMobileDataOn: Boolean = false,
     val autoConnect: Boolean = false
 ){
     val loginEnabled: Boolean = username.isNotEmpty() && password.isNotEmpty()

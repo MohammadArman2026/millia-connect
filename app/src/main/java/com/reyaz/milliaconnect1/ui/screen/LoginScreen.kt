@@ -101,6 +101,15 @@ fun WebViewScreen(
                     modifier = Modifier.padding(16.dp),
                     color = if(isSystemInDarkTheme()) Color(0xFF89AC46) else Color(0xFF008000)
                 )
+                if(uiState.isMobileDataOn)
+                    Text(
+                        text = "Please turn you Mobile Data Off to make Wifi your primary connection.",
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.error
+                    )
                 Spacer(Modifier.weight(1f))
 
                 // disconnect btn
@@ -135,7 +144,7 @@ fun WebViewScreen(
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next,
-                        keyboardType = KeyboardType.Number
+                        keyboardType = KeyboardType.Text
                     )
                 )
                 OutlinedTextField(
