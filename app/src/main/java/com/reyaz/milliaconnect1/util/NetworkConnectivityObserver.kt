@@ -9,13 +9,14 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.telephony.TelephonyManager
 import android.util.Log
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.combine
 
-/*read it: https://claude.ai/share/66dc73e6-035f-4096-8e26-1134cce62ffe*/
 class NetworkConnectivityObserver(private val context: Context) {
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -97,9 +98,89 @@ class NetworkConnectivityObserver(private val context: Context) {
         }
     }.distinctUntilChanged()
 
+    private fun observeMobileDataConnectivity(): Flow<Boolean> = callbackFlow {
+        val callback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                val capabilities = connectivityManager.getNetworkCapabilities(network)
+                val isMobileData = capabilities?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) == true
+                trySend(isMobileData)
+            }
+
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                trySend(false)
+            }
+
+            override fun onCapabilitiesChanged(
+                network: Network,
+                networkCapabilities: NetworkCapabilities
+            ) {
+                super.onCapabilitiesChanged(network, networkCapabilities)
+                val isMobileData = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+                trySend(isMobileData)
+            }
+        }
+
+        val request = NetworkRequest.Builder()
+            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .build()
+
+        connectivityManager.registerNetworkCallback(request, callback)
+
+        // Initial state
+        val isMobileDataConnected = isMobileDataCurrentlyConnected()
+        trySend(isMobileDataConnected)
+
+        awaitClose {
+            connectivityManager.unregisterNetworkCallback(callback)
+        }
+    }.distinctUntilChanged()
+
+    // Combine both WiFi and Mobile data statuses into a single flow
+    fun observeNetworkPreference(): Flow<NetworkPreference> = combine(
+        observeWifiConnectivity(),
+        observeMobileDataConnectivity()
+    ) { isWifiConnected, isMobileDataConnected ->
+        when {
+            isWifiConnected && isMobileDataConnected -> NetworkPreference.BOTH_CONNECTED
+            isWifiConnected && !isMobileDataConnected -> NetworkPreference.WIFI_ONLY
+            //isMobileDataConnected -> NetworkPreference.MOBILE_DATA_ONLY
+            else -> NetworkPreference.NONE
+        }
+    }
+
     private fun isWifiCurrentlyConnected(): Boolean {
         val network = connectivityManager.activeNetwork
         val capabilities = connectivityManager.getNetworkCapabilities(network)
         return capabilities?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true
     }
+
+    private fun isMobileDataCurrentlyConnected(): Boolean {
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+        return capabilities?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) == true
+    }
+
+    // Check if mobile data is currently the active network
+    fun isMobileDataActive(): Boolean {
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+        // Check if this network uses cellular transport
+        return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+    }
+
+    // Method to suggest disabling mobile data if WiFi is available
+    fun shouldSuggestDisablingMobileData(): Boolean {
+        return isWifiCurrentlyConnected() && isMobileDataCurrentlyConnected()
+    }
+}
+
+// Enum to represent the network preference status
+enum class NetworkPreference {
+    WIFI_ONLY,
+   // MOBILE_DATA_ONLY,
+    BOTH_CONNECTED,
+    NONE
 }

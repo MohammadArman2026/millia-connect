@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.reyaz.milliaconnect1.data.UserPreferences
 import com.reyaz.milliaconnect1.data.WebLoginManager
 import com.reyaz.milliaconnect1.util.NetworkConnectivityObserver
+import com.reyaz.milliaconnect1.util.NetworkPreference
 import com.reyaz.milliaconnect1.worker.AutoLoginWorker
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,26 +29,65 @@ class VMLogin(
     init {
         viewModelScope.launch {
             // Observe WiFi connectivity
-            networkObserver.observeWifiConnectivity()
-                .collect { isWifiConnected ->
+            /*networkObserver.observeWifiConnectivity().collect { isWifiConnected ->
+                _uiState.update { it.copy(showNoWifiDialog = !isWifiConnected) }
+                if (isWifiConnected) {
                     _uiState.update {
                         it.copy(
-                            isWifiConnected = !isWifiConnected
+                            username = userPreferences.username.first(),
+                            password = userPreferences.password.first(),
+                            isLoggedIn = userPreferences.loginStatus.first(),
+                            autoConnect = userPreferences.autoConnect.first()
                         )
                     }
-                    if (isWifiConnected) {
-                        _uiState.update {
-                            it.copy(
-                                username = userPreferences.username.first(),
-                                password = userPreferences.password.first(),
-                                isLoggedIn = userPreferences.loginStatus.first(),
-                                autoConnect = userPreferences.autoConnect.first()
-                            )
-                        }
-                        if (uiState.value.loginEnabled) handleLogin()
-                        else _uiState.update { it.copy(errorMessage = "You only need to enter your credentials once.") }
+                    if (uiState.value.loginEnabled) handleLogin()
+                    else _uiState.update { it.copy(errorMessage = "You only need to enter your credentials once.") }
+                }
+            }*/
+            networkObserver.observeNetworkPreference().collect() { preference ->
+                when (preference) {
+                    NetworkPreference.BOTH_CONNECTED -> {
+                        Log.d("Network", "Both connected")
+                        // Show alert to user suggesting they turn off mobile data
+                        _uiState.update { it.copy(isMobileDataOn = true, showNoWifiDialog = false) }
+                        // login start
+                        initialize()
+                    }
+
+                    NetworkPreference.WIFI_ONLY -> {
+                        _uiState.update { it.copy(isMobileDataOn = false, showNoWifiDialog = false) }
+                        // Ideal state - WiFi only
+                        Log.d("Network", "WiFi connection only - optimal!")
+                        // login start
+                        initialize()
+                    }
+
+                    /*NetworkPreference.MOBILE_DATA_ONLY -> {
+                        // May want to show different UI or behavior
+                        Log.d("Network", "Mobile data only")
+                    }*/
+
+                    NetworkPreference.NONE -> {
+                        // No connectivity
+                        _uiState.update { it.copy(showNoWifiDialog = true) }
                     }
                 }
+            }
+        }
+    }
+
+    private fun initialize() {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    username = userPreferences.username.first(),
+                    password = userPreferences.password.first(),
+                    isLoggedIn = userPreferences.loginStatus.first(),
+                    autoConnect = userPreferences.autoConnect.first()
+                )
+            }
+            if (uiState.value.loginEnabled) handleLogin()
+            else _uiState.update { it.copy(errorMessage = "You only need to enter your credentials once.") }
         }
     }
 
@@ -116,7 +156,7 @@ class VMLogin(
     }
 
     fun dismissNoWifiDialog() {
-        _uiState.update { it.copy(isWifiConnected = false) }
+        _uiState.update { it.copy(showNoWifiDialog = false) }
     }
 
     fun updateUsername(username: String) {
@@ -138,7 +178,7 @@ class VMLogin(
             _uiState.update { it.copy(autoConnect = autoConnect) }
             if (!uiState.value.autoConnect)
                 AutoLoginWorker.cancel(context = context)
-            else if (uiState.value.isLoggedIn && uiState.value.loginEnabled){
+            else if (uiState.value.isLoggedIn && uiState.value.loginEnabled) {
                 AutoLoginWorker.schedule(context = context)
             }
             userPreferences.setAutoConnect(autoConnect)
