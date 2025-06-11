@@ -43,6 +43,7 @@ android {
 
 dependencies {
 
+    implementation(project(":core:navigation"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -89,7 +90,8 @@ dependencies {
     // screen scraping
     implementation(libs.htmlunit.android)
 
-
+    // extended icon
+    implementation(libs.androidx.material.icons.extended)
 
     // worker
     implementation(libs.androidx.work.runtime.ktx)

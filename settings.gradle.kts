@@ -21,3 +21,13 @@ dependencyResolutionManagement {
 
 rootProject.name = "Millia Connect"
 include(":app")
+include(":feature:portal")
+include(":feature:notice")
+include(":feature:result")
+include(":feature:attendance")
+include(":core:data")
+include(":core:domain")
+include(":core:ui")
+include(":core:common")
+include(":core:navigation")
+include(":core:network")

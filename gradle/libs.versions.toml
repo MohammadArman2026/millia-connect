@@ -1,101 +1,319 @@
 [versions]
+
+room = "2.7.1"
+ksp = "2.0.0-1.0.24"        # kotlin version of this project - kotlin compatible ksp version
+
+# Google Accompanist - Jetpack Compose utilities and extensions
+# A collection of libraries that complement Jetpack Compose with frequently requested functionalities
+# that are not yet part of the core Compose framework.
+accompanistPermissions = "0.32.0"
+
+# Android Gradle Plugin (AGP) - Core build system for Android projects
+# The primary plugin for building Android applications and libraries. It handles compilation,
+# packaging, resource processing, and more.
 agp = "8.8.0"
+
+# AndroidX DataStore - Modern data storage solution replacing SharedPreferences
+# datastorePreferences: Specifically for storing simple key-value pairs in a type-safe and
+# asynchronous way, ideal for user preferences and app settings.
 datastorePreferences = "1.1.2"
-htmlunitAndroid = "2.63.0"
-jsoup = "1.18.3"
-koinAndroidxWorkmanager = "4.0.2"
-kotlin = "2.0.0"
-coreKtx = "1.15.0"
-junit = "4.13.2"
-junitVersion = "1.2.1"
-espressoCore = "3.6.1"
-kotlinxCoroutinesAndroid = "1.9.0"
-kotlinxCoroutinesCore = "1.7.3"
-lifecycleRuntimeKtx = "2.8.7"
-activityCompose = "1.10.0"
-composeBom = "2024.04.01"
-okhttp = "4.12.0"
+# datastoreCoreAndroid: The foundational API for DataStore. Only explicitly needed if you're
+# implementing a custom DataStore (e.g., Proto DataStore with custom serializers).
+# datastore-preferences internally uses this.
 datastoreCoreAndroid = "1.1.2"
+
+# HtmlUnit Android - Headless web browser for testing web applications on Android
+# A headless browser that can execute web pages, including JavaScript, without a graphical user interface.
+# Useful for advanced web scraping that requires JavaScript execution or form submission.
+htmlunitAndroid = "2.63.0"
+
+# Jsoup - Java HTML parser for web scraping and HTML manipulation
+# A robust library for parsing HTML, extracting data, and manipulating HTML DOM.
+# Excellent for web scraping static content or content that doesn't heavily rely on client-side JavaScript.
+jsoup = "1.18.3"
+
+# Koin - Lightweight dependency injection framework
+# koinAndroidxWorkmanager: Integrates Koin with AndroidX WorkManager, allowing dependency injection
+# into your WorkManager Workers.
+koinAndroidxWorkmanager = "4.0.2"
+# koin-bom: Koin's Bill of Materials (BoM) to manage consistent versions of all Koin libraries.
+# Recommended for ensuring compatibility across different Koin modules.
 koin-bom = "4.0.2"
+
+# Kotlin - Programming language and compiler versions
+# The version of the Kotlin language compiler used across the project.
+kotlin = "2.0.0"
+# kotlinSerialization: The version of the Kotlinx Serialization plugin.
+# Used for converting Kotlin objects to and from formats like JSON.
+kotlinSerialization = "1.9.0"
+
+# AndroidX Core - Essential Android APIs and Kotlin extensions
+# Provides compatibility APIs and extensions for Android core functionalities, enhancing developer experience.
+coreKtx = "1.15.0"
+
+# Testing frameworks - Unit and instrumentation testing
+# junit: The standard JUnit 4 framework for writing unit tests.
+junit = "4.13.2"
+# junitVersion: Version for AndroidX JUnit extensions.
+junitVersion = "1.2.1"
+# espressoCore: Core library for Android UI instrumentation testing. Used to test UI interactions.
+espressoCore = "3.6.1"
+
+# Kotlin Coroutines - Asynchronous programming support
+# kotlinxCoroutinesAndroid: Provides Android-specific coroutine dispatchers (e.g., Dispatchers.Main)
+# and utilities for handling concurrency on Android.
+kotlinxCoroutinesAndroid = "1.9.0"
+# kotlinxCoroutinesCore: The core library for Kotlin Coroutines, enabling asynchronous programming
+# with suspending functions.
+kotlinxCoroutinesCore = "1.7.3"
+
+# Kotlinx DateTime - Multiplatform date and time API
+# A modern, multiplatform library for handling dates, times, and time zones in a type-safe manner.
+kotlinxDatetime = "0.5.0"
+
+# AndroidX Lifecycle - Lifecycle-aware components and ViewModels
+# Provides classes to build lifecycle-aware components that manage their own lifecycle,
+# like LiveData and ViewModel.
+lifecycleRuntimeKtx = "2.8.7"
+
+# Jetpack Compose Activity integration
+# Provides the `ComponentActivity` extension function `setContent` to host Compose UI in Activities.
+activityCompose = "1.10.0"
+
+# Jetpack Compose - Modern declarative UI toolkit
+# composeBom: Bill of Materials (BoM) for Jetpack Compose. It centralizes all Compose library
+# versions to ensure compatibility and simplify dependency management.
+composeBom = "2024.04.01"
+
+# OkHttp - HTTP client library for efficient network requests
+# A popular, efficient, and well-maintained HTTP client for making network requests.
+# Often used as the underlying client for Retrofit.
+okhttp = "4.12.0"
+
+# AndroidX Work - Background task scheduling and execution
+# WorkManager for reliable background task execution. It handles device constraints,
+# guarantees execution, and manages retries for deferrable tasks.
 workRuntimeKtx = "2.10.0"
+
+# AndroidX AppCompat - Backward compatibility support for older Android versions
+# Provides backward-compatible versions of Android framework APIs and UI components.
 appcompat = "1.6.1"
+
+# Material Design - Google's design system components
+# Provides traditional Material Design components (pre-Material 3) for XML-based UI.
+# While you're using Compose Material 3, this might be included for other reasons (e.g., splash screen themes).
 material = "1.10.0"
 
-
+# Android build tools and plugins (Specific versions of plugins)
+# androidApplication: Version for the Android Application plugin (id = "com.android.application").
 androidApplication = "8.1.3"
+# kotlinAndroid: Version for the Kotlin Android plugin (id = "org.jetbrains.kotlin.android").
 kotlinAndroid = "1.9.20"
+# ktlint: Version for the Ktlint Gradle plugin, used for enforcing Kotlin coding style.
 ktlint = "11.6.0"
+# kotlinJvm: Version for the Kotlin JVM plugin (id = "org.jetbrains.kotlin.jvm").
 kotlinJvm = "1.8.10"
+# androidLibrary: Version for the Android Library plugin (id = "com.android.library").
 androidLibrary = "8.1.3"
-kotlinSerialization = "1.9.0"
-hilt = "2.48.1"
-protobuf = "0.9.4"
-
-ktor = "2.3.5"
-protobufJavaLite = "3.25.0"
-timber = "5.0.1"
-spotless = "6.19.0"
 
 [libraries]
 
+# PERMISSIONS & SYSTEM ACCESS
+# Provides easy-to-use composable functions for requesting runtime permissions in Jetpack Compose
+# Essential for location-based attendance, camera access, or other permission-requiring features
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 
+# ARCHITECTURE COMPONENTS - LIFECYCLE & VIEWMODEL
+# Integrates Android ViewModels with Jetpack Compose, enabling state management and lifecycle awareness
+# Critical for MVVM architecture pattern in Compose applications
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
+
+# Provides lifecycle-aware components and Kotlin coroutines integration for Android
+# Essential for managing component lifecycles and preventing memory leaks
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+
+# Additional lifecycle support specifically for Compose runtime integration
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
+
+# NAVIGATION
+# Type-safe navigation component specifically designed for Jetpack Compose
+# Handles screen transitions, deep links, and navigation state management
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "lifecycleRuntimeKtx" }
 
+# CORE ANDROID APIS
+# Provides Kotlin extensions for Android Core APIs, making code more concise and idiomatic
+# Includes extensions for bundles, shared preferences, collections, and more
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+
+# DATA PERSISTENCE
+# Preferences-based DataStore implementation for simple key-value storage
+# Ideal for storing user settings, app preferences, and simple configuration data
+# This is the primary DataStore dependency for most common use cases.
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
-androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
-htmlunit-android = { module = "net.sourceforge.htmlunit:htmlunit-android", version.ref = "htmlunitAndroid" }
-jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 
-androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-
-androidx-ui = { group = "androidx.compose.ui", name = "ui" }
-androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
-androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-koin-android = { module = "io.insert-koin:koin-android" }
-koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
-koin-androidx-compose-navigation = { module = "io.insert-koin:koin-androidx-compose-navigation" }
-koin-androidx-workmanager = { module = "io.insert-koin:koin-androidx-workmanager" }
-koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
-koin-core = { module = "io.insert-koin:koin-core" }
-koin-core-coroutines = { module = "io.insert-koin:koin-core-coroutines" }
-kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+# Core DataStore functionality for type-safe, asynchronous data storage
+# You typically only need this if you are building a custom DataStore (e.g., Proto DataStore)
+# and it's brought in transitively by `androidx-datastore-preferences`.
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
+
+# BACKGROUND PROCESSING
+# WorkManager for reliable background task execution with constraints and scheduling
+# Perfect for data sync, periodic tasks, and deferrable work that must complete
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
+
+# WEB SCRAPING & HTML PARSING
+# Headless web browser implementation for Android testing and automation
+# Useful for testing web-based components or automated form submissions, especially when JavaScript rendering is needed.
+htmlunit-android = { module = "net.sourceforge.htmlunit:htmlunit-android", version.ref = "htmlunitAndroid" }
+
+# Java HTML parser library for extracting and manipulating HTML content
+# Essential for web scraping, HTML cleaning, and content extraction tasks from static HTML.
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
+
+# TESTING FRAMEWORKS
+# Standard JUnit framework for unit testing Java/Kotlin code
+# Foundation for all unit tests, assertions, and test organization
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+
+# AndroidX JUnit extensions providing Android-specific testing utilities
+# Bridges JUnit with Android testing framework and provides test runners
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+
+# Espresso core framework for Android UI testing and automation
+# Enables automated testing of user interactions, view assertions, and UI workflows
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+
+# JETPACK COMPOSE - ACTIVITY INTEGRATION
+# Bridges traditional Android Activities with Jetpack Compose content
+# Required for hosting Compose UI in Activities and handling system integrations (e.g., `setContent`).
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+
+# JETPACK COMPOSE - CORE UI FRAMEWORK
+# Bill of Materials (BoM) ensures all Compose libraries use compatible versions
+# Eliminates version conflicts and simplifies dependency management
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+# Material Design 3 components implementation for Jetpack Compose
+# Provides modern Material You design system components and theming for your Compose UI.
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-material-icons-extended = {  group = "androidx.compose.material", name = "material-icons-extended"}
+
+# Core Compose UI runtime and fundamental composable functions
+# Foundation for all Compose UI elements including layouts, modifiers, and state management
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+
+# Graphics primitives and drawing APIs for Compose
+# Provides Canvas, Paint, Path, and other graphics utilities for custom drawing within Compose.
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+
+# Development tools for Compose UI debugging and inspection
+# Enables layout inspector, component tree viewing, and runtime debugging capabilities in Android Studio.
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+
+# Preview support for Compose UI development
+# Enables `@Preview` annotations for viewing composables in Android Studio's design editor.
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+
+# Test manifest support for Compose UI testing
+# Required for instrumented tests that interact with Compose UI components and their manifests.
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+
+# JUnit4 integration for Compose UI testing
+# Provides testing utilities specifically designed for Compose UI components, allowing you to write
+# tests that interact with and assert on your composables.
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+
+# DEPENDENCY INJECTION - KOIN FRAMEWORK
+# Bill of Materials for Koin dependency injection framework
+# Manages all Koin library versions consistently to prevent conflicts and ensure compatibility.
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+
+# Core Koin dependency injection functionality
+# Provides the fundamental APIs for defining Koin modules, providing dependencies, and resolving them.
+koin-core = { module = "io.insert-koin:koin-core" }
+
+# Android-specific extensions and integrations for Koin
+# Includes Android context injection, lifecycle integration, and Android-specific utilities
+koin-android = { module = "io.insert-koin:koin-android" }
+
+# Jetpack Compose integration for Koin dependency injection
+# Provides composable functions like `koinViewModel()` and `koinInject()` for dependency retrieval
+# and ViewModel integration directly within Compose UI.
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
+
+# Navigation integration between Koin and Jetpack Compose Navigation
+# Enables dependency injection in navigation destinations and shared ViewModels across navigation graphs.
+koin-androidx-compose-navigation = { module = "io.insert-koin:koin-androidx-compose-navigation" }
+
+# WorkManager integration with Koin for dependency injection in background workers
+# Allows injecting dependencies into `Worker` classes for robust background task execution.
+koin-androidx-workmanager = { module = "io.insert-koin:koin-androidx-workmanager" }
+
+# Coroutines support for Koin dependency injection
+# Enables asynchronous dependency creation and injection within coroutine contexts,
+# useful for providing dependencies that require suspending operations.
+koin-core-coroutines = { module = "io.insert-koin:koin-core-coroutines" }
+
+# ASYNCHRONOUS PROGRAMMING - KOTLIN COROUTINES
+# Android-specific coroutines extensions and Main dispatcher integration
+# Provides Android Main thread dispatcher and Android-specific coroutine utilities
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
+
+# Core Kotlin coroutines library for asynchronous programming
+# Foundation for suspending functions, coroutine builders, and structured concurrency
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+
+# DATE & TIME HANDLING
+# Multiplatform date and time API for Kotlin
+# Type-safe, immutable date/time handling perfect for attendance timestamps, scheduling,
+# and general date-related operations.
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+
+# NETWORKING
+# Efficient HTTP client library with interceptors, caching, and connection pooling
+# Industry standard for REST API communication and general network requests.
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+
+# BACKWARD COMPATIBILITY
+# Provides backward compatibility for newer Android APIs on older devices
+# Essential for maintaining consistent UI/UX and functionality across different Android versions.
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+
+# Traditional Material Design components (pre-Material 3)
+# Provides classic Material Design components for Views/XML-based UI
+# While you're using Compose Material 3, this might be a transitive dependency or needed for
+# certain legacy Android framework components (e.g., splash screen compatible theme).
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-tor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
-ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor" }
-ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
-ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
-ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
-ktor-serialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
-ktor-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref = "ktor" }
-ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
 
-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+#Kotlin Extensions and Coroutines support for Room
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 
-protobuf-javalite = { group = "com.google.protobuf", name = "protobuf-javalite", version.ref = "protobufJavaLite" }
 
 [plugins]
+# Android application plugin for building APK/AAB files
+# Applied to the `:app` module to enable it to be built as a deployable Android application.
 android-application = { id = "com.android.application", version.ref = "agp" }
+
+# Kotlin Android plugin for compiling Kotlin code in Android projects
+# Essential for any Android module that contains Kotlin source code.
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
+# Kotlin Compose compiler plugin for optimizing Compose code generation
+# CRITICAL: This plugin transforms `@Composable` functions into actual UI elements that Android can render.
+# Must match your Kotlin compiler version.
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+# Android library plugin for creating reusable Android library modules
+# Applied to all your `core` and `feature` modules that are libraries, not standalone apps.
 android-library = { id = "com.android.library", version.ref = "agp" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
-spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+
+# Kotlin JVM plugin for pure Kotlin/Java modules without Android dependencies.
+# Used for modules that contain only Kotlin code and do not require Android APIs (e.g., `:domain` modules).
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinJvm" }
+
+# Kotlin serialization plugin for JSON/XML serialization support
+# Enables the use of `kotlinx.serialization` annotations and generates necessary serialization code.
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization" }
-protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
+
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
