@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.reyaz.feature.attendance.schedule.domain.AttendanceType
-import com.reyaz.feature.attendance.schedule.domain.CombinedScheduleTaskModel
+import com.reyaz.feature.attendance.schedule.data.dao.CombinedScheduleTaskModel
 
 @Composable
 fun TaskAttendance(

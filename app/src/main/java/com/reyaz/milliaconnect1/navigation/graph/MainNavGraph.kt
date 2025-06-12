@@ -1,10 +1,9 @@
 package com.reyaz.milliaconnect1.navigation.graph
 
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.navigation
 import com.reyaz.core.navigation.NavigationRoute
-import com.reyaz.core.navigation.composableRoute
 import com.reyaz.core.navigation.nestedGraph
 
 /**
@@ -15,33 +14,22 @@ internal fun androidx.navigation.NavGraphBuilder.mainNavGraph(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState
 ) {
-    // Home Screen
-    composableRoute(NavigationRoute.Home) {
-        // TODO: Replace with actual Home screen composable
-        /*HomeScreen(
-            onNavigateToAttendance = {
-                navController.navigate(NavigationRoute.Attendance.route)
-            },
-            onNavigateToAcademics = {
-                navController.navigate(NavigationRoute.Academics.route)
-            }
-        )*/
-    }
 
     // Attendance Feature Graph
-    nestedGraph(
-        startDestination = NavigationRoute.Attendance,
-        route = NavigationRoute.AttendanceGraph
+    navigation(
+        startDestination = NavigationRoute.Schedule.route,
+        route = NavigationRoute.AttendanceGraph.route
     ) {
         attendanceNavGraph(navController, snackbarHostState)
     }
+
 
     // Academic Feature Graph
     nestedGraph(
         startDestination = NavigationRoute.Academics,
         route = NavigationRoute.AcademicGraph
     ) {
-        academicNavGraph(navController, snackbarHostState)
+        //academicNavGraph(navController, snackbarHostState)
     }
 
     // Profile Feature Graph
@@ -49,6 +37,6 @@ internal fun androidx.navigation.NavGraphBuilder.mainNavGraph(
         startDestination = NavigationRoute.Profile,
         route = NavigationRoute.ProfileGraph
     ) {
-        profileNavGraph(navController, snackbarHostState)
+        //profileNavGraph(navController, snackbarHostState)
     }
 }

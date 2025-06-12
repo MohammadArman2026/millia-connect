@@ -94,6 +94,7 @@ fun NavGraphBuilder.composableRoute(
     )
 }
 
+
 /**
  * Extension function to get route arguments from NavBackStackEntry
  */

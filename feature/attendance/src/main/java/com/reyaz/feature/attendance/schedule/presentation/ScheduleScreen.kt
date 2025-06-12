@@ -34,7 +34,7 @@ import java.time.LocalTime
 fun ScheduleScreen(
     modifier: Modifier = Modifier,
     viewModel: ScheduleViewModel = koinViewModel(),
-    navigateToEditSchedule: (Int, String) -> Unit,
+    navigateToEditSchedule: (Int, String) -> Unit = { _, _ -> },
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val listState = rememberLazyListState()

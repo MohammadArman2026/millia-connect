@@ -1,3 +1,4 @@
+/*
 package com.reyaz.milliaconnect1.ui.theme
 
 import androidx.compose.ui.graphics.Color
@@ -73,3 +74,4 @@ val surfaceContainerLowDark = Color(0xFF181D19)
 val surfaceContainerDark = Color(0xFF1C211D)
 val surfaceContainerHighDark = Color(0xFF262B27)
 val surfaceContainerHighestDark = Color(0xFF313631)
+*/

@@ -42,6 +42,8 @@ sealed class NavigationRoute(val route: String) {
     data object Settings : NavigationRoute("profile/settings")
     data object Notifications : NavigationRoute("profile/notifications")
     data object About : NavigationRoute("profile/about")
+    data object Portal : NavigationRoute("portal")
+
 
     // Nested Graph Routes
     data object AuthGraph : NavigationRoute("auth_graph")

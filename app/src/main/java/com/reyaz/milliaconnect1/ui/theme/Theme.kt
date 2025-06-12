@@ -1,3 +1,4 @@
+/*
 package com.reyaz.milliaconnect1.ui.theme
 
 import android.os.Build
@@ -109,3 +110,4 @@ fun WifiAutoConnectTheme(
         content = content
     )
 }
+*/

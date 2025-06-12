@@ -36,10 +36,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.reyaz.feature.attendance.schedule.domain.CombinedScheduleTaskModel
-import `in`.instea.instea.data.datamodel.CombinedScheduleTaskModel
-import `in`.instea.instea.utility.checkAndRequestNotificationPermission
-import `in`.instea.instea.utility.rememberNotificationPermissionLauncher
+import com.reyaz.feature.attendance.schedule.data.dao.CombinedScheduleTaskModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +59,7 @@ fun TaskComposable(
     var remindBeforeHour by remember { mutableIntStateOf(remindBefore) }
     var isReminderOn by remember { mutableStateOf(remindBeforeHour > 0) }
     val context = LocalContext.current
-    val notificationPermissionLauncher = rememberNotificationPermissionLauncher(
+    /*val notificationPermissionLauncher = rememberNotificationPermissionLauncher(
         context = context,
         onPermissionGranted = {
             isReminderOn = true
@@ -71,7 +68,7 @@ fun TaskComposable(
         onPermissionDenied = {
             isReminderOn = false
         }
-    )
+    )*/
 
     LaunchedEffect(task) {
         taskValue = task ?: ""
@@ -125,14 +122,14 @@ fun TaskComposable(
                             checked = isReminderOn,
                             onCheckedChange = {
                                 if (it) {
-                                    checkAndRequestNotificationPermission(
+                                    /*checkAndRequestNotificationPermission(
                                         context = context,
                                         requestLauncher = notificationPermissionLauncher,
                                         onPermissionGranted = {
                                             isReminderOn = true
                                             remindBeforeHour = 18
                                         }
-                                    )
+                                    )*/
                                 } else {
                                     remindBeforeHour = 0
                                 }

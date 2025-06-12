@@ -33,7 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.reyaz.feature.attendance.schedule.domain.AttendanceType
-import com.reyaz.feature.attendance.schedule.domain.CombinedScheduleTaskModel
+import com.reyaz.feature.attendance.schedule.data.dao.CombinedScheduleTaskModel
 import kotlinx.coroutines.launch
 
 @Composable

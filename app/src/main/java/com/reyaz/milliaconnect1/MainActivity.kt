@@ -11,14 +11,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.ui.Modifier
+import androidx.compose.material3.Surface
 import androidx.core.content.ContextCompat
-import androidx.navigation.compose.rememberNavController
-import com.reyaz.milliaconnect1.navigation.NewAppNavHost
-import com.reyaz.milliaconnect1.ui.navigation.AppNavHost
-import com.reyaz.milliaconnect1.ui.theme.WifiAutoConnectTheme
+import com.reyaz.core.ui.theme.MilliaConnectTheme
 import com.reyaz.milliaconnect1.util.NetworkConnectivityObserver
 
 class MainActivity : ComponentActivity() {
@@ -48,12 +43,10 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            WifiAutoConnectTheme {
-                val navController = rememberNavController()
-                NewAppNavHost(
-                    modifier =  Modifier,
-                    navController = navController
-                )
+            MilliaConnectTheme {
+                Surface{
+                    MilliaConnectApp()
+                }
             }
         }
 
