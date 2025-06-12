@@ -1,15 +1,16 @@
 package com.reyaz.milliaconnect1.navigation
 
+import android.util.Config.PROFILE
 import com.reyaz.core.navigation.NavigationRoute
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.CalendarToday
-import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Newspaper
 import androidx.compose.material.icons.outlined.School
+import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -31,42 +32,34 @@ data class AppTopLevelDestination(
  */
 object TopLevelDestinations {
 
-    val HOME = AppTopLevelDestination(
-        route = NavigationRoute.Home,
-        selectedIcon = Icons.Filled.Home,
-        unselectedIcon = Icons.Outlined.Home,
-        titleResourceId = "Home",
-        iconContentDescription = "Home tab"
+    val SCHEDULE = AppTopLevelDestination(
+        route = NavigationRoute.Schedule,
+        selectedIcon = Icons.Filled.Timer,
+        unselectedIcon = Icons.Outlined.Timer,
+        titleResourceId = "Schedule",
+        iconContentDescription = "Schedule tab"
     )
 
-    val ATTENDANCE = AppTopLevelDestination(
-        route = NavigationRoute.Attendance,
-        selectedIcon = Icons.Filled.CalendarToday,
-        unselectedIcon = Icons.Outlined.CalendarToday,
-        titleResourceId = "Attendance",
-        iconContentDescription = "Attendance tab"
+    val NOTICE = AppTopLevelDestination(
+        route = NavigationRoute.Notice,
+        selectedIcon = Icons.Filled.Newspaper,
+        unselectedIcon = Icons.Outlined.Newspaper,
+        titleResourceId = "Notice",
+        iconContentDescription = "Notice tab"
     )
 
-    val ACADEMICS = AppTopLevelDestination(
+    val RESULT = AppTopLevelDestination(
         route = NavigationRoute.Academics,
         selectedIcon = Icons.Filled.School,
         unselectedIcon = Icons.Outlined.School,
-        titleResourceId = "Academics",
-        iconContentDescription = "Academics tab"
-    )
-
-    val PROFILE = AppTopLevelDestination(
-        route = NavigationRoute.Profile,
-        selectedIcon = Icons.Filled.AccountCircle,
-        unselectedIcon = Icons.Outlined.AccountCircle,
-        titleResourceId = "Profile",
-        iconContentDescription = "Profile tab"
+        titleResourceId = "Result",
+        iconContentDescription = "Result tab"
     )
 
     /**
      * List of all top-level destinations in the order they should appear
      */
-    val ALL = listOf(HOME, ATTENDANCE, ACADEMICS, PROFILE)
+    val ALL = listOf(SCHEDULE, NOTICE, RESULT)
 }
 
 /**

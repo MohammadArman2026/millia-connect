@@ -9,7 +9,6 @@ import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.School
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.reyaz.core.navigation.NavigationRoute
 
 /**
@@ -40,7 +39,7 @@ object AppDestinations {
             titleResourceId = "Home"
         ),
         AppTopLevelDestination(
-            route = NavigationRoute.Attendance,
+            route = NavigationRoute.Notice,
             selectedIcon = Icons.Filled.CalendarToday,
             unselectedIcon = Icons.Outlined.CalendarToday,
             titleResourceId = "Attendance"
@@ -73,7 +72,7 @@ object AppDestinations {
      */
     val mainDestinations = listOf(
         NavigationRoute.Home,
-        NavigationRoute.Attendance,
+        NavigationRoute.Notice,
         NavigationRoute.Academics,
         NavigationRoute.Profile
     )
@@ -82,7 +81,7 @@ object AppDestinations {
      * Attendance feature destinations
      */
     val attendanceDestinations = listOf(
-        NavigationRoute.Attendance,
+        NavigationRoute.Notice,
         NavigationRoute.AttendanceHistory,
         NavigationRoute.AttendanceDetails,
         NavigationRoute.MarkAttendance
@@ -142,7 +141,7 @@ fun NavigationRoute.getParentRoute(): NavigationRoute? {
         // Attendance nested routes
         NavigationRoute.AttendanceHistory,
         NavigationRoute.AttendanceDetails,
-        NavigationRoute.MarkAttendance -> NavigationRoute.Attendance
+        NavigationRoute.MarkAttendance -> NavigationRoute.Notice
 
         // Academic nested routes
         NavigationRoute.Courses,
@@ -175,7 +174,7 @@ fun NavigationRoute.shouldShowBottomNavigation(): Boolean {
 fun NavigationRoute.getAppBarTitle(): String {
     return when (this) {
         NavigationRoute.Home -> "Dashboard"
-        NavigationRoute.Attendance -> "Attendance"
+        NavigationRoute.Notice -> "Attendance"
         NavigationRoute.AttendanceHistory -> "Attendance History"
         NavigationRoute.AttendanceDetails -> "Attendance Details"
         NavigationRoute.MarkAttendance -> "Mark Attendance"

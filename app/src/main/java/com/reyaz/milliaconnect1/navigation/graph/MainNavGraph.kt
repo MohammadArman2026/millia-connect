@@ -15,28 +15,4 @@ internal fun androidx.navigation.NavGraphBuilder.mainNavGraph(
     snackbarHostState: SnackbarHostState
 ) {
 
-    // Attendance Feature Graph
-    navigation(
-        startDestination = NavigationRoute.Schedule.route,
-        route = NavigationRoute.AttendanceGraph.route
-    ) {
-        attendanceNavGraph(navController, snackbarHostState)
-    }
-
-
-    // Academic Feature Graph
-    nestedGraph(
-        startDestination = NavigationRoute.Academics,
-        route = NavigationRoute.AcademicGraph
-    ) {
-        //academicNavGraph(navController, snackbarHostState)
-    }
-
-    // Profile Feature Graph
-    nestedGraph(
-        startDestination = NavigationRoute.Profile,
-        route = NavigationRoute.ProfileGraph
-    ) {
-        //profileNavGraph(navController, snackbarHostState)
-    }
 }

@@ -52,7 +52,7 @@ fun MilliaConnectApp() {
                     NavigationRoute.Profile.route -> "Class Schedule"
                     else -> /*currentDestination?.titleTextId ?:*/ stringResource(R.string.app_name)
                 },
-                navigationIcon = if (!!isTopLevelDestination) Icons.Default.Menu else Icons.Default.ArrowBackIosNew,
+                navigationIcon = if (isTopLevelDestination) Icons.Default.Menu else Icons.Default.ArrowBackIosNew,
                 onNavigationClick = {
                     if (isTopLevelDestination) {
                         // Handle menu click (e.g., open drawer)

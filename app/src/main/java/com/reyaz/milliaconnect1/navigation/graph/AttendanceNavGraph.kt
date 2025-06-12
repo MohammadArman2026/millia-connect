@@ -1,16 +1,11 @@
 package com.reyaz.milliaconnect1.navigation.graph
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.reyaz.core.navigation.NavigationRoute
 import com.reyaz.feature.attendance.schedule.presentation.ScheduleScreen
-import com.reyaz.milliaconnect1.navigation.composableRoute
 
 /**
  * Attendance feature navigation graph
@@ -23,7 +18,6 @@ internal fun NavGraphBuilder.attendanceNavGraph(
     // Schedule Screen
     composable(route = NavigationRoute.Schedule.route){
         ScheduleScreen()
-//        Text(text = "Schedule")
     }
 
     /*composableRoute(NavigationRoute.Attendance) {

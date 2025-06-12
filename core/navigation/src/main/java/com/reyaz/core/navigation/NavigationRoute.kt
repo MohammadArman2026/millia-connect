@@ -14,7 +14,7 @@ sealed class NavigationRoute(val route: String) {
 
     // Main Bottom Navigation Routes
     data object Home : NavigationRoute("home")
-    data object Attendance : NavigationRoute("attendance")
+    data object Notice : NavigationRoute("attendance")
     data object Academics : NavigationRoute("academics")
     data object Profile : NavigationRoute("profile")
 
@@ -58,7 +58,7 @@ sealed class NavigationRoute(val route: String) {
          */
         val bottomNavigationRoutes = listOf(
             Home,
-            Attendance,
+            Notice,
             Academics,
             Profile
         )

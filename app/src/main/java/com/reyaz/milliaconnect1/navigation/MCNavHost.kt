@@ -16,6 +16,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.reyaz.core.navigation.nestedGraph
+import com.reyaz.milliaconnect1.navigation.graph.attendanceNavGraph
 import com.reyaz.milliaconnect1.navigation.graph.mainNavGraph
 
 /**
@@ -28,42 +30,35 @@ fun MCNavHost(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
-//    val navBackStackEntry by navController.currentBackStackEntryAsState()
-//    val currentRoute = navBackStackEntry?.destination?.route
 
     NavHost(
         navController = navController,
-        startDestination = NavigationRoute.MainGraph.route,
+        startDestination = NavigationRoute.AttendanceGraph.route,
         modifier = modifier.fillMaxSize()
     ) {
-        /*nestedGraph(
-            startDestination = NavigationRoute.Login,
-            route = NavigationRoute.AuthGraph
-        ) {
-            authNavGraph(navController)
-        }*/
-
-        // Main App Graph (requires authentication)
-       /* navigation(
-            startDestination = NavigationRoute.AttendanceGraph.route,
-            route = NavigationRoute.MainGraph.route
-        ){
-            mainNavGraph(navController, snackbarHostState)
-        }*/
-
+        // Attendance Feature Graph
         navigation(
-            startDestination = NavigationRoute.AttendanceGraph.route,
-            route = NavigationRoute.MainGraph.route
+            route = NavigationRoute.AttendanceGraph.route,
+            startDestination = NavigationRoute.Schedule.route
         ){
-            mainNavGraph(navController, snackbarHostState)
+            attendanceNavGraph(navController, snackbarHostState)
         }
-    }
-}
 
-fun NavGraphBuilder.composableRoute(
-    route: NavigationRoute,
-    content: @Composable() (AnimatedContentScope.(NavBackStackEntry) -> Unit)
-) {
-    composable(route = route.route, content = content)
+        // Notice Graph
+        /*navigation(
+            startDestination = NavigationRoute.Notice.route,
+            route = NavigationRoute.AllNotice.route
+        ) {
+            attendanceNavGraph(navController, snackbarHostState)
+        }*/
+
+        // Side Navigation Graph
+        /*navigation(
+            route = NavigationRoute.AcademicGraph.route,
+            startDestination = NavigationRoute.Academics.route,
+        ) {
+            //academicNavGraph(navController, snackbarHostState)
+        }*/
+    }
 }
 
