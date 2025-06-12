@@ -744,3 +744,257 @@ This modular structure provides:
 - **Independent feature development**
 - **Optimized build times through parallel builds**
 
+---------------------------------------- Version 3: actual feature --------------------------------------------
+Okay, this is a comprehensive plan! Building on your existing setup and incorporating the new features and technologies, here's a detailed file structure for your multi-module Jetpack Compose project using Clean Architecture (MVVM) and Koin for DI.
+
+This structure emphasizes **feature-wise modularization** while centralizing core components and shared data/library implementations.
+
+```
+├── .gradle/
+├── .idea/
+├── app/
+│   ├── build.gradle.kts
+│   └── src/main/java/com/yourpackage/universityapp/
+│       ├── UniversityApp.kt                   // Koin Application initialization, loads all modules
+│       ├── MainActivity.kt                    // Main entry point, Splash Screen API integration, NavHost setup
+│       └── navigation/
+│           ├── AppNavHost.kt                  // Centralizes app's navigation graph logic
+│           ├── AppRoutes.kt                   // Sealed class/object for global navigation routes (from core-navigation)
+│           └── AppTopLevelDestination.kt      // Data class for bottom navigation bar items
+├── build-logic/                               // Optional: For custom Gradle plugins/conventions
+│   └── src/main/kotlin/
+│       ├── build-logic-common-plugins.gradle.kts
+│       └── build-logic-feature-plugins.gradle.kts
+├── build.gradle.kts                           // Root project build.gradle.kts
+├── gradle/
+│   └── wrapper/
+│       └── gradle-wrapper.properties
+├── gradlew
+├── gradlew.bat
+├── libs.versions.toml                         // Gradle Version Catalogs for dependencies
+├── settings.gradle.kts                        // Declares all modules
+├── core/
+│   ├── build.gradle.kts                       // Common dependencies for core modules
+│   ├── core-common/                           // Common utilities, extensions, constants, global observers
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/core/common/
+│   │       ├── utils/
+│   │       │   ├── Resource.kt                // Sealed class for data states (Loading, Success, Error)
+│   │       │   ├── DateUtils.kt
+│   │       │   ├── Extensions.kt
+│   │       │   └── NetworkConnectivityObserver.kt // Observes network status (Wi-Fi, Mobile, etc.)
+│   │       └── constants/
+│   │           └── AppConstants.kt
+│   ├── core-ui/                               // Reusable UI components for Jetpack Compose
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/core/ui/
+│   │       ├── theme/
+│   │       │   ├── Theme.kt
+│   │       │   ├── Color.kt
+│   │       │   └── Type.kt
+│   │       ├── components/
+│   │       │   ├── CustomTopAppBar.kt         // Top App Bar composable
+│   │       │   ├── CustomBottomNavigationBar.kt // Bottom Navigation Bar composable
+│   │       │   ├── LoadingIndicator.kt
+│   │       │   └── ErrorScreen.kt
+│   │       └── preview/
+│   │           └── ThemePreview.kt
+│   ├── core-data/                             // Base interfaces/models for shared data layer concerns
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/core/data/
+│   │       └── models/
+│   │           └── BaseResponse.kt            // Generic base response for APIs
+│   ├── core-domain/                           // Base interfaces/models for shared domain layer concerns
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/core/domain/
+│   │       ├── usecase/
+│   │       │   └── BaseUseCase.kt             // Abstract base class for use cases
+│   │       └── models/
+│   │           └── BaseModel.kt               // Generic base domain model
+│   ├── core-di/                               // Koin modules for core application-wide dependencies
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/core/di/
+│   │       └── CoreModule.kt                  // Provides CoroutineDispatchers, NetworkConnectivityObserver
+│   ├── core-navigation/                       // Centralized navigation logic/routes definitions
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/core/navigation/
+│   │       ├── AppRoutes.kt                   // Defines all app-wide navigation destinations
+│   │       └── NavHostExtensions.kt           // Extensions for NavHost setup
+│   └── core-network/                          // Base Retrofit setup, OkHttp client, interceptors (for REST APIs)
+│       ├── build.gradle.kts
+│       └── src/main/java/com/yourpackage/core/network/
+│           ├── RetrofitBuilder.kt
+│           ├── NetworkClient.kt
+│           └── interceptor/
+│               └── AuthInterceptor.kt
+├── data/
+│   ├── build.gradle.kts                       // Common dependencies for data modules
+│   ├── data-local-room/                       // Centralized Room database definition
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/data/local/room/
+│   │       ├── AppDatabase.kt                 // Main Room database class, listing all entities/DAOs
+│   │       └── converters/
+│   │           └── Converters.kt              // Custom TypeConverters for Room
+│   │       └── di/
+│   │           └── RoomModule.kt              // Koin module for AppDatabase and shared DAOs
+│   ├── data-local-preferences/                // Centralized DataStore preferences setup
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/data/local/preferences/
+│   │       ├── AppPreferencesDataSource.kt    // Generic DataStore operations
+│   │       └── AppPreferencesKeys.kt          // Central place for DataStore preference keys
+│   │       └── di/
+│   │           └── PreferencesModule.kt       // Koin module for DataStore
+├── library/
+│   ├── build.gradle.kts                       // Common dependencies for library modules
+│   ├── library-htmlunit/                      // Encapsulates HTMLUnit setup and client provision
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/library/htmlunit/
+│   │       ├── HtmlUnitClientProvider.kt      // Provides and configures HtmlUnit WebClient instance
+│   │       └── di/
+│   │           └── HtmlUnitModule.kt          // Koin module for HTMLUnit client
+│   ├── library-mlkit/                         // Encapsulates Google ML Kit setup and common utilities
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/library/mlkit/
+│   │       ├── MLKitImageProcessor.kt         // Common utilities for image processing (e.g., for text recognition)
+│   │       └── di/
+│   │           └── MLKitModule.kt             // Koin module for ML Kit components
+│   ├── library-location/                      // Encapsulates GPS/Map related functionalities
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/library/location/
+│   │       ├── GpsTracker.kt                  // Handles requesting location updates
+│   │       ├── MapUtils.kt                    // Utilities for map calculations (e.g., distance, geofencing)
+│   │       └── di/
+│   │           └── LocationModule.kt          // Koin module for location services
+├── feature/
+│   ├── build.gradle.kts                       // Common dependencies for feature modules
+│   ├── feature-auth/                          // Captive Portal Login feature
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/feature/auth/
+│   │       ├── data/
+│   │       │   ├── AuthRepository.kt          // Interface
+│   │       │   ├── AuthRepositoryImpl.kt      // Implements AuthRepository, uses LoginDataSource
+│   │       │   ├── AuthDataStore.kt           // Handles storing student ID/password in DataStore
+│   │       │   └── remote/
+│   │       │       └── LoginScraper.kt        // Handles HTMLUnit login request & parsing
+│   │       ├── domain/
+│   │       │   ├── usecase/
+│   │       │   │   └── PerformLoginUseCase.kt
+│   │       │   │   └── GetLoginStatusUseCase.kt // For splash screen check
+│   │       │   └── models/
+│   │       │       └── AuthResult.kt
+│   │       ├── presentation/
+│   │       │   ├── AuthViewModel.kt
+│   │       │   ├── LoginScreen.kt             // Compose UI for login
+│   │       │   └── components/
+│   │       │       └── LoginInputField.kt
+│   │       └── di/
+│   │           └── AuthModule.kt              // Koin module for feature-auth
+│   ├── feature-notice/                        // Notice display feature
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/feature/notice/
+│   │       ├── data/
+│   │       │   ├── NoticeRepository.kt        // Interface
+│   │       │   ├── NoticeRepositoryImpl.kt    // Implements, uses web scraper & Room
+│   │       │   ├── remote/
+│   │       │   │   └── NoticeScraper.kt       // HTMLUnit logic for scraping notices
+│   │       │   └── local/
+│   │       │       ├── NoticeDao.kt           // Room DAO
+│   │       │       └── NoticeEntity.kt        // Room Entity
+│   │       ├── domain/
+│   │       │   ├── usecase/
+│   │       │   │   └── GetNoticesUseCase.kt
+│   │       │   └── models/
+│   │       │       └── Notice.kt              // Domain model
+│   │       ├── presentation/
+│   │       │   ├── NoticeViewModel.kt
+│   │       │   ├── NoticeScreen.kt            // Compose UI
+│   │       │   └── components/
+│   │       │       └── NoticeListItem.kt
+│   │       └── di/
+│   │           └── NoticeModule.kt            // Koin module for feature-notice
+│   ├── feature-result/                        // Student Result display feature
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/feature/result/
+│   │       ├── data/
+│   │       │   ├── ResultRepository.kt        // Interface
+│   │       │   ├── ResultRepositoryImpl.kt    // Implements, uses web scraper & ML Kit
+│   │       │   ├── remote/
+│   │       │   │   └── JamiaResultScraper.kt  // HTMLUnit for scraping result
+│   │       │   │   └── CaptchaRecognizer.kt   // Uses library-mlkit to process captcha images
+│   │       │   └── models/
+│   │       │       └── ResultDto.kt
+│   │       ├── domain/
+│   │       │   ├── usecase/
+│   │       │   │   └── GetStudentResultUseCase.kt
+│   │       │   │   └── RecognizeCaptchaUseCase.kt // Uses CaptchaRecognizer
+│   │       │   └── models/
+│   │       │       └── StudentResult.kt
+│   │       ├── presentation/
+│   │       │   ├── ResultViewModel.kt
+│   │       │   ├── ResultScreen.kt            // Compose UI
+│   │       │   └── components/
+│   │       │       └── CaptchaInputView.kt
+│   │       └── di/
+│   │           └── ResultModule.kt            // Koin module for feature-result
+│   ├── feature-schedule/                      // Class Schedule feature
+│   │   ├── build.gradle.kts
+│   │   └── src/main/java/com/yourpackage/feature/schedule/
+│   │       ├── data/
+│   │       │   ├── ScheduleRepository.kt      // Interface
+│   │       │   ├── ScheduleRepositoryImpl.kt  // Implements, uses Room (and possibly remote source for initial sync)
+│   │       │   ├── local/
+│   │       │   │   ├── ScheduleDao.kt         // Room DAO
+│   │       │   │   └── ScheduleEntity.kt      // Room Entity
+│   │       ├── domain/
+│   │       │   ├── usecase/
+│   │       │   │   └── GetClassScheduleUseCase.kt
+│   │       │   │   └── UpdateClassScheduleUseCase.kt // For data sync
+│   │       │   └── models/
+│   │       │       └── ClassSchedule.kt
+│   │       ├── presentation/
+│   │       │   ├── ScheduleViewModel.kt
+│   │       │   ├── ScheduleScreen.kt          // Compose UI
+│   │       │   └── components/
+│   │       │       └── ScheduleItem.kt
+│   │       └── di/
+│   │           └── ScheduleModule.kt          // Koin module for feature-schedule
+├── gradle.properties
+└── README.md
+```
+
+### Key Considerations and Integrations:
+
+1.  **`app/UniversityApp.kt` (Koin Initialization):**
+    * This is where all your Koin modules from `core-di`, `data-local-room/di`, `data-local-preferences/di`, `library-htmlunit/di`, `library-mlkit/di`, `library-location/di`, and all `feature-X/di` modules will be loaded. This creates your complete DI graph.
+
+2.  **`app/MainActivity.kt` (Splash Screen & Navigation):**
+    * Uses `installSplashScreen()` from the Splash Screen API.
+    * Injects `GetLoginStatusUseCase` (from `feature-auth:domain`) to check user login status during splash screen.
+    * The `AppNavHost` will then be initialized with the `isUserLoggedIn` state to navigate to either the `LoginScreen` or the main authenticated screen.
+
+3.  **Network Observer (`core:common`):**
+    * `NetworkConnectivityObserver.kt` will be provided as a `single` instance in `core-di/CoreModule.kt`.
+    * Any `ViewModel` or `Repository` that needs to react to network changes (e.g., `NoticeViewModel`, `AuthViewModel`, `ResultViewModel` for triggering scrapes only on Wi-Fi) can inject `NetworkConnectivityObserver` and observe its `Flow`.
+
+4.  **HTMLUnit (`library:htmlunit`):**
+    * `HtmlUnitClientProvider.kt` will be responsible for setting up and configuring the `WebClient` instance. This instance can then be injected into the data sources (`LoginScraper`, `NoticeScraper`, `JamiaResultScraper`) in your feature modules.
+    * This centralizes the HTMLUnit setup and ensures a single, well-configured client.
+
+5.  **Room (`data:local-room`):**
+    * `AppDatabase.kt` will list *all* `Entity` classes and provide *abstract functions* for all `Dao` interfaces from your feature modules.
+    * The `RoomModule.kt` in `data-local-room/di` will provide the `AppDatabase` instance and all individual DAOs (e.g., `get<AppDatabase>().notificationDao()`).
+    * Each feature using Room (Notice, Schedule) will define its `Entity` and `Dao` within its own `data/local` sub-package, but they will be part of the single `AppDatabase`.
+
+6.  **DataStore (`data:local-preferences` & `feature:auth`):**
+    * `data-local-preferences` provides the generic `AppPreferencesDataSource` (for accessing `DataStore<Preferences>`).
+    * `feature-auth/data/AuthDataStore.kt` will *use* `AppPreferencesDataSource` to specifically store and retrieve student ID/password. This keeps the auth logic within its feature module while leveraging the shared DataStore setup.
+
+7.  **Google ML Kit (`library:mlkit` & `feature:result`):**
+    * `library-mlkit` can provide common ML Kit configurations or helper classes (like `MLKitImageProcessor` to convert images for ML Kit processing).
+    * `feature-result/data/remote/CaptchaRecognizer.kt` will implement the actual captcha solving logic, using `MLKitImageProcessor` to feed the captcha image to ML Kit's Text Recognition API.
+
+8.  **Navigation:**
+    * `core-navigation/AppRoutes.kt` defines all major navigation routes.
+    * `app/navigation/AppNavHost.kt` stitches together the navigation graph using composables from different feature modules. Each feature module provides its composable entry point to the `NavHost`.
+
+This structure should give you a very robust, maintainable, and scalable project, allowing different features to be developed somewhat independently while sharing essential core functionalities and tools.

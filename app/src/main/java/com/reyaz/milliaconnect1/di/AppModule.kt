@@ -12,7 +12,6 @@ import org.koin.dsl.module
 
 val appModule = module {
     single { UserPreferences(get()) }
-//    single { WifiNetworkManager(get()) }
     single { WebLoginManager(get(), get()) }
     single { NetworkConnectivityObserver(get()) }
     viewModel { VMLogin(get(), get(), get(), get()) }

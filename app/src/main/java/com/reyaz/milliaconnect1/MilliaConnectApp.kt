@@ -1,20 +1,27 @@
 package com.reyaz.milliaconnect1
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.material.icons.filled.WifiFind
+import androidx.compose.material.icons.filled.WifiOff
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.reyaz.core.navigation.NavigationRoute
@@ -22,9 +29,11 @@ import com.reyaz.core.navigation.isCurrentRoute
 import com.reyaz.core.ui.components.BottomNavItem
 import com.reyaz.core.ui.components.CustomBottomNavigationBar
 import com.reyaz.core.ui.components.CustomCenterAlignedTopAppBar
+import com.reyaz.feature.portal.presentation.PortalViewModel
 import com.reyaz.milliaconnect1.navigation.MCNavHost
 import com.reyaz.milliaconnect1.navigation.TopLevelDestinations
 import com.reyaz.milliaconnect1.navigation.getIcon
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,6 +52,9 @@ fun MilliaConnectApp() {
             title = it.titleResourceId
         )
     }
+
+    val portalViewModel: PortalViewModel = koinViewModel()
+    val portalUiState by portalViewModel.uiState.collectAsState()
 
     Scaffold(
         modifier = Modifier,
@@ -73,10 +85,21 @@ fun MilliaConnectApp() {
                     IconButton(onClick = {
                         navController.navigate(NavigationRoute.Portal.route)
                     }) {
-                        Icon(
-                            Icons.Default.Wifi, contentDescription = "Wifi",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                        if(portalUiState.isLoading){
+                            CircularProgressIndicator(
+                                strokeWidth = 5.dp,
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.primary,
+                                trackColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        }else {
+                            Icon(
+                                imageVector =
+                                    if (portalUiState.isLoggedIn) Icons.Default.Wifi else if (!portalUiState.loadingMessage.isNullOrBlank()) Icons.Default.WifiFind else Icons.Default.WifiOff,
+                                contentDescription = "Wifi",
+                                tint = if (portalUiState.isLoggedIn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
             )
@@ -102,6 +125,6 @@ fun MilliaConnectApp() {
             }
         }
     ) { innerPadding ->
-        MCNavHost(modifier = Modifier.padding(innerPadding), navController = navController)
+        MCNavHost(modifier = Modifier.padding(innerPadding), navController = navController, portalViewModel = portalViewModel)
     }
 }

@@ -1,4 +1,3 @@
-/*
 package com.reyaz.feature.portal.presentation
 
 
@@ -6,6 +5,11 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.reyaz.core.common.utlis.NetworkManager
+import com.reyaz.feature.portal.data.PortalScraper
+import com.reyaz.feature.portal.data.local.PortalDataStore
+import com.reyaz.feature.portal.domain.model.ConnectRequest
+import com.reyaz.feature.portal.domain.repository.PortalRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,10 +18,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PortalViewModel(
-    private val userPreferences: UserPreferences,
-    private val webLoginManager: WebLoginManager,
-    private val networkObserver: NetworkConnectivityObserver,
-    private val appContext: Context,
+    private val repository: PortalRepository,
+    private val networkObserver: NetworkManager,
+    private val userPreferences: PortalDataStore,
+//    private val portalScraper: PortalScraper,
+//    private val appContext: Context,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PortalUiState())
@@ -52,7 +57,12 @@ class PortalViewModel(
     fun handleLogin() {
         viewModelScope.launch {
             _uiState.update { it.copy(loadingMessage = "Logging in...") }
-            webLoginManager.performLogin(_uiState.value.username, _uiState.value.password)
+            val request = ConnectRequest(
+                _uiState.value.username,
+                _uiState.value.password,
+                _uiState.value.autoConnect
+            )
+            repository.connect(request)
                 .onSuccess { message ->
 //                    Log.d("VMLogin", "Login successful")
                     _uiState.update {
@@ -63,11 +73,11 @@ class PortalViewModel(
                         )
                     }
                     saveCredentials(true)
-                    if (_uiState.value.autoConnect)
-                        AutoLoginWorker.schedule(context = appContext)
+//                    if (_uiState.value.autoConnect)
+                    //AutoLoginWorker.schedule(context = appContext)
                 }
                 .onFailure { exception ->
-                    AutoLoginWorker.cancel(appContext)
+                    //AutoLoginWorker.cancel(appContext)
                     onError(exception)
                 }
         }
@@ -75,24 +85,24 @@ class PortalViewModel(
 
     fun logout() {
         viewModelScope.launch {
-            _uiState.update { it.copy(loadingMessage = "Logging Out...") }
-            webLoginManager.performLogout()
-                .onSuccess { message ->
-                    Log.d("VMLogin", "Logout successful")
-                    _uiState.update {
-                        it.copy(
-                            isLoggedIn = false,
-                            loadingMessage = null,
-                            message = message
-                        )
-                    }
-                    saveCredentials(false)
-                }
-                .onFailure { exception ->
-                    Log.e("VMLogin", "Logout failed", exception)
-                    onError(exception)
-                }
-            AutoLoginWorker.cancel(appContext)
+             _uiState.update { it.copy(loadingMessage = "Logging Out...") }
+             repository.disconnect()
+                 .onSuccess { message ->
+                     Log.d("VMLogin", "Logout successful")
+                     _uiState.update {
+                         it.copy(
+                             isLoggedIn = false,
+                             loadingMessage = null,
+                             message = message
+                         )
+                     }
+                     saveCredentials(false)
+                 }
+                 .onFailure { exception ->
+                     Log.e("VMLogin", "Logout failed", exception)
+                     onError(exception)
+                 }
+             //AutoLoginWorker.cancel(appContext)
         }
     }
 
@@ -102,9 +112,8 @@ class PortalViewModel(
                 "You're not connected to Jamia Wifi.\nPlease connect and try again."
             else if (exception.message?.contains("Wrong Username or Password") == true)
                 "Wrong Username or Password"
-            else */
-/*exception.message ?: *//*
- "Oops! An error occurred."
+            else
+                exception.message ?: "Oops! An error occurred."
 
             _uiState.update {
                 it.copy(
@@ -135,7 +144,7 @@ class PortalViewModel(
     }
 
     fun updateAutoConnect(autoConnect: Boolean, context: Context) {
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             _uiState.update { it.copy(autoConnect = autoConnect) }
             if (!uiState.value.autoConnect)
                 AutoLoginWorker.cancel(context = context)
@@ -146,18 +155,17 @@ class PortalViewModel(
         }
         viewModelScope.launch {
             saveCredentials(isLoggedIn = false)
-        }
+        }*/
     }
 
     private fun saveCredentials(isLoggedIn: Boolean) {
-        viewModelScope.launch {
-            userPreferences.saveCredentials(
-                _uiState.value.username,
-                _uiState.value.password,
-                isLoggedIn,
-                _uiState.value.autoConnect
-            )
-        }
+        /* viewModelScope.launch {
+             userPreferences.saveCredentials(
+                 _uiState.value.username,
+                 _uiState.value.password,
+                 isLoggedIn,
+                 _uiState.value.autoConnect
+             )
+         }*/
     }
 }
-*/
