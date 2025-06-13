@@ -16,38 +16,38 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 
 @Composable
- fun FeedBackContent(
-     modifier: Modifier = Modifier
+fun FeedBackContent(
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
-    Row(        modifier = modifier.alpha(0.7f),
+    Row(
+        modifier = modifier.alpha(0.7f),
     ) {
-    Text(
-        text = "Facing any issue? ",
-        fontWeight = FontWeight.Normal,
-        textAlign = TextAlign.Center,
+        Text(
+            text = "Facing any issue? ",
+            fontWeight = FontWeight.Normal,
+            textAlign = TextAlign.Center,
 //        fontSize = 16.sp,
-    )
+        )
 //        Spacer(Modifier.weight(1f))
 
 
         Text(
-        text = "Submit Feedback",
+            text = "Submit Feedback",
 //        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center,
+            textAlign = TextAlign.Center,
 //        fontSize = 16.sp,
-        textDecoration = TextDecoration.Underline,
-        modifier = Modifier.clickable {
-            val url = "https://forms.gle/8g3R2J2G5ohAkhVK6"
-            try {
-                uriHandler.openUri(url)
-            } catch (e: ActivityNotFoundException) {
-                Toast.makeText(context, "No app found", Toast.LENGTH_SHORT).show()
-            }
-        },
-        color = MaterialTheme.colorScheme.primary
-    )
-}
-
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier.clickable {
+                val url = "https://forms.gle/8g3R2J2G5ohAkhVK6"
+                try {
+                    uriHandler.openUri(url)
+                } catch (e: ActivityNotFoundException) {
+                    Toast.makeText(context, "No app found", Toast.LENGTH_SHORT).show()
+                }
+            },
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
 }

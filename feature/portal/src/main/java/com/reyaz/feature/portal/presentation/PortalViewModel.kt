@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.reyaz.core.common.utlis.NetworkManager
-import com.reyaz.feature.portal.data.PortalScraper
 import com.reyaz.feature.portal.data.local.PortalDataStore
 import com.reyaz.feature.portal.domain.model.ConnectRequest
 import com.reyaz.feature.portal.domain.repository.PortalRepository
@@ -25,17 +24,27 @@ class PortalViewModel(
 //    private val appContext: Context,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(PortalUiState())
+    private val _uiState = MutableStateFlow(PortalUiState(
+        isJamiaWifi = true,
+        isLoggedIn = true,
+        autoConnect = true,
+        username = "",
+        password = "",
+        message = null,
+        loadingMessage = null
+
+    ))
     val uiState: StateFlow<PortalUiState> = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
+        // todo: check if connected internet is from jamia
+        /*viewModelScope.launch {
             // Observe WiFi connectivity
             networkObserver.observeWifiConnectivity()
                 .collect { isWifiConnected ->
                     _uiState.update {
                         it.copy(
-                            showNoWifiDialog = !isWifiConnected
+                            isJamiaWifi = !isWifiConnected
                         )
                     }
                     if (isWifiConnected) {
@@ -51,7 +60,7 @@ class PortalViewModel(
                         else _uiState.update { it.copy(message = "One time credential needed to login automatically.") }
                     }
                 }
-        }
+        }*/
     }
 
     fun handleLogin() {
@@ -126,7 +135,7 @@ class PortalViewModel(
     }
 
     fun dismissNoWifiDialog() {
-        _uiState.update { it.copy(showNoWifiDialog = false) }
+        _uiState.update { it.copy(isJamiaWifi = false) }
     }
 
     fun updateUsername(username: String) {
@@ -167,5 +176,9 @@ class PortalViewModel(
                  _uiState.value.autoConnect
              )
          }*/
+    }
+
+    fun retry() {
+
     }
 }

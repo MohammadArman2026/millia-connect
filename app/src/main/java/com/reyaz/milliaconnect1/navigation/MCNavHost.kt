@@ -28,7 +28,9 @@ fun MCNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = NavigationRoute.AttendanceGraph.route,
+        startDestination =
+//            NavigationRoute.AttendanceGraph.route,
+            NavigationRoute.Portal.route,
         modifier = modifier.fillMaxSize()
     ) {
         // Attendance Feature Graph
@@ -40,7 +42,7 @@ fun MCNavHost(
         }
 
         dialog(route = NavigationRoute.Portal.route){
-            PortalScreen(viewModel = portalViewModel, onDismiss = {
+            PortalScreen(viewModel = portalViewModel, dismissDialog = {
                 navController.navigateUp()
             })
         }
