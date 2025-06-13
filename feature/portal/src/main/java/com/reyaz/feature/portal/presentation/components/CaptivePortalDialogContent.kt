@@ -36,11 +36,6 @@ fun CaptivePortalDialogContent(
             )
         } else {    // login form
             LoginFormComposable(modifier = modifier, uiState, viewModel)
-            if (uiState.isLoading)
-                TranslucentLoader(
-                    modifier = modifier.matchParentSize(),
-                    message = uiState.loadingMessage
-                )
         }
 
     }

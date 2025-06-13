@@ -102,7 +102,7 @@ fun CustomTextField(
                         .clip(CircleShape)
                         .size(24.dp)
 //                        .fillMaxWidth()
-                        .clickable { /*onValueChange("")*/ }
+                        .clickable { onValueChange("") }
                 )
         }
     }

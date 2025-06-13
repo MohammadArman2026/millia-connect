@@ -44,13 +44,7 @@ class PortalViewModel(
 
     init {
         viewModelScope.launch {
-            _uiState.update {
-                it.copy(
-                    username = userPreferences.username.first(),
-                    password = userPreferences.password.first(),
-                    autoConnect = userPreferences.autoConnect.first(),
-                )
-            }
+            fetchCredentials()
             networkObserver.observeNetworkPreference().collect { preference ->
                 when (preference) {
                     NetworkPreference.BOTH_CONNECTED -> {
@@ -78,10 +72,20 @@ class PortalViewModel(
         }
     }
 
+    private suspend fun fetchCredentials() {
+        _uiState.update {
+            it.copy(
+                username = userPreferences.username.first(),
+                password = userPreferences.password.first(),
+                autoConnect = userPreferences.autoConnect.first(),
+            )
+        }
+    }
+
 
     fun handleLogin() {
         viewModelScope.launch {
-            repository.checkConnectionState()
+//            repository.checkConnectionState()
             if (uiState.value.loadingMessage == null) {
                 _uiState.update { it.copy(loadingMessage = "Logging in...") }
             }
@@ -97,10 +101,9 @@ class PortalViewModel(
                             message = message,
                             isLoggedIn = true,
                             loadingMessage = null,
-                            primaryErrorMsg = if (uiState.value.isMobileDataOn) "Turn Off Mobile Data to make wifi your primary connection." else null
                         )
-
                     }
+                    updatePrimaryConnectionError()
                     saveCredentials(true)
 //                    if (_uiState.value.autoConnect)
                     //AutoLoginWorker.schedule(context = appContext)
@@ -154,10 +157,6 @@ class PortalViewModel(
         }
     }
 
-    fun dismissNoWifiDialog() {
-        _uiState.update { it.copy(isJamiaWifi = false) }
-    }
-
     fun updateUsername(username: String) {
         _uiState.update { it.copy(username = username) }
         viewModelScope.launch {
@@ -173,29 +172,29 @@ class PortalViewModel(
     }
 
     fun updateAutoConnect(autoConnect: Boolean, context: Context) {
-        /*viewModelScope.launch {
+        viewModelScope.launch {
             _uiState.update { it.copy(autoConnect = autoConnect) }
             if (!uiState.value.autoConnect)
-                AutoLoginWorker.cancel(context = context)
+//                AutoLoginWorker.cancel(context = context)
             else if (uiState.value.isLoggedIn && uiState.value.loginEnabled){
-                AutoLoginWorker.schedule(context = context)
+//                AutoLoginWorker.schedule(context = context)
             }
             userPreferences.setAutoConnect(autoConnect)
         }
         viewModelScope.launch {
             saveCredentials(isLoggedIn = false)
-        }*/
+        }
     }
 
     private fun saveCredentials(isLoggedIn: Boolean) {
-        /* viewModelScope.launch {
+         viewModelScope.launch {
              userPreferences.saveCredentials(
                  _uiState.value.username,
                  _uiState.value.password,
                  isLoggedIn,
                  _uiState.value.autoConnect
              )
-         }*/
+         }
     }
 
     fun retry() {
@@ -239,12 +238,19 @@ class PortalViewModel(
                             loadingMessage = null,
                             isLoggedIn = true,
                             isJamiaWifi = true,
-                            message = null
+                            message = null,
                         )
                     }
+                    updatePrimaryConnectionError()
                     saveCredentials(true)
                 }
             }
         }
     }
+
+    private suspend fun updatePrimaryConnectionError() =
+        _uiState.update {
+            it.copy(primaryErrorMsg = if (repository.isWifiPrimary()) null else "Turn Off Mobile Data to make wifi your primary connection.")
+        }
+
 }

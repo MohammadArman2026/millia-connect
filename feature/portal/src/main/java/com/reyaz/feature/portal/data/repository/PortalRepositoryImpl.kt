@@ -1,5 +1,6 @@
 package com.reyaz.feature.portal.data.repository
 
+import android.util.Log
 import com.reyaz.feature.portal.data.PortalScraper
 import com.reyaz.feature.portal.data.local.PortalDataStore
 import com.reyaz.feature.portal.domain.model.ConnectRequest
@@ -70,7 +71,11 @@ class PortalRepositoryImpl(
            JmiWifiState.NOT_CONNECTED
         }
     }
-    override suspend fun isWifiPrimary(): Boolean = portalScraper.isJmiWifi(false)
+    override suspend fun isWifiPrimary(): Boolean  {
+        val res = portalScraper.isJmiWifi(false)
+        Log.d(TAG, "isWifiPrimary: $res")
+        return res
+    }
 }
 
 private const val TAG = "PORTAL_REPO_IMPL"

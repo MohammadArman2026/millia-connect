@@ -4,6 +4,7 @@ package com.reyaz.feature.portal.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,11 +16,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.reyaz.feature.portal.presentation.components.CaptivePortalDialogContent
+import com.reyaz.feature.portal.presentation.components.TranslucentLoader
 
 @Composable
 fun PortalScreen(
@@ -27,32 +30,33 @@ fun PortalScreen(
     viewModel: PortalViewModel,
     dismissDialog: () -> Unit
 ) {
-
     Dialog(onDismissRequest = { }) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(
-                    width = 1.5.dp,
-                    color = MaterialTheme.colorScheme.outline,
-                    shape = RoundedCornerShape(16.dp)
-                )
-            ,
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            CaptivePortalDialogContent(viewModel = viewModel)
+        Box{
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = 1.5.dp,
+                        color = MaterialTheme.colorScheme.outline,
+                        shape = RoundedCornerShape(16.dp)
+                    ),
+                shape = RoundedCornerShape(16.dp),
+            ) {
+                CaptivePortalDialogContent(viewModel = viewModel)
+            }
+            Icon(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable { dismissDialog() }
+                    .padding(8.dp)
+                    .size(16.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.error),
+                imageVector = Icons.Default.Clear, contentDescription = "Close",
+                tint = MaterialTheme.colorScheme.onError
+            )
+            if(viewModel.uiState.collectAsState().value.isLoading)
+                TranslucentLoader(modifier = modifier.matchParentSize())
         }
-        Icon(
-            modifier = Modifier
-                .clip(CircleShape)
-                .clickable{dismissDialog()}
-                .padding(8.dp)
-                .size(16.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.error)
-            ,
-            imageVector = Icons.Default.Clear, contentDescription =  "Close",
-            tint = MaterialTheme.colorScheme.onError
-        )
     }
 }

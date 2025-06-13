@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.reyaz.core.navigation.NavigationRoute
@@ -28,6 +29,7 @@ import com.reyaz.core.navigation.isCurrentRoute
 import com.reyaz.core.ui.components.BottomNavItem
 import com.reyaz.core.ui.components.CustomBottomNavigationBar
 import com.reyaz.core.ui.components.CustomCenterAlignedTopAppBar
+import com.reyaz.feature.portal.presentation.PortalUiState
 import com.reyaz.feature.portal.presentation.PortalViewModel
 import com.reyaz.milliaconnect1.navigation.MCNavHost
 import com.reyaz.milliaconnect1.navigation.TopLevelDestinations
@@ -81,25 +83,9 @@ fun MilliaConnectApp() {
                         )
                     }
 
-                    IconButton(onClick = {
-                        navController.navigate(NavigationRoute.Portal.route)
-                    }) {
-                        if(portalUiState.isLoading){
-                            CircularProgressIndicator(
-                                strokeWidth = 4.dp,
-                                modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.primary,
-                                trackColor = MaterialTheme.colorScheme.primaryContainer
-                            )
-                        }else {
-                            Icon(
-                                imageVector =
-                                    if (portalUiState.isLoggedIn) Icons.Default.Wifi else if (!portalUiState.loadingMessage.isNullOrBlank()) Icons.Default.WifiFind else Icons.Default.WifiOff,
-                                contentDescription = "Wifi",
-                                tint = if (portalUiState.isLoggedIn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                    }
+                    WifiIconComposable(
+                        portalUiState = portalUiState,
+                        navigateToPortal = { navController.navigate(NavigationRoute.Portal.route) })
                 }
             )
         },
@@ -124,6 +110,37 @@ fun MilliaConnectApp() {
             }
         }
     ) { innerPadding ->
-        MCNavHost(modifier = Modifier.padding(innerPadding), navController = navController, portalViewModel = portalViewModel)
+        MCNavHost(
+            modifier = Modifier.padding(innerPadding),
+            navController = navController,
+            portalViewModel = portalViewModel
+        )
+    }
+}
+
+@Composable
+fun WifiIconComposable(
+    portalUiState: PortalUiState,
+    navigateToPortal: () -> Unit
+) {
+    IconButton(onClick = {
+        navigateToPortal()
+    }) {
+        if (portalUiState.isLoading) {
+            CircularProgressIndicator(
+                strokeWidth = 4.dp,
+                modifier = Modifier.size(24.dp),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.primaryContainer
+            )
+        } else {
+            Icon(
+                imageVector =
+                    if (portalUiState.isLoggedIn) Icons.Default.Wifi
+                    else Icons.Default.WifiOff,
+                contentDescription = "Wifi",
+                tint = if (portalUiState.isLoggedIn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }

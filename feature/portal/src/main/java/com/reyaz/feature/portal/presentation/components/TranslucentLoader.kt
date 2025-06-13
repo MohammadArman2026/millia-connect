@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,7 +23,7 @@ import androidx.compose.ui.unit.dp
     Column(
         modifier = modifier
 //            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.4f))
+            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.4f), shape = RoundedCornerShape(16.dp))
             .clickable(enabled = false, role = Role.Button, onClick = {}),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
