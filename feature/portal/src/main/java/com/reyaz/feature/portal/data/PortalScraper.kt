@@ -13,6 +13,9 @@ import com.reyaz.core.common.utlis.NetworkManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 
 
 class PortalScraper(
@@ -95,4 +98,44 @@ class PortalScraper(
             return@withContext Result.failure(e)
         }
     }
+
+    suspend fun hasInternetAccess() = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val url = URL("https://www.google.com/generate_204") // Lightweight endpoint
+            networkManager.forceUseWifi()
+            val connection = url.openConnection() as HttpURLConnection
+            connection.connectTimeout = 2000
+            connection.readTimeout = 2000
+            connection.connect()
+            val haveInternet = connection.responseCode == 204
+            Log.d(TAG, "haveInternet $haveInternet")
+            haveInternet
+        } catch (e: IOException) {
+            Log.d(TAG, "haveInternet false")
+            //Log.e(TAG, "Error while connecting to Google", e)
+            false
+        }
+    }
+
+     suspend fun isJmiWifi(forceUseWifi: Boolean = true): Boolean = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val url = URL("http://10.2.0.10:8090/login?dummy")
+            if (forceUseWifi)
+                networkManager.forceUseWifi()
+            val connection = url.openConnection() as HttpURLConnection
+            connection.connectTimeout = 2000
+            connection.connect()
+            val responseCode = connection.responseCode
+            connection.disconnect()
+            val isJmiWifi = responseCode == 200 || responseCode == 302 // 302 if redirect to login
+            Log.d(TAG, "JMI Wifi $isJmiWifi")
+            isJmiWifi
+        } catch (e: IOException) {
+            Log.d(TAG, "JMI Wifi false")
+            //Log.e(TAG, "Error while connecting to JMI Wifi", e)
+            false
+        }
+    }
 }
+
+private const val TAG = "PORTAL_SCRAPER"

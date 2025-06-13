@@ -62,10 +62,10 @@ class VMLogin(
                         initialize()
                     }
 
-                    /*NetworkPreference.MOBILE_DATA_ONLY -> {
+                    NetworkPreference.MOBILE_DATA_ONLY -> {
                         // May want to show different UI or behavior
                         Log.d("Network", "Mobile data only")
-                    }*/
+                    }
 
                     NetworkPreference.NONE -> {
                         // No connectivity

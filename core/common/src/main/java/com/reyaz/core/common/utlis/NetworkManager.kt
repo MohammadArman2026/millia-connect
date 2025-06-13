@@ -160,19 +160,6 @@ class NetworkManager(private val context: Context) {
         return capabilities?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) == true
     }
 
-    // Check if mobile data is currently the active network
-    fun isMobileDataActive(): Boolean {
-        val network = connectivityManager.activeNetwork ?: return false
-        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-
-        // Check if this network uses cellular transport
-        return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-    }
-
-    // Method to suggest disabling mobile data if WiFi is available
-    fun shouldSuggestDisablingMobileData(): Boolean {
-        return isWifiCurrentlyConnected() && isMobileDataCurrentlyConnected()
-    }
 }
 
 // Enum to represent the network preference status

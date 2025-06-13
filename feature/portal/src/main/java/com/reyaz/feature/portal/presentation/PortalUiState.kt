@@ -1,13 +1,17 @@
 package com.reyaz.feature.portal.presentation
 
+import org.apache.xpath.operations.Bool
+
 data class PortalUiState(
-    val username: String = "202207696",
-    val password: String = "ique@7696595",
-    var message: String? = "null",
+    val username: String = "",
+    val password: String = "",
+    var message: String? = null,
     val loadingMessage: String? = "Loading...",
     val isLoggedIn: Boolean = false,
     val isJamiaWifi: Boolean = true,
-    val autoConnect: Boolean = true
+    val autoConnect: Boolean = true,
+    val isMobileDataOn: Boolean = false,
+    val primaryErrorMsg: String? = null
 ){
     val loginEnabled: Boolean = username.isNotEmpty() && password.isNotEmpty()
     val isLoading: Boolean  = !loadingMessage.isNullOrBlank()

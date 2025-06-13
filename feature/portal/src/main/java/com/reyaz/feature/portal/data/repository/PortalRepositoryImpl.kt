@@ -13,7 +13,11 @@ class PortalRepositoryImpl(
     override suspend fun saveCredential(request: ConnectRequest): Result<Unit> {
         return try {
             val result =
-                dataStore.saveCredentials(username = request.username, password = request.password, autoConnect = request.autoConnect)
+                dataStore.saveCredentials(
+                    username = request.username,
+                    password = request.password,
+                    autoConnect = request.autoConnect
+                )
             if (result.isSuccess) {
                 Result.success(Unit)
             } else {
@@ -54,5 +58,25 @@ class PortalRepositoryImpl(
             Result.failure(e)
         }
     }
+
+    override suspend fun checkConnectionState(): JmiWifiState {
+        val isJmiWifi = portalScraper.isJmiWifi()
+        val hasInternetAccess = portalScraper.hasInternetAccess()
+        return if (isJmiWifi && hasInternetAccess) {
+            JmiWifiState.LOGGED_IN
+        } else if (isJmiWifi && !hasInternetAccess) {
+            JmiWifiState.NOT_LOGGED_IN
+        } else {
+           JmiWifiState.NOT_CONNECTED
+        }
+    }
+    override suspend fun isWifiPrimary(): Boolean = portalScraper.isJmiWifi(false)
 }
 
+private const val TAG = "PORTAL_REPO_IMPL"
+
+enum class JmiWifiState(val error: String? = null) {
+    NOT_CONNECTED("You're Not Connected with JMI-WiFi"),
+    NOT_LOGGED_IN,
+    LOGGED_IN,
+}

@@ -41,7 +41,7 @@ class PortalDataStore(private val context: Context) {
     // Get Auto Connect Status
     val autoConnect: Flow<Boolean> = context.dataStore.data
         .map { preferences ->
-            preferences[AUTO_CONNECT] ?: false
+            preferences[AUTO_CONNECT] ?: true
         }
 
 

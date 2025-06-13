@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.sp
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-//                .padding(24.dp)
             ,
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)

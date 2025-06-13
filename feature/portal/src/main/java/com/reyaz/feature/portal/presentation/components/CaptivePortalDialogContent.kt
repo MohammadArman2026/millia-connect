@@ -1,15 +1,9 @@
 package com.reyaz.feature.portal.presentation.components
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,6 +20,7 @@ fun CaptivePortalDialogContent(
 
     Box (
         modifier = modifier
+            .padding(top = 12.dp)
             .padding(24.dp)
             .verticalScroll(rememberScrollState())
     ){
@@ -37,6 +32,7 @@ fun CaptivePortalDialogContent(
         } else if (uiState.isLoggedIn) {
             ConnectedComposable(
                 onDisconnect = { viewModel.logout() },
+                primaryErrorMsg = uiState.primaryErrorMsg
             )
         } else {    // login form
             LoginFormComposable(modifier = modifier, uiState, viewModel)

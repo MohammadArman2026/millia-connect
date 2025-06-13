@@ -82,7 +82,8 @@ fun CustomTextField(
             if (leadingIcon != null) leadingIcon()
 
             if (value.isEmpty() && !isFocused)
-                Text(text = label, color = TextFieldDefaults.colors().unfocusedPlaceholderColor,
+                Text(
+                    text = label, color = TextFieldDefaults.colors().unfocusedPlaceholderColor,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -93,13 +94,15 @@ fun CustomTextField(
             if (value.isNotEmpty())
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Clear search",
-                    tint = TextFieldDefaults.colors().unfocusedTrailingIconColor,
+                    contentDescription = "Clear",
+                    tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier
-                        .padding(start = 8.dp)
-                        .size(24.dp)
+                        .size(16.dp)
+                        .border(width = 1.dp, color = MaterialTheme.colorScheme.error, CircleShape)
                         .clip(CircleShape)
-                        .clickable { onValueChange("") }
+                        .size(24.dp)
+//                        .fillMaxWidth()
+                        .clickable { /*onValueChange("")*/ }
                 )
         }
     }
