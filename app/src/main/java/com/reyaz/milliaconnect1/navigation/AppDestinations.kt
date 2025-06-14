@@ -39,7 +39,7 @@ object AppDestinations {
             titleResourceId = "Home"
         ),
         AppTopLevelDestination(
-            route = NavigationRoute.Notice,
+            route = NavigationRoute.NoticeGraph,
             selectedIcon = Icons.Filled.CalendarToday,
             unselectedIcon = Icons.Outlined.CalendarToday,
             titleResourceId = "Attendance"
@@ -72,7 +72,7 @@ object AppDestinations {
      */
     val mainDestinations = listOf(
         NavigationRoute.Home,
-        NavigationRoute.Notice,
+        NavigationRoute.NoticeGraph,
         NavigationRoute.Academics,
         NavigationRoute.Profile
     )
@@ -81,7 +81,7 @@ object AppDestinations {
      * Attendance feature destinations
      */
     val attendanceDestinations = listOf(
-        NavigationRoute.Notice,
+        NavigationRoute.NoticeGraph,
         NavigationRoute.AttendanceHistory,
         NavigationRoute.AttendanceDetails,
         NavigationRoute.MarkAttendance
@@ -141,7 +141,7 @@ fun NavigationRoute.getParentRoute(): NavigationRoute? {
         // Attendance nested routes
         NavigationRoute.AttendanceHistory,
         NavigationRoute.AttendanceDetails,
-        NavigationRoute.MarkAttendance -> NavigationRoute.Notice
+        NavigationRoute.MarkAttendance -> NavigationRoute.NoticeGraph
 
         // Academic nested routes
         NavigationRoute.Courses,
@@ -174,7 +174,7 @@ fun NavigationRoute.shouldShowBottomNavigation(): Boolean {
 fun NavigationRoute.getAppBarTitle(): String {
     return when (this) {
         NavigationRoute.Home -> "Dashboard"
-        NavigationRoute.Notice -> "Attendance"
+        NavigationRoute.NoticeGraph -> "Attendance"
         NavigationRoute.AttendanceHistory -> "Attendance History"
         NavigationRoute.AttendanceDetails -> "Attendance Details"
         NavigationRoute.MarkAttendance -> "Mark Attendance"

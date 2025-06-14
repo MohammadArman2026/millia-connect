@@ -12,7 +12,9 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import com.reyaz.feature.portal.presentation.PortalScreen
 import com.reyaz.feature.portal.presentation.PortalViewModel
+import com.reyaz.feature.result.presentation.ResultScreen
 import com.reyaz.milliaconnect1.navigation.graph.attendanceNavGraph
+import com.reyaz.milliaconnect1.navigation.graph.resultNavGraph
 
 /**
  * Main navigation host for the Millia Connect App
@@ -29,8 +31,8 @@ fun MCNavHost(
     NavHost(
         navController = navController,
         startDestination =
-            NavigationRoute.AttendanceGraph.route,
-//            NavigationRoute.Portal.route,
+//            NavigationRoute.AttendanceGraph.route,
+            NavigationRoute.ResultGraph.route,
         modifier = modifier.fillMaxSize()
     ) {
         // Attendance Feature Graph
@@ -45,6 +47,14 @@ fun MCNavHost(
             PortalScreen(viewModel = portalViewModel, dismissDialog = {
                 navController.navigateUp()
             })
+        }
+
+        // Result Graph
+        navigation(
+            route = NavigationRoute.ResultGraph.route,
+            startDestination = NavigationRoute.Result.route
+        ){
+            resultNavGraph(navController, snackbarHostState)
         }
 
         // Notice Graph

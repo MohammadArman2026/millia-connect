@@ -1,13 +1,10 @@
 package com.reyaz.milliaconnect1.navigation
 
-import android.util.Config.PROFILE
 import com.reyaz.core.navigation.NavigationRoute
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Newspaper
 import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.Timer
@@ -41,7 +38,7 @@ object TopLevelDestinations {
     )
 
     val NOTICE = AppTopLevelDestination(
-        route = NavigationRoute.Notice,
+        route = NavigationRoute.NoticeGraph,
         selectedIcon = Icons.Filled.Newspaper,
         unselectedIcon = Icons.Outlined.Newspaper,
         titleResourceId = "Notice",
@@ -49,7 +46,7 @@ object TopLevelDestinations {
     )
 
     val RESULT = AppTopLevelDestination(
-        route = NavigationRoute.Academics,
+        route = NavigationRoute.ResultGraph,
         selectedIcon = Icons.Filled.School,
         unselectedIcon = Icons.Outlined.School,
         titleResourceId = "Result",

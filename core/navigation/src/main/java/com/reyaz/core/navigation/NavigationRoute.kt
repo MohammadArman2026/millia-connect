@@ -14,9 +14,11 @@ sealed class NavigationRoute(val route: String) {
 
     // Main Bottom Navigation Routes
     data object Home : NavigationRoute("home")
-    data object Notice : NavigationRoute("attendance")
+    data object NoticeGraph : NavigationRoute("attendance")
     data object Academics : NavigationRoute("academics")
     data object Profile : NavigationRoute("profile")
+
+    data object Result: NavigationRoute("result")
 
     // Attendance Feature Routes
     data object AttendanceHistory : NavigationRoute("attendance/history")
@@ -49,6 +51,7 @@ sealed class NavigationRoute(val route: String) {
     data object AuthGraph : NavigationRoute("auth_graph")
     data object MainGraph : NavigationRoute("main_graph")
     data object AttendanceGraph : NavigationRoute("attendance_graph")
+    data object ResultGraph: NavigationRoute("result_graph")
     data object AcademicGraph : NavigationRoute("academic_graph")
     data object ProfileGraph : NavigationRoute("profile_graph")
 
@@ -58,7 +61,7 @@ sealed class NavigationRoute(val route: String) {
          */
         val bottomNavigationRoutes = listOf(
             Home,
-            Notice,
+            NoticeGraph,
             Academics,
             Profile
         )
