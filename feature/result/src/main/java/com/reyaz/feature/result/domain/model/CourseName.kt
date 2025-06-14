@@ -1,6 +1,6 @@
 package com.reyaz.feature.result.domain.model
 
-data class Degree(
-    val id: Int,
+data class CourseName(
+    val id: String,
     val name: String,
 )

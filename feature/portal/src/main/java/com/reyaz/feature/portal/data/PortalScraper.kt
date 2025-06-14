@@ -1,18 +1,18 @@
 package com.reyaz.feature.portal.data
 
 import android.util.Log
-import com.gargoylesoftware.htmlunit.BrowserVersion
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController
-import com.gargoylesoftware.htmlunit.WaitingRefreshHandler
-import com.gargoylesoftware.htmlunit.WebClient
-import com.gargoylesoftware.htmlunit.html.HtmlElement
-import com.gargoylesoftware.htmlunit.html.HtmlPage
-import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput
-import com.gargoylesoftware.htmlunit.html.HtmlTextInput
 import com.reyaz.core.common.utlis.NetworkManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import org.htmlunit.BrowserVersion
+import org.htmlunit.NicelyResynchronizingAjaxController
+import org.htmlunit.WaitingRefreshHandler
+import org.htmlunit.WebClient
+import org.htmlunit.html.HtmlElement
+import org.htmlunit.html.HtmlPage
+import org.htmlunit.html.HtmlPasswordInput
+import org.htmlunit.html.HtmlTextInput
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL

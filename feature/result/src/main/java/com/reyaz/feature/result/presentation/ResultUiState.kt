@@ -1,7 +1,7 @@
 package com.reyaz.feature.result.presentation
 
-import com.reyaz.feature.result.domain.model.Course
-import com.reyaz.feature.result.domain.model.Degree
+import com.reyaz.feature.result.domain.model.CourseType
+import com.reyaz.feature.result.domain.model.CourseName
 import com.reyaz.feature.result.domain.model.ResultHistory
 
 data class ResultUiState(
@@ -9,17 +9,17 @@ data class ResultUiState(
     val error: String? = null,
 
     val degreeLoading: Boolean = true,
-    val degreeList: List<Degree> = emptyList(),
+    val courseNameList: List<CourseName> = emptyList(),
     val selectedDegree: String = "",
 
     val courseLoading: Boolean = true,
-    val courseList: List<Course> = emptyList(),
+    val courseTypeList: List<CourseType> = emptyList(),
     val selectedCourse: String = "",
 
     val historyList: List<ResultHistory> = emptyList(),
 ) {
-    val degreeEnabled: Boolean = degreeList.isNotEmpty()
-    val courseEnabled: Boolean = selectedDegree.isNotEmpty() && courseList.isNotEmpty()
+    val degreeEnabled: Boolean = courseNameList.isNotEmpty()
+    val courseEnabled: Boolean = selectedDegree.isNotEmpty() && courseTypeList.isNotEmpty()
     val btnEnabled: Boolean = selectedDegree.isNotEmpty() && selectedCourse.isNotEmpty()
 }
 

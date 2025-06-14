@@ -25,7 +25,8 @@ datastoreCoreAndroid = "1.1.2"
 # HtmlUnit Android - Headless web browser for testing web applications on Android
 # A headless browser that can execute web pages, including JavaScript, without a graphical user interface.
 # Useful for advanced web scraping that requires JavaScript execution or form submission.
-htmlunitAndroid = "2.63.0"
+#htmlunitAndroid = "2.63.0"
+htmlunit = "4.3.0"
 
 # Jsoup - Java HTML parser for web scraping and HTML manipulation
 # A robust library for parsing HTML, extracting data, and manipulating HTML DOM.
@@ -164,7 +165,9 @@ androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version
 # WEB SCRAPING & HTML PARSING
 # Headless web browser implementation for Android testing and automation
 # Useful for testing web-based components or automated form submissions, especially when JavaScript rendering is needed.
-htmlunit-android = { module = "net.sourceforge.htmlunit:htmlunit-android", version.ref = "htmlunitAndroid" }
+#htmlunit-android = { module = "net.sourceforge.htmlunit:htmlunit-android", version.ref = "htmlunitAndroid" }
+htmlunit-android = { group = "org.htmlunit", name = "htmlunit3-android", version.ref = "htmlunit" }
+
 
 # Java HTML parser library for extracting and manipulating HTML content
 # Essential for web scraping, HTML cleaning, and content extraction tasks from static HTML.

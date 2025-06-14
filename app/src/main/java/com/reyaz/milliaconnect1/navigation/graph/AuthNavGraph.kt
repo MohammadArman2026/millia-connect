@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.gargoylesoftware.htmlunit.javascript.host.Screen
 import com.reyaz.core.navigation.NavigationRoute
-import com.reyaz.core.navigation.composableRoute
 
 /**
  * Authentication navigation graph

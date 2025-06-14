@@ -5,19 +5,19 @@ import android.net.CaptivePortal
 import android.net.ConnectivityManager
 import android.provider.Settings
 import android.util.Log
-import com.gargoylesoftware.htmlunit.BrowserVersion
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController
-import com.gargoylesoftware.htmlunit.WaitingRefreshHandler
-import com.gargoylesoftware.htmlunit.WebClient
-import com.gargoylesoftware.htmlunit.html.HtmlElement
-import com.gargoylesoftware.htmlunit.html.HtmlPage
-import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput
-import com.gargoylesoftware.htmlunit.html.HtmlTextInput
 import com.reyaz.milliaconnect1.util.NetworkConnectivityObserver
 import com.reyaz.milliaconnect1.util.NotificationHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import org.htmlunit.BrowserVersion
+import org.htmlunit.NicelyResynchronizingAjaxController
+import org.htmlunit.WaitingRefreshHandler
+import org.htmlunit.WebClient
+import org.htmlunit.html.HtmlElement
+import org.htmlunit.html.HtmlPage
+import org.htmlunit.html.HtmlPasswordInput
+import org.htmlunit.html.HtmlTextInput
 
 
 class WebLoginManager(

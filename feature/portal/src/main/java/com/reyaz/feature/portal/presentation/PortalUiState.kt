@@ -1,6 +1,5 @@
 package com.reyaz.feature.portal.presentation
 
-import org.apache.xpath.operations.Bool
 
 data class PortalUiState(
     val username: String = "",
