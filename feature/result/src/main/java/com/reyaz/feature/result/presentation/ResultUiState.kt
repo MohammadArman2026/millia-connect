@@ -19,7 +19,11 @@ data class ResultUiState(
     val historyList: List<ResultHistory> = emptyList(),
 ) {
     val selectedType: String = selectedTypeIndex?.let { courseTypeList[it].name } ?: ""
+    val selectedTypeId: String = selectedTypeIndex?.let { courseTypeList[it].id } ?: ""
+
     val selectedCourse: String = selectedCourseIndex?.let { courseNameList[it].name } ?: ""
+    val selectedCourseId: String = selectedCourseIndex?.let { courseNameList[it].id } ?: ""
+
     val courseTypeEnabled: Boolean = courseTypeList.isNotEmpty() && !typeLoading
     val courseEnabled: Boolean =
         selectedTypeIndex != null && courseNameList.isNotEmpty() && !courseLoading

@@ -1,6 +1,7 @@
 package com.reyaz.feature.result.presentation.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -56,7 +57,8 @@ fun DropDownComposable(
 
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.height(400.dp)
         ) {
             options.forEachIndexed { index, selectionOption ->
                 DropdownMenuItem(

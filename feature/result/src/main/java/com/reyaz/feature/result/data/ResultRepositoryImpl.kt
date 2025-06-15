@@ -41,9 +41,9 @@ class ResultRepositoryImpl(
         }
     }
 
-    override suspend fun getResult(type: String, course: String, phdDepartment: String?): Result<List<ResultHistory>> {
-        return try {
-            val result: Result<List<ResultHistory>> = resultScraper.fetchResult(courseType = type, courseName = course, phdDiscipline = null)
+    override suspend fun getResult(type: String, course: String, phdDepartment: String): Result<List<ResultHistory>> = withContext(Dispatchers.IO) {
+         try {
+            val result: Result<List<ResultHistory>> = resultScraper.fetchResult(courseType = type, courseName = course, phdDiscipline = phdDepartment)
             Result.success(result.getOrDefault(emptyList()))
         } catch (e: Exception) {
             Result.failure(e)

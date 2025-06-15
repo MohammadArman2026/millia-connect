@@ -204,11 +204,11 @@ class ResultScraper(
         return Result.success(programs)
     }
 
-    fun fetchResult(courseType: String = "UG1", courseName: String, phdDiscipline : String? = null): Result<List<ResultHistory>> {
+    fun fetchResult(courseType: String, courseName: String, phdDiscipline : String = ""): Result<List<ResultHistory>> {
         val programs = mutableListOf<ResultHistory>()
 
         try {
-            Log.d("RESULT_SCRAPER", "Kotlin Hardcode")
+            Log.d("RESULT_SCRAPER", "Result fetching...")
 
             val payload = listOf(
                 "frm_ProgramType" to courseType,
@@ -217,6 +217,8 @@ class ResultScraper(
             ).joinToString("&") { (key, value) ->
                 "${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
             }   // like: frm_ProgramType=PHD&frm_ProgramName=PH1&frm_PhDMainDiscipline=M0015
+
+            Log.d("RESULT_SCRAPER", "Payload created: $payload")
 
             val endpoint = "https://admission.jmi.ac.in/EntranceResults/UniversityResult/getUniversityResults"
 
@@ -227,9 +229,11 @@ class ResultScraper(
             conn.doOutput = true
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
 
+            Log.d("RESULT_SCRAPER", "Payload sening...: $payload")
             conn.outputStream.use { os ->
                 os.write(payload.toByteArray())
             }
+            Log.d("RESULT_SCRAPER", "Payload sent")
 
             conn.inputStream.bufferedReader().use { reader ->
                 val response = reader.readText()
@@ -252,6 +256,7 @@ class ResultScraper(
     }
 
     private fun parseUniversityResultsTable(htmlContent: String): List<ResultHistory> {
+        Log.d("RESULT_SCRAPER", "Parsing...")
         val results = mutableListOf<ResultHistory>()
 
         val document: org.jsoup.nodes.Document = Jsoup.parse(htmlContent)

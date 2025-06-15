@@ -29,7 +29,7 @@ class ResultViewModel(
             is ResultEvent.LoadCourse -> {
                 getCourses()
             }
-            is ResultEvent.LoadResult -> {}
+            is ResultEvent.LoadResult -> getResult()
             is ResultEvent.UpdateType -> {
                 updateSelectedType(event.typeIndex)
                 //ResultEvent.LoadCourse(event.type)
@@ -71,7 +71,7 @@ class ResultViewModel(
         viewModelScope.launch {
             // Log.d(TAG, "Loading Course")
             updateState { it.copy(courseLoading = true, courseNameList = emptyList()) }
-            val typeList = resultRepository.getCourses(uiState.value.courseTypeList[uiState.value.selectedTypeIndex!!].id)
+            val typeList = resultRepository.getCourses(uiState.value.selectedTypeId)
             if (typeList.isSuccess) {
                 updateState {
                     it.copy(
@@ -85,6 +85,31 @@ class ResultViewModel(
                     it.copy(
                         courseNameList = typeList.getOrDefault(emptyList()),
                         error = typeList.exceptionOrNull()?.message,
+                        courseLoading = false
+                    )
+                }
+            }
+        }
+    }
+
+    private fun getResult() {
+        viewModelScope.launch {
+            // Log.d(TAG, "Loading Course")
+            updateState { it.copy(isLoading = true) }
+            val result = resultRepository.getResult(type = uiState.value.selectedTypeId, course = uiState.value.selectedCourseId)
+            if (result.isSuccess) {
+                updateState {
+                    it.copy(
+                        historyList = result.getOrDefault(emptyList()),
+                        isLoading = false
+                    )
+                }
+//                 Log.d(TAG, "Result: ${result.getOrDefault(emptyList()).size}")
+            } else {
+                updateState {
+                    it.copy(
+                        historyList = result.getOrDefault(emptyList()),
+                        error = result.exceptionOrNull()?.message,
                         courseLoading = false
                     )
                 }
