@@ -20,7 +20,7 @@ class ResultRepositoryImpl(
             try {
 //                resultScraper.getProgramsForCourseType() // Java method
                 val response: Result<List<CourseType>> =
-                    resultScraper.fetchProgByHardCode() // Java method
+                    resultScraper.fetchPrograms() // Java method
                 Result.success(response.getOrDefault(emptyList()))
             } catch (e: Exception) {
                 Log.e(TAG, "Exception while scraping: ${e.message}")
@@ -28,9 +28,9 @@ class ResultRepositoryImpl(
             }
         }
 
-    override suspend fun getCourses(type: String): Result<List<CourseName>> {
-        return try {
-            val request: Result<List<CourseName>> = resultScraper.getProgramsForCourseType(type)
+    override suspend fun getCourses(type: String): Result<List<CourseName>> = withContext(Dispatchers.IO) {
+         try {
+            val request: Result<List<CourseName>> = resultScraper.fetchPrograms(type)
             if (request.isSuccess) {
                 Result.success(request.getOrDefault(emptyList()))
             } else {

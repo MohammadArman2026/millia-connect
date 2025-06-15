@@ -64,7 +64,7 @@ class ResultScraper(
     }
 
 
-    suspend fun fetchProgram(): Result<List<CourseType>> = withContext(Dispatchers.IO) {
+    suspend fun fetchPrograms(): Result<List<CourseType>> = withContext(Dispatchers.IO) {
         val url = "https://admission.jmi.ac.in/EntranceResults/UniversityResult"
         try {
             val page: HtmlPage = webClient.getPage(url)
@@ -95,6 +95,7 @@ class ResultScraper(
     /**
      * Get programs for a specific course type
      */
+    @Deprecated("Cannot execute js")
     suspend fun getProgramsForCourseType(courseTypeValue: String = "UG1"): Result<List<CourseName>> =
         withContext(Dispatchers.IO) {
             dropdownSelector.getProgramsForCourseType()
@@ -141,8 +142,6 @@ class ResultScraper(
             }
         }
 
-//    data class CourseName(val id: String, val name: String)
-
     fun trustAllHosts() {
         val trustAllCerts = arrayOf<TrustManager>(
             object : X509TrustManager {
@@ -162,8 +161,8 @@ class ResultScraper(
         }
     }
 
-    fun fetchProgByHardCode(courseTypeValue: String = "UG1"): Result<List<CourseType>> {
-        val programs = mutableListOf<CourseType>()
+    fun fetchPrograms(courseTypeValue: String): Result<List<CourseName>> {
+        val programs = mutableListOf<CourseName>()
 
         try {
             Log.d("RESULT_SCRAPER", "Kotlin Hardcode")
@@ -190,7 +189,7 @@ class ResultScraper(
                     val obj = jsonArray.getJSONObject(i)
                     val id = obj.getString("CPD_ID")
                     val name = obj.getString("PROGNAME")
-                    programs.add(CourseType(id, name))
+                    programs.add(CourseName(id, name))
                 }
             }
         } catch (e: Exception) {

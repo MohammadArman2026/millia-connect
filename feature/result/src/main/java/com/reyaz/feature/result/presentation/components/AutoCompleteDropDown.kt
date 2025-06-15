@@ -30,8 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import com.reyaz.core.ui.theme.MilliaConnectTheme
+import com.reyaz.feature.result.presentation.ResultScreen
+import com.reyaz.feature.result.presentation.ResultUiState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AutoCompleteDropDown(
     modifier: Modifier = Modifier,
@@ -48,7 +49,7 @@ fun AutoCompleteDropDown(
     val heightTextFields by remember {
         mutableStateOf(64.dp)
     }
-
+    var textValue by remember {mutableStateOf("")}
     var textFieldSize by remember {
         mutableStateOf(Size.Zero)
     }
@@ -85,7 +86,7 @@ fun AutoCompleteDropDown(
                         },
                     value = selectedText,
                     onValueChange = {
-                        onItemSelected(it)
+                        textValue = it
                         expanded = true
                     },
                     textStyle = TextStyle(
@@ -100,7 +101,7 @@ fun AutoCompleteDropDown(
                         if (isLoading) {
                             CircularProgressIndicator(modifier = Modifier.size(20.dp))
                         } else {
-                            IconButton(onClick = { if (selectionDone){onItemSelected("")} else {
+                            IconButton(onClick = { if (selectionDone){ textValue = "" } else {
                                 expanded = !expanded
                             }
                             }) {
@@ -128,14 +129,15 @@ fun AutoCompleteDropDown(
 //                        modifier = Modifier.heightIn(max = 150.dp),
                     ) {
 
-                        if (selectedText.isNotEmpty()) {
+                        if (textValue.isNotEmpty()) {
                             items(
                                 list.filter { listItem ->
                                     listItem.lowercase().contains(selectedText.lowercase())
                                 }.sorted()
                             ) {
                                 CategoryItems(title = it) { title ->
-                                    onItemSelected( title)
+                                    textValue = title
+                                    onItemSelected(title)
                                     expanded = false
                                     selectionDone = true
                                 }
@@ -145,7 +147,8 @@ fun AutoCompleteDropDown(
                                 list.sorted()
                             ) {
                                 CategoryItems(title = it) { title ->
-                                    onItemSelected( title)
+                                    textValue = title
+                                    onItemSelected( "UG1")
                                     expanded = false
                                     selectionDone = true
                                 }
@@ -198,16 +201,16 @@ fun AutoCompletePreview() {
         )
     }
 }
-@Preview(showSystemUi = true)
+/*@Preview(showSystemUi = true)
 @Composable
 fun ResultScreenPreview() {
     MilliaConnectTheme(darkTheme = false) {
-       /* ResultScreen(
+        ResultScreen(
             uiState = ResultUiState(),
             onNavigateBack = {}
-        )*/
+        )
     }
-}
+}*/
 
 
 

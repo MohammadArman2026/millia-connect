@@ -9,17 +9,20 @@ data class ResultUiState(
     val error: String? = null,
 
     val typeLoading: Boolean = true,
-    val courseNameList: List<CourseName> = emptyList(),
-    val selectedType: String = "",
+    val courseTypeList: List<CourseType> = emptyList(),
+    val selectedTypeIndex: Int? = null,
 
     val courseLoading: Boolean = true,
-    val courseTypeList: List<CourseType> = emptyList(),
-    val selectedCourse: String = "",
+    val courseNameList: List<CourseName> = emptyList(),
+    val selectedCourseIndex: Int? = null,
 
     val historyList: List<ResultHistory> = emptyList(),
 ) {
-    val degreeEnabled: Boolean = courseNameList.isNotEmpty()
-    val courseEnabled: Boolean = selectedType.isNotEmpty() && courseTypeList.isNotEmpty()
-    val btnEnabled: Boolean = selectedType.isNotEmpty() && selectedCourse.isNotEmpty()
+    val selectedType: String = selectedTypeIndex?.let { courseTypeList[it].name } ?: ""
+    val selectedCourse: String = selectedCourseIndex?.let { courseNameList[it].name } ?: ""
+    val courseTypeEnabled: Boolean = courseTypeList.isNotEmpty() && !typeLoading
+    val courseEnabled: Boolean =
+        selectedTypeIndex != null && courseNameList.isNotEmpty() && !courseLoading
+    val btnEnabled: Boolean = selectedTypeIndex != null && selectedCourseIndex != null
 }
 

@@ -3,10 +3,16 @@ package com.reyaz.feature.result.presentation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.reyaz.feature.result.presentation.components.AutoCompleteDropDown
+import com.reyaz.core.ui.theme.MilliaConnectTheme
+import com.reyaz.feature.result.presentation.components.DropDownComposable
 
 @Composable
 fun ResultScreen(
@@ -17,51 +23,33 @@ fun ResultScreen(
 ) {
     Column(
         modifier = modifier.padding(16.dp)/*.verticalScroll(rememberScrollState())*/,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-       /* DropDownWithLoader(
-            modifier = modifier,
-            isLoading = uiState.typeLoading,
-            selectedText = uiState.selectedType,
-            items = uiState.courseTypeList.map { it.name },
-            onItemSelected = { onEvent(ResultEvent.UpdateType(it)) }
-        )
-
         DropDownComposable(
-            modifier = modifier,
             options = uiState.courseTypeList.map { it.name },
-            label = "Course",
-            onOptionSelected = { onEvent(ResultEvent.UpdateCourse(it)) }
+            label = "Course Type",
+            onOptionSelected = {
+                onEvent(ResultEvent.UpdateType(it))
+                onEvent(ResultEvent.LoadCourse) },
+            isLoading = uiState.typeLoading,
+            enabled = uiState.courseTypeEnabled,
+            value = uiState.selectedType
         )
-
-        DropdownInsteaComposable(
-            modifier = modifier,
-            options = uiState.courseTypeList.map { it.name },
+        DropDownComposable(
+            options = uiState.courseNameList.map { it.name },
             label = "Course",
             onOptionSelected = { onEvent(ResultEvent.UpdateCourse(it)) },
-//            leadingIcon = TODO(),
-//            isError = TODO(),
-//            errorMessage = TODO(),
-//            selectedOption = TODO(),
-//            keyboardActions = TODO(),
-//            onAddItemClicked = TODO(),
-//            isEnabled = TODO(),
-            isLoadingOption = false,
-//            isExpandable = TODO(),
-//            showAddBtn = TODO()
+            isLoading = uiState.courseLoading,
+            enabled = uiState.courseEnabled,
+            value = uiState.selectedCourse
         )
+        Button(
+            onClick = {onEvent(ResultEvent.LoadResult)}
+        ) {
+            Text(text = "Track Result")
+        }
 
-        DropdownButtonComposable(
-            options = uiState.courseTypeList.map { it.name }
-        )
-*/
-        AutoCompleteDropDown(
-            isLoading = uiState.typeLoading,
-            selectedText = uiState.selectedType,
-            list = uiState.courseTypeList.map { it.name },
-            onItemSelected = { onEvent(ResultEvent.UpdateType(it)) },
-            label = "Course Type"
-        )
     }
 
 
@@ -69,3 +57,15 @@ fun ResultScreen(
 
 //    ExposedDropdownMenuBox() { }
 }
+
+/*
+@Preview(showSystemUi = true)
+@Composable
+fun ResultScreenPreview() {
+    MilliaConnectTheme(darkTheme = false) {
+        ResultScreen(
+            uiState = ResultUiState(),
+            onNavigateBack = {}
+        )
+    }
+}*/
