@@ -3,16 +3,24 @@ package com.reyaz.feature.result.data
 import android.util.Log
 import com.reyaz.feature.result.domain.model.CourseName
 import com.reyaz.feature.result.domain.model.CourseType
+import com.reyaz.feature.result.domain.model.ResultHistory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.htmlunit.BrowserVersion
 import org.htmlunit.NicelyResynchronizingAjaxController
 import org.htmlunit.WaitingRefreshHandler
 import org.htmlunit.WebClient
-import org.htmlunit.html.HtmlOption
 import org.htmlunit.html.HtmlPage
 import org.htmlunit.html.HtmlSelect
+import org.json.JSONArray
+import org.json.JSONObject
+import org.jsoup.Jsoup
+import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLEncoder
+import java.security.SecureRandom
 import java.security.cert.X509Certificate
+import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
@@ -132,4 +140,138 @@ class ResultScraper(
 //            ScrapingResult(error = e.message)
             }
         }
+
+//    data class CourseName(val id: String, val name: String)
+
+    fun trustAllHosts() {
+        val trustAllCerts = arrayOf<TrustManager>(
+            object : X509TrustManager {
+                override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+                override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+                override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+            }
+        )
+
+        try {
+            val sc = SSLContext.getInstance("TLS")
+            sc.init(null, trustAllCerts, SecureRandom())
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.socketFactory)
+            HttpsURLConnection.setDefaultHostnameVerifier { _, _ -> true }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun fetchProgByHardCode(courseTypeValue: String = "UG1"): Result<List<CourseType>> {
+        val programs = mutableListOf<CourseType>()
+
+        try {
+            Log.d("RESULT_SCRAPER", "Kotlin Hardcode")
+            val endpoint = "https://admission.jmi.ac.in/EntranceResults/UniversityResult/getUniversityProgramName"
+
+            val url = URL(endpoint)
+            trustAllHosts()     // call this before opening the connection
+            val conn = url.openConnection() as HttpURLConnection
+            conn.requestMethod = "POST"
+            conn.doOutput = true
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+
+            val payload = "prgType=${URLEncoder.encode(courseTypeValue, "UTF-8")}"
+            conn.outputStream.use { os ->
+                os.write(payload.toByteArray())
+            }
+
+            conn.inputStream.bufferedReader().use { reader ->
+                val response = reader.readText()
+                Log.d("RESULT_SCRAPER", "Response: $response")
+
+                val jsonArray = JSONArray(response)
+                for (i in 0 until jsonArray.length()) {
+                    val obj = jsonArray.getJSONObject(i)
+                    val id = obj.getString("CPD_ID")
+                    val name = obj.getString("PROGNAME")
+                    programs.add(CourseType(id, name))
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("RESULT_SCRAPER", "Error fetching programs: ${e.message}", e)
+            //Result.failure(e)
+        }
+
+        for (program in programs) {
+            Log.d("RESULT_SCRAPER", program.toString())
+        }
+
+        return Result.success(programs)
+    }
+
+    fun fetchResult(courseType: String = "UG1", courseName: String, phdDiscipline : String? = null): Result<List<ResultHistory>> {
+        val programs = mutableListOf<ResultHistory>()
+
+        try {
+            Log.d("RESULT_SCRAPER", "Kotlin Hardcode")
+
+            val payload = listOf(
+                "frm_ProgramType" to courseType,
+                "frm_ProgramName" to courseName,
+                "frm_PhDMainDiscipline" to phdDiscipline
+            ).joinToString("&") { (key, value) ->
+                "${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
+            }   // like: frm_ProgramType=PHD&frm_ProgramName=PH1&frm_PhDMainDiscipline=M0015
+
+            val endpoint = "https://admission.jmi.ac.in/EntranceResults/UniversityResult/getUniversityResults"
+
+            val url = URL(endpoint)
+            trustAllHosts()     // call this before opening the connection
+            val conn = url.openConnection() as HttpURLConnection
+            conn.requestMethod = "POST"
+            conn.doOutput = true
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+
+            conn.outputStream.use { os ->
+                os.write(payload.toByteArray())
+            }
+
+            conn.inputStream.bufferedReader().use { reader ->
+                val response = reader.readText()
+                Log.d("RESULT_SCRAPER", "Response: $response")
+                val jsonResponse = JSONObject(response)
+                val htmlContent = jsonResponse.getString("UniversityResults")
+                val result = parseUniversityResultsTable(htmlContent = htmlContent)
+                programs.addAll(result)
+            }
+        } catch (e: Exception) {
+            Log.e("RESULT_SCRAPER", "Error fetching programs: ${e.message}", e)
+            //Result.failure(e)
+        }
+
+        for (program in programs) {
+            Log.d("RESULT_SCRAPER", program.toString())
+        }
+
+        return Result.success(programs)
+    }
+
+    private fun parseUniversityResultsTable(htmlContent: String): List<ResultHistory> {
+        val results = mutableListOf<ResultHistory>()
+
+        val document: org.jsoup.nodes.Document = Jsoup.parse(htmlContent)
+        val rows = document.select("table tr")
+
+        for (row in rows) {
+            val cells = row.select("td")
+            if (cells.size >= 3) {
+                val courseName = cells.getOrNull(0)?.text()?.trim() ?: ""
+                val date = cells.getOrNull(1)?.text()?.trim() ?: ""
+                val remarks = cells.getOrNull(2)?.text()?.trim() ?: ""
+
+                // Look for a link to PDF inside any cell
+                val pdfUrl = row.selectFirst("a[href]")?.attr("href")?.trim()
+
+                results.add(ResultHistory(courseName = courseName, date = date, remarks = remarks, link = pdfUrl))
+            }
+        }
+
+        return results
+    }
 }

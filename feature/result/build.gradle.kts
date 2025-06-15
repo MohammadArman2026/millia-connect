@@ -79,7 +79,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 //    implementation(libs.androidx.navigation.compose)
 
-//    implementation(libs.jsoup)
+    // html scraping
+    implementation(libs.jsoup)
     // screen scraping
     implementation(libs.htmlunit.android)
 

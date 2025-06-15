@@ -31,7 +31,7 @@ htmlunit = "4.3.0"
 # Jsoup - Java HTML parser for web scraping and HTML manipulation
 # A robust library for parsing HTML, extracting data, and manipulating HTML DOM.
 # Excellent for web scraping static content or content that doesn't heavily rely on client-side JavaScript.
-jsoup = "1.18.3"
+jsoup = "1.20.1"
 
 # Koin - Lightweight dependency injection framework
 # koinAndroidxWorkmanager: Integrates Koin with AndroidX WorkManager, allowing dependency injection
