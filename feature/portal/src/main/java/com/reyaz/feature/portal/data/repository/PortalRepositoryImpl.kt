@@ -73,7 +73,7 @@ class PortalRepositoryImpl(
     }
     override suspend fun isWifiPrimary(): Boolean  {
         val res = portalScraper.isJmiWifi(false)
-        Log.d(TAG, "isWifiPrimary: $res")
+        // Log.d(TAG, "isWifiPrimary: $res")
         return res
     }
 }

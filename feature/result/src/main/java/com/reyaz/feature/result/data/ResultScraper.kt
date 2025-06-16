@@ -1,9 +1,10 @@
 package com.reyaz.feature.result.data
 
 import android.util.Log
+import com.reyaz.feature.result.data.local.dto.RemoteCourseResultDto
+import com.reyaz.feature.result.data.local.dto.RemoteResultListDto
 import com.reyaz.feature.result.domain.model.CourseName
 import com.reyaz.feature.result.domain.model.CourseType
-import com.reyaz.feature.result.domain.model.ResultHistory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.htmlunit.BrowserVersion
@@ -64,7 +65,7 @@ class ResultScraper(
     }
 
 
-    suspend fun fetchPrograms(): Result<List<CourseType>> = withContext(Dispatchers.IO) {
+    suspend fun fetchProgramTypes(): Result<List<CourseType>> = withContext(Dispatchers.IO) {
         val url = "https://admission.jmi.ac.in/EntranceResults/UniversityResult"
         try {
             val page: HtmlPage = webClient.getPage(url)
@@ -82,7 +83,7 @@ class ResultScraper(
                     )
                 }
 
-            Log.d(TAG, "Found ${courseTypeTypes.size} course types")
+            // Log.d(TAG, "Found ${courseTypeTypes.size} course types")
             // courseTypes.forEach { Log.d(TAG, "Course Type: ${it.text} (${it.value})") }
 
             Result.success(courseTypeTypes)
@@ -101,7 +102,7 @@ class ResultScraper(
             dropdownSelector.getProgramsForCourseType()
             val url = "https://admission.jmi.ac.in/EntranceResults/UniversityResult"
             try {
-                Log.d(TAG, "Fetching programs for course type: $courseTypeValue")
+                // Log.d(TAG, "Fetching programs for course type: $courseTypeValue")
 
                 val page: HtmlPage = webClient.getPage(url)
                 webClient.waitForBackgroundJavaScript(5000)
@@ -129,8 +130,8 @@ class ResultScraper(
                         )
                     }
 
-                Log.d(TAG, "Found ${programs.size} programs for course type: $courseTypeValue")
-                programs.forEach { Log.d(TAG, "Program: ${it.id} (${it.name})") }
+                // Log.d(TAG, "Found ${programs.size} programs for course type: $courseTypeValue")
+                //  programs.forEach { Log.d(TAG, "Program: ${it.id} (${it.name})") }
 
 //            ScrapingResult(programs = programs)
                 Result.success(programs)
@@ -142,7 +143,7 @@ class ResultScraper(
             }
         }
 
-    fun trustAllHosts() {
+    private fun trustAllHosts() {
         val trustAllCerts = arrayOf<TrustManager>(
             object : X509TrustManager {
                 override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
@@ -165,8 +166,9 @@ class ResultScraper(
         val programs = mutableListOf<CourseName>()
 
         try {
-            Log.d("RESULT_SCRAPER", "Kotlin Hardcode")
-            val endpoint = "https://admission.jmi.ac.in/EntranceResults/UniversityResult/getUniversityProgramName"
+            // Log.d("RESULT_SCRAPER", "Kotlin Hardcode")
+            val endpoint =
+                "https://admission.jmi.ac.in/EntranceResults/UniversityResult/getUniversityProgramName"
 
             val url = URL(endpoint)
             trustAllHosts()     // call this before opening the connection
@@ -182,7 +184,7 @@ class ResultScraper(
 
             conn.inputStream.bufferedReader().use { reader ->
                 val response = reader.readText()
-                Log.d("RESULT_SCRAPER", "Response: $response")
+                // Log.d("RESULT_SCRAPER", "Response: $response")
 
                 val jsonArray = JSONArray(response)
                 for (i in 0 until jsonArray.length()) {
@@ -197,30 +199,36 @@ class ResultScraper(
             //Result.failure(e)
         }
 
-        for (program in programs) {
-            Log.d("RESULT_SCRAPER", program.toString())
-        }
+        /*for (program in programs) {
+             Log.d("RESULT_SCRAPER", program.toString())
+        }*/
 
         return Result.success(programs)
     }
 
-    fun fetchResult(courseType: String, courseName: String, phdDiscipline : String = ""): Result<List<ResultHistory>> {
-        val programs = mutableListOf<ResultHistory>()
+    fun fetchResult(
+        courseTypeId: String,
+        courseNameId: String,
+        phdDisciplineId: String = ""
+    ): Result<List<RemoteResultListDto>> {
 
-        try {
+        //val programs = mutableListOf<RemoteCourseResultDto>()
+
+        return try {
             Log.d("RESULT_SCRAPER", "Result fetching...")
 
             val payload = listOf(
-                "frm_ProgramType" to courseType,
-                "frm_ProgramName" to courseName,
-                "frm_PhDMainDiscipline" to phdDiscipline
+                "frm_ProgramType" to courseTypeId,
+                "frm_ProgramName" to courseNameId,
+                "frm_PhDMainDiscipline" to phdDisciplineId
             ).joinToString("&") { (key, value) ->
                 "${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
             }   // like: frm_ProgramType=PHD&frm_ProgramName=PH1&frm_PhDMainDiscipline=M0015
 
-            Log.d("RESULT_SCRAPER", "Payload created: $payload")
+            // Log.d("RESULT_SCRAPER", "Payload created: $payload")
 
-            val endpoint = "https://admission.jmi.ac.in/EntranceResults/UniversityResult/getUniversityResults"
+            val endpoint =
+                "https://admission.jmi.ac.in/EntranceResults/UniversityResult/getUniversityResults"
 
             val url = URL(endpoint)
             trustAllHosts()     // call this before opening the connection
@@ -229,53 +237,71 @@ class ResultScraper(
             conn.doOutput = true
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
 
-            Log.d("RESULT_SCRAPER", "Payload sening...: $payload")
+            // Log.d("RESULT_SCRAPER", "Payload sening...: $payload")
             conn.outputStream.use { os ->
                 os.write(payload.toByteArray())
             }
-            Log.d("RESULT_SCRAPER", "Payload sent")
+            // Log.d("RESULT_SCRAPER", "Payload sent")
 
             conn.inputStream.bufferedReader().use { reader ->
                 val response = reader.readText()
-                Log.d("RESULT_SCRAPER", "Response: $response")
+                // Log.d("RESULT_SCRAPER", "Response: $response")
                 val jsonResponse = JSONObject(response)
                 val htmlContent = jsonResponse.getString("UniversityResults")
                 val result = parseUniversityResultsTable(htmlContent = htmlContent)
-                programs.addAll(result)
+
+                for (program in result) {
+                    Log.d("RESULT_SCRAPER", program.toString())
+                }
+
+                Result.success(result)
             }
         } catch (e: Exception) {
             Log.e("RESULT_SCRAPER", "Error fetching programs: ${e.message}", e)
-            //Result.failure(e)
+            Result.failure(e)
         }
-
-        for (program in programs) {
-            Log.d("RESULT_SCRAPER", program.toString())
-        }
-
-        return Result.success(programs)
     }
 
-    private fun parseUniversityResultsTable(htmlContent: String): List<ResultHistory> {
-        Log.d("RESULT_SCRAPER", "Parsing...")
-        val results = mutableListOf<ResultHistory>()
+    private fun parseUniversityResultsTable(htmlContent: String): List<RemoteResultListDto> {
+        return try {
+            Log.d("RESULT_SCRAPER", "Parsing...")
+            val results = mutableListOf<RemoteResultListDto>()
 
-        val document: org.jsoup.nodes.Document = Jsoup.parse(htmlContent)
-        val rows = document.select("table tr")
+            val document: org.jsoup.nodes.Document = Jsoup.parse(htmlContent)
+            val rows = document.select("table tr")
 
-        for (row in rows) {
-            val cells = row.select("td")
-            if (cells.size >= 3) {
-                val courseName = cells.getOrNull(0)?.text()?.trim() ?: ""
-                val date = cells.getOrNull(1)?.text()?.trim() ?: ""
-                val remarks = cells.getOrNull(2)?.text()?.trim() ?: ""
+            if (rows.isEmpty())
+                Log.d("RESULT_SCRAPER", "No list Released....")
+            for (row in rows.drop(1)) {     // skip the header
+                val cells =
+                    row.select("td")    // cells is a list of <td> elements (i.e., individual table cells) inside a single <tr> row.
+                Log.d("RESULT_SCRAPER", "Row: $cells")
 
-                // Look for a link to PDF inside any cell
-                val pdfUrl = row.selectFirst("a[href]")?.attr("href")?.trim()
+                if (cells.size >= 5) {
+                    val srNo = cells[0].text().trim()
+                    val courseName = cells[1].text().trim()
+                    val date = cells[2].text().trim()
+                    val remarks = cells[3].text().trim()
+                    val pdfUrl = row.selectFirst("a[href]")?.attr("href")?.trim()
 
-                results.add(ResultHistory(courseName = courseName, date = date, remarks = remarks, link = pdfUrl))
+                    Log.d("RESULT_SCRAPER", "Parsed: $courseName | $date | $remarks | $pdfUrl")
+
+                    results.add(
+                        RemoteResultListDto(
+                            srNo = srNo,
+                            courseName = courseName,
+                            date = date,
+                            remark = remarks,
+                            link = pdfUrl
+                        )
+                    )
+                }
             }
-        }
 
-        return results
+            results
+        } catch (e: Exception) {
+            Log.d(TAG, "Error parsing: ${e.message}")
+            emptyList()
+        }
     }
 }

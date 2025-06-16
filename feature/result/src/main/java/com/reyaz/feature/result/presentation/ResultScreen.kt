@@ -1,6 +1,10 @@
 package com.reyaz.feature.result.presentation
 
+import android.content.ActivityNotFoundException
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults.TrailingIcon
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,7 +40,11 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import com.reyaz.core.ui.theme.MilliaConnectTheme
 import com.reyaz.feature.result.domain.model.ResultHistory
+import com.reyaz.feature.result.domain.model.ResultList
 import com.reyaz.feature.result.presentation.components.DropDownComposable
+
+
+private const val TAG = "RESULT_SCREEN"
 
 @Composable
 fun ResultScreen(
@@ -80,11 +91,16 @@ fun ResultScreen(
                 }
             }
         }
-        items(uiState.historyList) {
-            ResultCard()
+
+        item {
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            Text("Recent Searches")
         }
-        items(3){
-            ResultCard()
+        items(uiState.historyList) {
+            ResultCard(
+                items = it.resultList,
+                courseName = it.courseName
+            )
         }
     }
 
@@ -95,30 +111,19 @@ fun ResultScreen(
 fun ResultCard(
     modifier: Modifier = Modifier,
     courseName: String = "B64 - Four Year B.Sc. (Multidisciplinary))",
-    items: List<ResultHistory> = listOf( ResultHistory(
-        courseName = "[S01]-Nursery (Dareecha) ( Session 2025-26 )",
-        remarks = "List of Provisionally Selected Candidates from to Waiting List for Admission to Nursery (Dareecha) for the Session 2025-26",
-        date = "16-06-2023",
-        link = "https://admission.jmi.ac.in/application/assets/pdfFile/entranceSyllabi/B03.pdf"
-    ), ResultHistory(
-        courseName = "[S01]-Nursery (Dareecha) ( Session 2025-26 )",
-        remarks = "List of Provisionally Selected Candidates from the Waitng List for Admission to Nursery (Dareecha) for the Session 2025-26",
-        date = "16-06-2023"
-    ), ResultHistory(
-        courseName = "[S01]-Nursery (Dareecha) ( Session 2025-26 )",
-        remarks = "List of Provisionally Selected Candidates frm the Waiting List for Admission to Nursery (Dareecha) for the Session 2025-26",
-        date = "16-06-2023"
-    ),
-    )
+    items: List<ResultList>
+
 ) {
+    val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
     var expanded by rememberSaveable { mutableStateOf(false) }
-    
+
     Card(
         modifier = modifier
             .fillMaxWidth(),
         onClick = { expanded = !expanded }
 
-        ) {
+    ) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
@@ -129,31 +134,60 @@ fun ResultCard(
                 // course name
                 Text(
                     modifier = Modifier.fillMaxWidth(0.9f),
-                    text = items[0].courseName,
+                    text = courseName,
                     fontWeight = FontWeight.Bold,
                 )
                 TrailingIcon(expanded)
             }
 
             // date
-            AnimatedVisibility(!expanded) {
-                Text(
-                    text = items.first().date,
-                    modifier = Modifier.align(Alignment.End),
-                    fontSize = 10.sp
-                )
-            }
+            if (items.isNotEmpty())
+                AnimatedVisibility(!expanded) {
+                    Text(
+                        text = items.first().date,
+                        modifier = Modifier.align(Alignment.End),
+                        fontSize = 10.sp
+                    )
+                }
             AnimatedVisibility(expanded) {
                 Column {
-                    items.forEachIndexed { index, item ->
-                        Column {
-                            Text(item.remarks, fontSize = 14.sp)
-                            Text(item.date, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                            
-                            if (index != items.lastIndex)
-                                HorizontalDivider(modifier = Modifier.padding(vertical = 3.dp), thickness = 1.dp)
+                    if (items.isNotEmpty())
+                        items.forEachIndexed { index, item ->
+                            Column {
+//                                Text(item.listId, fontSize = 14.sp)
+                                //Text(item.date, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+//                                if (index != items.lastIndex)
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(vertical = 8.dp),
+                                    thickness = 1.dp,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    item.listTitle,
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.clickable {
+                                        val url = item.link
+                                        try {
+                                            if (url != null) {
+                                                uriHandler.openUri(url)
+                                            } else {
+                                                throw ActivityNotFoundException("No URL found")
+                                            }
+                                        } catch (e: ActivityNotFoundException) {
+                                            Toast.makeText(
+                                                context,
+                                                "No app found",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    },
+//                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
-                    }
+                    else
+                        Text("No list is yet released for this course.")
+
                 }
             }
         }
@@ -169,6 +203,7 @@ fun TrailingIcon(expanded: Boolean) {
     )
 }
 
+/*
 @Preview(showSystemUi = true)
 @Composable
 fun ResultScreenPreview() {
@@ -184,4 +219,5 @@ fun ResultScreenPreview() {
         }
     }
 }
+*/
 

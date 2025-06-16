@@ -20,6 +20,7 @@ class ResultViewModel(
     val uiState: StateFlow<ResultUiState> = _uiState.asStateFlow()
 
     init {
+        onEvent(ResultEvent.LoadSavedResults)
         onEvent(ResultEvent.LoadDegree)
     }
 
@@ -29,7 +30,10 @@ class ResultViewModel(
             is ResultEvent.LoadCourse -> {
                 getCourses()
             }
-            is ResultEvent.LoadResult -> getResult()
+            is ResultEvent.LoadResult -> {
+                saveCourse()
+                getResult()
+            }
             is ResultEvent.UpdateType -> {
                 updateSelectedType(event.typeIndex)
                 //ResultEvent.LoadCourse(event.type)
@@ -38,7 +42,34 @@ class ResultViewModel(
                 updateState { it.copy(selectedCourseIndex = event.selectedIndex) }
             }
 
+            ResultEvent.LoadSavedResults -> {
+                observeSavedResults()
+            }
+
             else -> {}
+        }
+    }
+
+    private fun saveCourse() {
+        viewModelScope.launch {
+            resultRepository.saveCourse(
+                courseId = uiState.value.selectedCourseId,
+                courseName = uiState.value.selectedCourse,
+                courseTypeId = uiState.value.selectedTypeId,
+                courseType = uiState.value.selectedType,
+                phdDepartmentId = uiState.value.selectedPhdDepartmentId,
+                phdDepartment = uiState.value.selectedPhdDepartment
+            )
+        }
+    }
+
+    private fun observeSavedResults() {
+        viewModelScope.launch {
+
+            resultRepository.observeResults().collect { resultHistories ->
+//                Log.d(TAG, "Results in viewmodel: ${resultHistories}")
+                updateState { it.copy(isLoading = false, historyList = resultHistories) }
+            }
         }
     }
 
@@ -54,7 +85,7 @@ class ResultViewModel(
                         typeLoading = false
                     )
                 }
-                 Log.d(TAG, "Course Types: ${typeList.getOrDefault(emptyList())}")
+                 // Log.d(TAG, "Course Types: ${typeList.getOrDefault(emptyList())}")
             } else {
                 updateState {
                     it.copy(
@@ -98,21 +129,9 @@ class ResultViewModel(
             updateState { it.copy(isLoading = true) }
             val result = resultRepository.getResult(type = uiState.value.selectedTypeId, course = uiState.value.selectedCourseId)
             if (result.isSuccess) {
-                updateState {
-                    it.copy(
-                        historyList = result.getOrDefault(emptyList()),
-                        isLoading = false
-                    )
-                }
-//                 Log.d(TAG, "Result: ${result.getOrDefault(emptyList()).size}")
+                updateState { it.copy(isLoading = false) }
             } else {
-                updateState {
-                    it.copy(
-                        historyList = result.getOrDefault(emptyList()),
-                        error = result.exceptionOrNull()?.message,
-                        courseLoading = false
-                    )
-                }
+                updateState { it.copy(error = result.exceptionOrNull()?.message, courseLoading = false) }
             }
         }
     }

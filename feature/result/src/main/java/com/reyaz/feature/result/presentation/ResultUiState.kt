@@ -16,6 +16,9 @@ data class ResultUiState(
     val courseNameList: List<CourseName> = emptyList(),
     val selectedCourseIndex: Int? = null,
 
+    val selectedPhdDepartmentId: String? = null,
+    val selectedPhdDepartment: String? = null,
+
     val historyList: List<ResultHistory> = emptyList(),
 ) {
     val selectedType: String = selectedTypeIndex?.let { courseTypeList[it].name } ?: ""

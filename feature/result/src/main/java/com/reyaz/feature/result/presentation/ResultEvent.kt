@@ -6,4 +6,5 @@ sealed class ResultEvent {
     data object LoadCourse : ResultEvent()
     data class UpdateCourse(val selectedIndex: Int) : ResultEvent()
     data object LoadResult : ResultEvent()
+    data object LoadSavedResults: ResultEvent()
 }

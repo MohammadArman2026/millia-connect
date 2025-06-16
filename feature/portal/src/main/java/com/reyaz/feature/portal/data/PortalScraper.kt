@@ -37,20 +37,20 @@ class PortalScraper(
 //            return@withContext Result.failure<String>(Exception("dummy errorrr"))
 //            return@withContext Result.success<String>("Successfully Logged in!")
 
-            Log.d("WebScrapingService", "DUMMY login begins")
+            // Log.d("WebScrapingService", "DUMMY login begins")
             if (username == "99999" && password == "sssss") {
                 delay(2_000)
                 // Report captive portal dismissed for successful dummy login
                 networkManager.reportCaptivePortalDismissed()
                 return@withContext Result.success("Successfully Logged in!")
             }
-            Log.d("WebScrapingService", "DUMMY login")
+            // Log.d("WebScrapingService", "DUMMY login")
             networkManager.forceUseWifi()
             //notificationHelper.showNotification("performing login", "in weblogin manager")
             val loginUrl = "http://10.2.0.10:8090/login?dummy"
 //            Log.d("WebScrapingService", "it is login portal")
             try {
-                Log.d("WebScrapingService", "1")
+                // Log.d("WebScrapingService", "1")
                 val page: HtmlPage = webClient.getPage(loginUrl)
                 val usernameField: HtmlTextInput =
                     page.getFirstByXPath("//input[@type='text']")
@@ -58,7 +58,7 @@ class PortalScraper(
                     page.getFirstByXPath("//input[@type='password']")
                 val loginButton: HtmlElement =
                     page.getFirstByXPath("/html/body/div[1]/form/div[3]/button")
-                Log.d("WebScrapingService", "$username, $password")
+                // Log.d("WebScrapingService", "$username, $password")
 
                 usernameField.setValueAttribute(username)
                 passwordField.setValueAttribute(password)
@@ -68,7 +68,7 @@ class PortalScraper(
                 // Closing the webClient to release resources.
                 // The WebClient is used to simulate a web browser.
                 // It is important to close it after use to free up resources.
-                Log.d("WebScrapingService", "Response Page: $pageText")
+                // Log.d("WebScrapingService", "Response Page: $pageText")
                 if (pageText.contains("Note: Please enter your valid credentials."))
                     Result.failure(Exception("Wrong Username or Password"))
                 else {
@@ -91,7 +91,7 @@ class PortalScraper(
             val logoutUrl = "http://10.2.0.10:8090/logout?dummy"
             val page: HtmlPage = webClient.getPage(logoutUrl)
 
-            Log.d("WebScrapingService", "Logout Response Page text\n: ${page.asNormalizedText()}")
+            // Log.d("WebScrapingService", "Logout Response Page text\n: ${page.asNormalizedText()}")
 //            Log.d("WebScrapingService", "Logout Response Page xml: ${page.asXml()}")
             return@withContext Result.success("Successfully Logged out!")
         } catch (e: Exception) {
@@ -108,11 +108,11 @@ class PortalScraper(
             connection.readTimeout = 2000
             connection.connect()
             val haveInternet = connection.responseCode == 204
-            Log.d(TAG, "haveInternet $haveInternet")
+            // Log.d(TAG, "haveInternet $haveInternet")
             haveInternet
         } catch (e: IOException) {
             Log.d(TAG, "haveInternet false")
-            //Log.e(TAG, "Error while connecting to Google", e)
+            //// Log.e(TAG, "Error while connecting to Google", e)
             false
         }
     }
@@ -128,7 +128,7 @@ class PortalScraper(
             val responseCode = connection.responseCode
             connection.disconnect()
             val isJmiWifi = responseCode == 200 || responseCode == 302 // 302 if redirect to login
-            Log.d(TAG, "JMI Wifi $isJmiWifi")
+            // Log.d(TAG, "JMI Wifi $isJmiWifi")
             isJmiWifi
         } catch (e: IOException) {
             Log.d(TAG, "JMI Wifi false")
