@@ -23,6 +23,7 @@ data class ResultListEntity(
     val viewed: Boolean = false,
     val link: String?,
     val pdfPath: String?,
+    val downloadProgress: Int? = null,
 
     val listOwnerId: String     // FK to CourseEntity.courseId
 )

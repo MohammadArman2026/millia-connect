@@ -39,6 +39,11 @@ sealed class NavigationRoute(val route: String) {
     data object Grades : NavigationRoute("academics/grades")
     data object Schedule : NavigationRoute("academics/schedule")
 
+    // miscellaneous
+    data object PdfViewer : NavigationRoute("pdf_viewer?path={path}"){
+        fun createRoute(path: String) = "pdf_viewer?path=$path"
+    }
+
     // Profile Feature Routes
     data object EditProfile : NavigationRoute("profile/edit")
     data object Settings : NavigationRoute("profile/settings")

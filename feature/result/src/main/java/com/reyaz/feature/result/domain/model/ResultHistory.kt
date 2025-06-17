@@ -15,7 +15,8 @@ data class ResultList(
     val listId: String = "",
     val listTitle: String = "",
     val link: String? = null,
-    val localPath: String? = null,
     val date: String = "",
+    val localPath: String? = null,
+    val downloadProgress: Int? = null,
     val viewed: Boolean = true
 )

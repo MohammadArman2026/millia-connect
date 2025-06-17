@@ -29,6 +29,7 @@ fun ResultScreen(
     uiState: ResultUiState,
     onEvent: (ResultEvent) -> Unit = {},
     onNavigateBack: () -> Unit,
+    openPdf: (String) -> Unit,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
@@ -84,7 +85,8 @@ fun ResultScreen(
                     courseName = it.courseName,
                     items = it.resultList,
                     onResultEvent = onEvent,
-                    courseId = it.courseId
+                    courseId = it.courseId,
+                    openPdf = openPdf
                 )
             }
         }

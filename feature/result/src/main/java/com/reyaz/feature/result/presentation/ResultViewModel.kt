@@ -1,7 +1,9 @@
 package com.reyaz.feature.result.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.feature.result.domain.repository.ResultRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,6 +53,25 @@ class ResultViewModel(
             }
 
             is ResultEvent.DeleteCourse -> onDeleteCourse(event.courseId)
+
+            is ResultEvent.ToggleDownload -> {
+                Log.d(TAG, "Toggle download invoked with event: $event")
+                event.url?.let {
+                    downloadPdf(  url = it,
+                        listId = event.listId,
+                        listTitle = event.title )
+                } ?: run {
+                    event.path?.let { deletePdfByPath(path = it, listId = event.listId) }
+                }
+            }
+
+            is ResultEvent.DownloadPdf -> downloadPdf(
+                url = event.pdfUrl,
+                listId = event.listId,
+                listTitle = event.title
+            )
+
+//            is ResultEvent.DeleteFileByPath -> deletePdfByPath(event.path, event.listId)
 
             else -> {}
         }
@@ -172,11 +193,12 @@ class ResultViewModel(
     }
 
     private fun downloadPdf(url: String, listId: String, listTitle: String) {
+            Log.d(TAG, "Download url: $url")
         viewModelScope.launch {
-            resultRepository.downloadPdf(url = url, listId = listId, fileName = listTitle).collect{
-                /*when(it){
+            resultRepository.downloadPdf(url = url, listId = listId, fileName = listTitle).collect { downloadResult ->
+               /* when(downloadResult){
                     is DownloadResult.Error -> {
-                        updateState { it.copy(error = it.exception.message) }
+                        updateState { it.copy(error = downloadResult.exception) }
                     }
                     is DownloadResult.Progress -> {
                         updateState { it.copy(progress = it.progress) }
@@ -186,6 +208,12 @@ class ResultViewModel(
                     }
                 }*/
             }
+        }
+    }
+
+    private fun deletePdfByPath(path: String, listId: String) {
+        viewModelScope.launch {
+            resultRepository.deleteFileByPath(path, listId = listId)
         }
     }
 }

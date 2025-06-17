@@ -1,6 +1,7 @@
 package com.reyaz.feature.result.data.scraper
 
 import android.util.Log
+import com.reyaz.core.network.utils.SSLTrustUtils.trustAllHosts
 import com.reyaz.feature.result.data.local.dto.RemoteResultListDto
 import com.reyaz.feature.result.data.mapper.ResultHtmlParser
 import com.reyaz.feature.result.domain.model.CourseName
@@ -128,24 +129,6 @@ class ResultApiService(
             webClient.webWindows.forEach { it.jobManager.removeAllJobs() }
         } catch (e: Exception) {
             Log.e(TAG, "Error clearing WebClient state: $e")
-        }
-    }
-    private fun trustAllHosts() {
-        val trustAllCerts = arrayOf<TrustManager>(
-            object : X509TrustManager {
-                override fun getAcceptedIssuers() = arrayOf<X509Certificate>()
-                override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
-                override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
-            }
-        )
-        try {
-            val sc = SSLContext.getInstance("TLS")
-            sc.init(null, trustAllCerts, SecureRandom())
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.socketFactory)
-            HttpsURLConnection.setDefaultHostnameVerifier { _, _ -> true }
-        } catch (e: Exception) {
-            Log.d(TAG, "Error trusting all hosts", e)
-//            e.printStackTrace()
         }
     }
 

@@ -1,5 +1,6 @@
 [versions]
 
+pdfViewer = "2.3.7"
 room = "2.7.1"
 ksp = "2.0.0-1.0.24"        # kotlin version of this project - kotlin compatible ksp version
 
@@ -291,6 +292,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+pdf-viewer = { module = "io.github.afreakyelf:Pdf-Viewer", version.ref = "pdfViewer" }
 
 
 [plugins]

@@ -7,9 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
+import com.reyaz.core.ui.screen.PdfViewerScreen
 import com.reyaz.feature.portal.presentation.PortalScreen
 import com.reyaz.feature.portal.presentation.PortalViewModel
 import com.reyaz.feature.result.presentation.ResultScreen
@@ -47,6 +51,14 @@ fun MCNavHost(
             PortalScreen(viewModel = portalViewModel, dismissDialog = {
                 navController.navigateUp()
             })
+        }
+        composable(
+            route = NavigationRoute.PdfViewer.route,
+            arguments = listOf(navArgument("path") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val path = backStackEntry.arguments?.getString("path") ?: ""
+            if (path.isNotEmpty())
+                PdfViewerScreen(filePath = path)
         }
 
         // Result Graph

@@ -22,6 +22,9 @@ fun NavGraphBuilder.resultNavGraph(
             modifier = Modifier,
             uiState = uiState.value,
             onEvent = viewModel::onEvent,
+            openPdf = {
+                navController.navigate(NavigationRoute.PdfViewer.createRoute(it))
+            },
             onNavigateBack = {
                 navController.popBackStack()
             }

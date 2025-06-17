@@ -16,7 +16,10 @@ fun CourseWithList.toResultHistory(): ResultHistory {
                 listTitle = it.remark,
                 link = it.link,
                 date = it.date.toString(),
-                viewed = it.viewed
+                viewed = it.viewed,
+                localPath = it.pdfPath,
+                downloadProgress = it.downloadProgress
+
             )
         }
     )

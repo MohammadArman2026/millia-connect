@@ -1,9 +1,8 @@
 package com.reyaz.feature.result.presentation.components
 
-import android.content.ActivityNotFoundException
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +12,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleDown
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.SpatialTracking
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,16 +31,29 @@ import com.reyaz.feature.result.domain.model.ResultList
 import com.reyaz.feature.result.presentation.ResultEvent
 
 @Composable
-fun ResultListComposable(
+fun ListContainerComposable(
     items: List<ResultList>,
     onEvent: (ResultEvent) -> Unit,
     courseId: String,
+    openPdf: (String) -> Unit,
 ) {
 
     Column {
         if (items.isNotEmpty())
             items.forEachIndexed { index, item ->
-                ListItemComposable(item = item, toggleDownload = { onEvent(ResultEvent.ToggleDownload(url = item.link, path = item.localPath)) })
+                ListItemComposable(
+                    item = item,
+                    openPdf = { openPdf(item.localPath ?: "") },
+                    toggleDownload = { link, path ->
+                        onEvent(
+                            ResultEvent.ToggleDownload(
+                                path = path,
+                                url = link,
+                                listId = item.listId,
+                                title = item.listTitle
+                            )
+                        )
+                    })
             }
         else
             Text("No list is yet released for this course.")
@@ -54,8 +68,7 @@ fun ResultListComposable(
                 .clip(CircleShape)
                 .clickable { onEvent(ResultEvent.DeleteCourse(courseId)) }
                 .padding(horizontal = 16.dp)
-                .align(Alignment.End)
-            ,
+                .align(Alignment.End),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -79,7 +92,8 @@ fun ResultListComposable(
 @Composable
 private fun ListItemComposable(
     item: ResultList,
-    toggleDownload: () -> Unit,
+    toggleDownload: (String?, String?) -> Unit, // link, path
+    openPdf: ()->Unit,
 ) {
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
@@ -102,32 +116,56 @@ private fun ListItemComposable(
                     .weight(1f)
                     .clip(RoundedCornerShape(8.dp))
                     .clickable {
-                        val url = item.link
-                        try {
-                            if (url != null) {
-                                uriHandler.openUri(url)
-                            } else {
-                                throw ActivityNotFoundException("No URL found")
-                            }
-                        } catch (e: ActivityNotFoundException) {
-                            Toast.makeText(
-                                context,
-                                "No app found",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                        item.localPath?.let {
+                            // open pdf
+                            openPdf()
+                        } ?: run {
+                            // download pdf
+                            // todo: check if the given link is ending at .pdf else open the link
+                            toggleDownload(item.link, null)
                         }
                     }
-                    .padding(start = 8.dp)
-                ,
+                    .padding(start = 8.dp),
             )
-            Icon(
-                imageVector = Icons.Default.ArrowCircleDown, contentDescription = "",
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .clickable {  }
-                    .padding(12.dp)
-                ,
-            )
+
+            if (!item.link.isNullOrEmpty()) {
+                if (item.localPath.isNullOrEmpty()) {
+                    if (item.downloadProgress != null && (item.downloadProgress in 0..99)) {
+                        // circular progress
+                        Box(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .size(28.dp)
+                        ) {
+                            CircularProgressIndicator(
+//                                modifier = Modifier.size(16.dp).padding(12.dp),
+                                progress = { item.downloadProgress.div(100f) },
+                                trackColor = MaterialTheme.colorScheme.onSecondary
+                            )
+                            Text("${item.downloadProgress}%", fontSize = 8.sp, modifier = Modifier.align(Alignment.Center))
+                        }
+                    } else {
+                        // download btn
+                        Icon(
+                            imageVector = Icons.Default.ArrowCircleDown, contentDescription = "",
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .clickable { toggleDownload(item.link, null) }
+                                .padding(12.dp),
+                        )
+                    }
+                } else {
+                    // delete btn
+                    Icon(
+                        imageVector = Icons.Default.Delete, contentDescription = "",
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .clickable { toggleDownload(null, item.localPath) }
+                            .padding(12.dp),
+                    )
+                }
+            }
         }
     }
 }

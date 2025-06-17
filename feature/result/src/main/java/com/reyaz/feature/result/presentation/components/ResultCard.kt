@@ -32,10 +32,11 @@ fun ResultCard(
     courseName: String = "",
     items: List<ResultList>,
     onResultEvent: (ResultEvent) -> Unit,
-    courseId: String
+    courseId: String,
+    openPdf: (String) -> Unit
 
 ) {
-    var expanded by rememberSaveable { mutableStateOf(true) }       // todo
+    var expanded by rememberSaveable { mutableStateOf(true) }       //
 
     Card(
         modifier = modifier
@@ -69,7 +70,7 @@ fun ResultCard(
                     )
                 }
             AnimatedVisibility(expanded) {
-                ResultListComposable(items = items, onEvent = onResultEvent, courseId = courseId)
+                ListContainerComposable(items = items, onEvent = onResultEvent, courseId = courseId, openPdf = openPdf)
             }
         }
     }

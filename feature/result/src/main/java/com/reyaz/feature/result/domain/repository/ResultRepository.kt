@@ -15,4 +15,5 @@ interface ResultRepository {
     suspend fun saveCourse(courseId: String, courseName: String, courseTypeId: String, courseType: String, phdDepartmentId: String? = null, phdDepartment: String? = null)
     suspend fun deleteCourse(courseId: String)
     suspend fun downloadPdf(url: String, listId: String, fileName: String): Flow<DownloadResult>
+    suspend fun deleteFileByPath(path: String, listId: String)
 }

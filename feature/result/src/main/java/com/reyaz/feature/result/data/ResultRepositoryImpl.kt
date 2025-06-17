@@ -2,7 +2,7 @@ package com.reyaz.feature.result.data
 
 import android.util.Log
 import com.reyaz.core.common.utlis.safeSuspendCall
-import com.reyaz.core.network.PdfDownloader
+import com.reyaz.core.network.PdfManager
 import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.feature.result.data.local.dao.ResultDao
 import com.reyaz.feature.result.data.local.dto.RemoteResultListDto
@@ -24,7 +24,7 @@ private const val TAG = "RESULT_REPO_IMPL"
 class ResultRepositoryImpl(
     private val resultApi: ResultApiService,
     private val resultDao: ResultDao,
-    private val pdfDownloadResult: PdfDownloader
+    private val pdfDownloadResult: PdfManager
 ) : ResultRepository {
 
     override fun observeResults(): Flow<List<ResultHistory>> {
@@ -36,7 +36,6 @@ class ResultRepositoryImpl(
 
     override suspend fun getCourseTypes(): Result<List<CourseType>> =
         safeSuspendCall { resultApi.fetchProgramTypes().getOrDefault(emptyList()) }
-
 
     override suspend fun getCourses(type: String): Result<List<CourseName>> {
         return try {
@@ -156,23 +155,47 @@ class ResultRepositoryImpl(
         listId: String,
         fileName: String
     ): Flow<DownloadResult> = flow {
+        Log.d(TAG, "Download url: $url")
         pdfDownloadResult.downloadPdf(url = url, fileName = fileName).collect { downloadStatus ->
+            Log.d(TAG, "Download status: $downloadStatus")
             when (downloadStatus) {
                 is DownloadResult.Error -> {
+                    Log.d(TAG, "Download error: ${downloadStatus.exception}")
+                    resultDao.updatePdfPath(
+                        path = null,
+                        listId = listId,
+                        progress = null
+                    )
                     emit(DownloadResult.Error(downloadStatus.exception))
                 }
 
                 is DownloadResult.Progress -> {
+                    Log.d(TAG, "Download progress: ${downloadStatus.percent}")
+                    resultDao.updateDownloadProgress(
+                        progress = downloadStatus.percent,
+                        listId = listId
+                    )
                     emit(DownloadResult.Progress(downloadStatus.percent))
                 }
 
                 is DownloadResult.Success -> {
-                    resultDao.updatePdfPath(path = downloadStatus.filePath, listId = listId)
+
+                    resultDao.updatePdfPath(
+                        path = downloadStatus.filePath,
+                        listId = listId,
+                        progress = 100
+                    )
                     Log.d(TAG, "Download path: ${downloadStatus.filePath}")
                     emit(DownloadResult.Success(filePath = downloadStatus.filePath))
                 }
             }
         }
+    }
+
+    override suspend fun deleteFileByPath(path: String, listId: String) {
+        pdfDownloadResult.deleteFile(path)
+        resultDao.updatePdfPath(path = null, listId = listId, progress = null)
+        Log.d(TAG, "path deleted from room")
     }
 }
 
