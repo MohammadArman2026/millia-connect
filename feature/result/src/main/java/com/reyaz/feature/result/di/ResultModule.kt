@@ -16,7 +16,7 @@ import org.koin.dsl.module
 
 val resultModule = module {
     viewModel { ResultViewModel(get()) }
-    single<ResultRepository> { ResultRepositoryImpl(get(), get()) }
+    single<ResultRepository> { ResultRepositoryImpl(get(), get(), get()) }
 
     // scraping
 //    single { ResultScraper(get(), get()) }
@@ -44,4 +44,6 @@ val resultModule = module {
             ).fallbackToDestructiveMigration(true).build()
     }
     single { get<ResultDatabase>().resultDao() }
+
+
 }

@@ -23,16 +23,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.reyaz.feature.result.domain.model.ResultList
+import com.reyaz.feature.result.presentation.ResultEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultCard(
     modifier: Modifier = Modifier,
     courseName: String = "",
-    items: List<ResultList>
+    items: List<ResultList>,
+    onResultEvent: (ResultEvent) -> Unit,
+    courseId: String
 
 ) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(true) }       // todo
 
     Card(
         modifier = modifier
@@ -66,7 +69,7 @@ fun ResultCard(
                     )
                 }
             AnimatedVisibility(expanded) {
-                ResultListComposable(items)
+                ResultListComposable(items = items, onEvent = onResultEvent, courseId = courseId)
             }
         }
     }
@@ -76,15 +79,19 @@ fun ResultCard(
 @Composable
 fun ResultCardExpandedPreview() {
     Surface {
-        ResultCard(
+       /* ResultCard(
             courseName = "B.Tech. Computer Engineering (2022-2026)",
             items = listOf(
-                ResultList(listTitle = "Applied Mathematics-I", link = "Grade A", date = "2023-01-15"),
+                ResultList(
+                    listTitle = "Applied Mathematics-I",
+                    link = "Grade A",
+                    date = "2023-01-15"
+                ),
                 ResultList(listTitle = "Programming in C", link = "Grade B+", date = "2023-01-15"),
                 ResultList(listTitle = "Digital Logic Design", link = null, date = "2023-01-15")
 
-            )
-        )
+            ),
+        )*/
     }
 }
 
@@ -92,9 +99,10 @@ fun ResultCardExpandedPreview() {
 @Composable
 fun ResultCardEmptyPreview() {
     Surface {
-        ResultCard(
+       /* ResultCard(
             courseName = "B.Tech. Computer Engineering (2022-2026)",
-            items = emptyList() // Test with empty list
-        )
+            items = emptyList(),
+            // Test with empty list
+        )*/
     }
 }

@@ -1,6 +1,7 @@
 package com.reyaz.milliaconnect1
 
 import android.app.Application
+import com.reyaz.core.network.networkModule
 import com.reyaz.feature.attendance.schedule.di.scheduleModule
 import com.reyaz.feature.portal.di.portalModule
 import com.reyaz.feature.result.di.resultModule
@@ -25,7 +26,7 @@ class BaseApplication : Application() {
         // Initialize Koin for dependency injection
         startKoin {
             androidContext(this@BaseApplication)
-            modules(appModule, scheduleModule, portalModule, resultModule)
+            modules(appModule, scheduleModule, portalModule, resultModule, networkModule)
         }
     }
 }

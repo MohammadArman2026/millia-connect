@@ -1,6 +1,5 @@
 package com.reyaz.feature.result.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.reyaz.feature.result.domain.repository.ResultRepository
@@ -14,9 +13,11 @@ private const val TAG = "RESULT_VIEW_MODEL"
 class ResultViewModel(
     private val resultRepository: ResultRepository
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(ResultUiState(
-        courseLoading = false,
-    ))
+    private val _uiState = MutableStateFlow(
+        ResultUiState(
+            courseLoading = false,
+        )
+    )
     val uiState: StateFlow<ResultUiState> = _uiState.asStateFlow()
 
     init {
@@ -30,14 +31,17 @@ class ResultViewModel(
             is ResultEvent.LoadCourse -> {
                 getCourses()
             }
+
             is ResultEvent.LoadResult -> {
                 saveCourse()
                 getResult()
             }
+
             is ResultEvent.UpdateType -> {
                 updateSelectedType(event.typeIndex)
                 //ResultEvent.LoadCourse(event.type)
             }
+
             is ResultEvent.UpdateCourse -> {
                 updateState { it.copy(selectedCourseIndex = event.selectedIndex) }
             }
@@ -45,6 +49,8 @@ class ResultViewModel(
             ResultEvent.LoadSavedResults -> {
                 observeSavedResults()
             }
+
+            is ResultEvent.DeleteCourse -> onDeleteCourse(event.courseId)
 
             else -> {}
         }
@@ -60,6 +66,12 @@ class ResultViewModel(
                 phdDepartmentId = uiState.value.selectedPhdDepartmentId,
                 phdDepartment = uiState.value.selectedPhdDepartment
             )
+        }
+    }
+
+    private fun onDeleteCourse(courseId: String) {
+        viewModelScope.launch {
+            resultRepository.deleteCourse(courseId)
         }
     }
 
@@ -84,7 +96,7 @@ class ResultViewModel(
                         typeLoading = false
                     )
                 }
-                 // Log.d(TAG, "Course Types: ${typeList.getOrDefault(emptyList())}")
+                // Log.d(TAG, "Course Types: ${typeList.getOrDefault(emptyList())}")
             } else {
                 updateState {
                     it.copy(
@@ -126,11 +138,19 @@ class ResultViewModel(
         viewModelScope.launch {
             // Log.d(TAG, "Loading Course")
             updateState { it.copy(isLoading = true) }
-            val result = resultRepository.getResult(type = uiState.value.selectedTypeId, course = uiState.value.selectedCourseId)
+            val result = resultRepository.getResult(
+                type = uiState.value.selectedTypeId,
+                course = uiState.value.selectedCourseId
+            )
             if (result.isSuccess) {
                 updateState { it.copy(isLoading = false) }
             } else {
-                updateState { it.copy(error = result.exceptionOrNull()?.message, courseLoading = false) }
+                updateState {
+                    it.copy(
+                        error = result.exceptionOrNull()?.message,
+                        courseLoading = false
+                    )
+                }
             }
         }
     }
@@ -138,6 +158,7 @@ class ResultViewModel(
     private fun updateSelectedType(type: Int) {
         updateState { it.copy(selectedTypeIndex = type, selectedCourseIndex = null) }
     }
+
     private fun setLoading(isLoading: Boolean) {
         updateState { it.copy(isLoading = isLoading) }
     }
@@ -148,5 +169,23 @@ class ResultViewModel(
 
     private fun updateState(update: (ResultUiState) -> ResultUiState) {
         _uiState.value = update(_uiState.value)
+    }
+
+    private fun downloadPdf(url: String, listId: String, listTitle: String) {
+        viewModelScope.launch {
+            resultRepository.downloadPdf(url = url, listId = listId, fileName = listTitle).collect{
+                /*when(it){
+                    is DownloadResult.Error -> {
+                        updateState { it.copy(error = it.exception.message) }
+                    }
+                    is DownloadResult.Progress -> {
+                        updateState { it.copy(progress = it.progress) }
+                    }
+                    is DownloadResult.Success -> {
+                        updateState { it.copy(progress = null) }
+                    }
+                }*/
+            }
+        }
     }
 }

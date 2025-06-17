@@ -7,6 +7,7 @@ import com.reyaz.feature.result.domain.model.ResultList
 fun CourseWithList.toResultHistory(): ResultHistory {
     // Log.d(TAG, "Converting to ResultHistory")
     return ResultHistory(
+        courseId = course.courseId,
         courseName = course.courseName,
         courseType = course.courseType,
         resultList = lists.map {

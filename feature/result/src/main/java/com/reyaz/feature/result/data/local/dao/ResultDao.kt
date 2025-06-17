@@ -23,15 +23,18 @@ interface ResultDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCourse(course: CourseEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertResultList(detail: ResultListEntity)
-
     @Query("SELECT * FROM ResultListEntity WHERE listOwnerId = :courseId")
     suspend fun getResults(courseId: String): List<ResultListEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertResultList(detail: ResultListEntity)
 
     // update course tracking
     @Query("UPDATE CourseEntity SET trackEnabled = :status WHERE courseId = :courseId")
     suspend fun updateTrackingStatus(status: Boolean, courseId: String)
+
+    @Query("UPDATE ResultListEntity SET pdfPath = :path WHERE listId = :listId")
+    suspend fun updatePdfPath(path: String? = null, listId: String)
 
     // delete course
     @Query("DELETE FROM CourseEntity WHERE courseId = :courseId")

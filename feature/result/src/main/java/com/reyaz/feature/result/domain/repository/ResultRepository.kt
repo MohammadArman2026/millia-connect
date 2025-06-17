@@ -1,5 +1,6 @@
 package com.reyaz.feature.result.domain.repository
 
+import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.feature.result.domain.model.CourseName
 import com.reyaz.feature.result.domain.model.CourseType
 import com.reyaz.feature.result.domain.model.ResultHistory
@@ -12,4 +13,6 @@ interface ResultRepository {
     suspend fun getResult(type: String, course: String, phdDepartment: String = ""): Result<Unit>
     suspend fun refreshLocalResults()
     suspend fun saveCourse(courseId: String, courseName: String, courseTypeId: String, courseType: String, phdDepartmentId: String? = null, phdDepartment: String? = null)
+    suspend fun deleteCourse(courseId: String)
+    suspend fun downloadPdf(url: String, listId: String, fileName: String): Flow<DownloadResult>
 }

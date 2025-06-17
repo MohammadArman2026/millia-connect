@@ -1,8 +1,9 @@
 package com.reyaz.feature.result.data
 
 import android.util.Log
-import com.reyaz.core.common.utlis.safeCall
 import com.reyaz.core.common.utlis.safeSuspendCall
+import com.reyaz.core.network.PdfDownloader
+import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.feature.result.data.local.dao.ResultDao
 import com.reyaz.feature.result.data.local.dto.RemoteResultListDto
 import com.reyaz.feature.result.data.local.entities.CourseEntity
@@ -15,13 +16,15 @@ import com.reyaz.feature.result.domain.model.ResultHistory
 import com.reyaz.feature.result.domain.repository.ResultRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 private const val TAG = "RESULT_REPO_IMPL"
 
 class ResultRepositoryImpl(
     private val resultApi: ResultApiService,
-    private val resultDao: ResultDao
+    private val resultDao: ResultDao,
+    private val pdfDownloadResult: PdfDownloader
 ) : ResultRepository {
 
     override fun observeResults(): Flow<List<ResultHistory>> {
@@ -66,6 +69,10 @@ class ResultRepositoryImpl(
                 phdDepartment = phdDepartment
             )
         )
+    }
+
+    override suspend fun deleteCourse(courseId: String) {
+        resultDao.deleteCourse(courseId)
     }
 
     override suspend fun getResult(
@@ -144,5 +151,28 @@ class ResultRepositoryImpl(
         }
     }
 
+    override suspend fun downloadPdf(
+        url: String,
+        listId: String,
+        fileName: String
+    ): Flow<DownloadResult> = flow {
+        pdfDownloadResult.downloadPdf(url = url, fileName = fileName).collect { downloadStatus ->
+            when (downloadStatus) {
+                is DownloadResult.Error -> {
+                    emit(DownloadResult.Error(downloadStatus.exception))
+                }
+
+                is DownloadResult.Progress -> {
+                    emit(DownloadResult.Progress(downloadStatus.percent))
+                }
+
+                is DownloadResult.Success -> {
+                    resultDao.updatePdfPath(path = downloadStatus.filePath, listId = listId)
+                    Log.d(TAG, "Download path: ${downloadStatus.filePath}")
+                    emit(DownloadResult.Success(filePath = downloadStatus.filePath))
+                }
+            }
+        }
+    }
 }
 
