@@ -65,7 +65,6 @@ class ResultViewModel(
 
     private fun observeSavedResults() {
         viewModelScope.launch {
-
             resultRepository.observeResults().collect { resultHistories ->
 //                Log.d(TAG, "Results in viewmodel: ${resultHistories}")
                 updateState { it.copy(isLoading = false, historyList = resultHistories) }

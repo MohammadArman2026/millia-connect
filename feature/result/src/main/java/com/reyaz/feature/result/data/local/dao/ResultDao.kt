@@ -1,6 +1,7 @@
 package com.reyaz.feature.result.data.local.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -28,5 +29,12 @@ interface ResultDao {
     @Query("SELECT * FROM ResultListEntity WHERE listOwnerId = :courseId")
     suspend fun getResults(courseId: String): List<ResultListEntity>
 
+    // update course tracking
+    @Query("UPDATE CourseEntity SET trackEnabled = :status WHERE courseId = :courseId")
+    suspend fun updateTrackingStatus(status: Boolean, courseId: String)
+
+    // delete course
+    @Query("DELETE FROM CourseEntity WHERE courseId = :courseId")
+    suspend fun deleteCourse(courseId: String)
 
 }

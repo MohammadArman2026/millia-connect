@@ -11,5 +11,6 @@ data class CourseEntity(
     val courseTypeId: String,
     val courseType: String,
     val phdDepartmentId: String? = null,
-    val phdDepartment: String? = null
+    val phdDepartment: String? = null,
+    val trackEnabled: Boolean = true
 )

@@ -22,7 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.reyaz.feature.portal.presentation.components.CaptivePortalDialogContent
-import com.reyaz.feature.portal.presentation.components.TranslucentLoader
+import com.reyaz.core.ui.components.TranslucentLoader
 
 @Composable
 fun PortalScreen(
