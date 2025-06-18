@@ -1,5 +1,6 @@
 package com.reyaz.feature.result.presentation.components
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -120,10 +121,12 @@ private fun ListItemComposable(
                             // open pdf
                             openPdf()
                         } ?: run {
+                            //Log.d("LIST_ITEM_COMPOSABLE", "ListItemComposable: ${item.link}")
                             // download pdf
                             // todo: check if the given link is ending at .pdf else open the link
                             toggleDownload(item.link, null)
                         }
+//                        if ()
                     }
                     .padding(start = 8.dp),
             )

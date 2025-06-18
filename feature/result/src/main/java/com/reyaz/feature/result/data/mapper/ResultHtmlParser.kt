@@ -28,7 +28,7 @@ class ResultHtmlParser {
             }
 
             if (results.isEmpty()) {
-                Log.d(TAG, "No rows parsed.")
+                // Log.d(TAG, "No rows parsed.")
             }
             return Result.success(results)
 

@@ -36,7 +36,7 @@ fun ResultCard(
     openPdf: (String) -> Unit
 
 ) {
-    var expanded by rememberSaveable { mutableStateOf(true) }       //
+    var expanded by rememberSaveable { mutableStateOf(false) }       //
 
     Card(
         modifier = modifier

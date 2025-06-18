@@ -42,4 +42,10 @@ interface ResultDao {
     @Query("DELETE FROM CourseEntity WHERE courseId = :courseId")
     suspend fun deleteCourse(courseId: String)
 
+    @Query("SELECT EXISTS(SELECT 1 FROM CourseEntity WHERE courseId = :courseId)")
+    suspend fun courseExist(courseId: String): Boolean
+
+    @Query("UPDATE ResultListEntity SET viewed = 1 WHERE listOwnerId = :courseId")
+    suspend fun markCourseAsRead(courseId: String)
+
 }

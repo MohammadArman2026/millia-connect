@@ -1,6 +1,5 @@
 package com.reyaz.milliaconnect1.di
 
-import androidx.work.WorkManager
 import com.reyaz.milliaconnect1.util.NotificationHelper
 import com.reyaz.milliaconnect1.data.UserPreferences
 import com.reyaz.milliaconnect1.data.WebLoginManager
@@ -15,6 +14,6 @@ val appModule = module {
     single { WebLoginManager(get(), get()) }
     single { NetworkConnectivityObserver(get()) }
     viewModel { VMLogin(get(), get(), get(), get()) }
-    single { WorkManager.getInstance(get()) }
+//    single { WorkManager.getInstance(get()) }
     single { NotificationHelper(get()) }
 }

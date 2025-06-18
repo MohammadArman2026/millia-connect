@@ -8,7 +8,6 @@ import com.reyaz.milliaconnect1.data.UserPreferences
 import com.reyaz.milliaconnect1.data.WebLoginManager
 import com.reyaz.milliaconnect1.util.NetworkConnectivityObserver
 import com.reyaz.milliaconnect1.util.NetworkPreference
-import com.reyaz.milliaconnect1.worker.AutoLoginWorker
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -105,10 +104,10 @@ class VMLogin(
                         )
                     }
                     saveCredentials(true)
-                    if (_uiState.value.autoConnect) AutoLoginWorker.schedule(context = appContext)
+                    //if (_uiState.value.autoConnect) AutoLoginWorker.schedule(context = appContext)
                 }
                 .onFailure { exception ->
-                    AutoLoginWorker.cancel(appContext)
+                   // AutoLoginWorker.cancel(appContext)
                     onError(exception)
                 }
         }
@@ -133,7 +132,7 @@ class VMLogin(
                     Log.e("VMLogin", "Logout failed", exception)
                     onError(exception)
                 }
-            AutoLoginWorker.cancel(appContext)
+            //AutoLoginWorker.cancel(appContext)
         }
     }
 
@@ -177,9 +176,9 @@ class VMLogin(
         viewModelScope.launch {
             _uiState.update { it.copy(autoConnect = autoConnect) }
             if (!uiState.value.autoConnect)
-                AutoLoginWorker.cancel(context = context)
+                //AutoLoginWorker.cancel(context = context)
             else if (uiState.value.isLoggedIn && uiState.value.loginEnabled) {
-                AutoLoginWorker.schedule(context = context)
+                //AutoLoginWorker.schedule(context = context)
             }
             userPreferences.setAutoConnect(autoConnect)
         }

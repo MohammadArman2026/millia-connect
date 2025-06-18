@@ -6,10 +6,12 @@ import android.app.PendingIntent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.reyaz.core.notification.manager.AppNotificationManager
 import org.koin.dsl.module
 
 val notificationModule = module {
-    single {
+    single { AppNotificationManager(get()) }
+    /*single {
         NotificationCompat.Builder(get(), "My_CHANNEL_ID")
             .setContentTitle("My Title")
             .setContentText("My Description")
@@ -29,5 +31,5 @@ val notificationModule = module {
             notificationManager.createNotificationChannel(channel)
         }
         notificationManager
-    }
+    }*/
 }

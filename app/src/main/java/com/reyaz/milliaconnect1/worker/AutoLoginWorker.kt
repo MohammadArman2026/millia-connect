@@ -1,3 +1,4 @@
+/*
 package com.reyaz.milliaconnect1.worker
 
 import android.content.Context
@@ -76,7 +77,8 @@ class AutoLoginWorker(
     companion object {
         private const val UNIQUE_WORK_NAME = "product_upload_work"
 
-        /**
+        */
+/**
          * Schedules a periodic background task for auto-login.
          *
          * This function uses WorkManager to schedule a worker ([AutoLoginWorker]) that will
@@ -96,7 +98,8 @@ class AutoLoginWorker(
          * @see WorkManager
          * @see PeriodicWorkRequestBuilder
          * @see ExistingPeriodicWorkPolicy
-         */
+         *//*
+
 
         //periodic work
         fun schedule(context: Context) {
@@ -144,4 +147,4 @@ class AutoLoginWorker(
 //            WorkManager.getInstance(context).pruneWork()
         }
     }
-}
+}*/

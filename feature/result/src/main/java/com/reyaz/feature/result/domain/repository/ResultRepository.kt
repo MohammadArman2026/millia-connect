@@ -16,4 +16,5 @@ interface ResultRepository {
     suspend fun deleteCourse(courseId: String)
     suspend fun downloadPdf(url: String, listId: String, fileName: String): Flow<DownloadResult>
     suspend fun deleteFileByPath(path: String, listId: String)
+    suspend fun markCourseAsRead(courseId: String)
 }

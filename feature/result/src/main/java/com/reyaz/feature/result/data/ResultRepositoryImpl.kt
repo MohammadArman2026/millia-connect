@@ -1,9 +1,12 @@
 package com.reyaz.feature.result.data
 
+import android.annotation.SuppressLint
 import android.util.Log
 import com.reyaz.core.common.utlis.safeSuspendCall
 import com.reyaz.core.network.PdfManager
 import com.reyaz.core.network.model.DownloadResult
+import com.reyaz.core.notification.manager.AppNotificationManager
+import com.reyaz.core.notification.model.NotificationData
 import com.reyaz.feature.result.data.local.dao.ResultDao
 import com.reyaz.feature.result.data.local.dto.RemoteResultListDto
 import com.reyaz.feature.result.data.local.entities.CourseEntity
@@ -14,6 +17,8 @@ import com.reyaz.feature.result.domain.model.CourseName
 import com.reyaz.feature.result.domain.model.CourseType
 import com.reyaz.feature.result.domain.model.ResultHistory
 import com.reyaz.feature.result.domain.repository.ResultRepository
+import com.reyaz.feature.result.util.NotificationConstant
+import com.reyaz.feature.result.worker.WorkScheduler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -24,7 +29,9 @@ private const val TAG = "RESULT_REPO_IMPL"
 class ResultRepositoryImpl(
     private val resultApi: ResultApiService,
     private val resultDao: ResultDao,
-    private val pdfDownloadResult: PdfManager
+    private val pdfDownloadResult: PdfManager,
+    private val notificationManager: AppNotificationManager,
+    private val workScheduler: WorkScheduler
 ) : ResultRepository {
 
     override fun observeResults(): Flow<List<ResultHistory>> {
@@ -72,6 +79,7 @@ class ResultRepositoryImpl(
 
     override suspend fun deleteCourse(courseId: String) {
         resultDao.deleteCourse(courseId)
+        workScheduler.cancelWork(tag = courseId)
     }
 
     override suspend fun getResult(
@@ -81,15 +89,24 @@ class ResultRepositoryImpl(
     ): Result<Unit> {
         return try {
 //            val result: Result<List<RemoteResultListDto>> = resultApi.fetchResult(courseTypeId = "UG1", courseNameId = "B03", phdDisciplineId = phdDepartment)
-            val remoteList =
-                fetchRemoteResultList(typeId = type, courseId = course, phdId = phdDepartment)
-            if (remoteList.isSuccess) {
-                remoteList.getOrDefault(emptyList()).map { it ->
-                    resultDao.insertResultList(it.dtoListItemToEntity(courseId = course))
+            val isExist: Boolean = resultDao.courseExist(courseId = course)
+            if (!isExist) {
+                val remoteList =
+                    fetchRemoteResultList(typeId = type, courseId = course, phdId = phdDepartment)
+                if (remoteList.isSuccess) {
+                    remoteList.getOrDefault(emptyList()).map { it ->
+                        resultDao.insertResultList(it.dtoListItemToEntity(
+                            courseId = course,
+                            isViewed = true
+                        ))
+                        workScheduler.schedulePeriodic(workName = course)
+                    }
+                } else {
+                    Log.d(TAG, "Error fetching remote result list: ${remoteList.exceptionOrNull()}")
+                    throw Exception("Unable to fetch from remote!")
                 }
             } else {
-                Log.d(TAG, "Error fetching remote result list: ${remoteList.exceptionOrNull()}")
-                throw Exception("Unable to fetch from remote!")
+                Log.d(TAG, "Course already being tracked!!")
             }
             Result.success(Unit)
         } catch (e: Exception) {
@@ -109,7 +126,7 @@ class ResultRepositoryImpl(
                     courseNameId = courseId,
                     phdDisciplineId = phdId
                 ).getOrThrow()
-            Log.d(TAG, "Scraped list size: ${scrapedList.size}")
+            // Log.d(TAG, "Scraped list size: ${scrapedList.size}")
             Result.success(scrapedList)
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching remote result list: ${e.message}")
@@ -117,9 +134,10 @@ class ResultRepositoryImpl(
         }
     }
 
+    @SuppressLint("MissingPermission")
     override suspend fun refreshLocalResults() {
         try {
-            // Log.d(TAG, "Refreshing local results")
+            Log.d(TAG, "Refreshing local results")
             resultDao.observeResults().first().forEach { courseWithList ->
 
                 val newListResponse = fetchRemoteResultList(
@@ -128,13 +146,39 @@ class ResultRepositoryImpl(
                     phdId = courseWithList.course.phdDepartment ?: ""
                 )
                 if (newListResponse.isSuccess) {
-                    val newList = newListResponse.getOrDefault(emptyList())
+                    val newList : List<RemoteResultListDto> = newListResponse.getOrDefault(emptyList())
                     if (newList.isNotEmpty() && newList.size != courseWithList.lists.size) {
-                        newList.forEach {
-                            resultDao.insertResultList(it.dtoListItemToEntity(courseId = courseWithList.course.courseId))
+                        newList.forEach {it->
+                            resultDao.insertResultList(it.dtoListItemToEntity(courseId = courseWithList.course.courseId, isViewed = false))
+                            try {
+                                notificationManager.showNotification(
+                                    NotificationData(
+                                        id = it.srNo.toInt(),
+                                        title = it.courseName,
+                                        message = it.remark,
+                                        channelId = NotificationConstant.RESULT_CHANNEL.channelId,
+                                        channelName = NotificationConstant.RESULT_CHANNEL.channelName,
+                                    )
+                                )
+                            } catch (e: Exception) {
+                                Log.d(TAG, "Permission not granted")
+                            }
                         }
                     } else {
-                        Log.d(TAG, "No new results found")
+                         Log.d(TAG, "No new results found")
+                        /*try {
+                            notificationManager.showNotification(
+                                NotificationData(
+                                    id = 0,
+                                    title = "No new results found",
+                                    message = "No new results found for ${courseWithList.course.courseName}",
+                                    channelName = NotificationConstant.RESULT_CHANNEL.channelName,
+                                    channelId = NotificationConstant.RESULT_CHANNEL.channelId
+                                )
+                            )
+                        } catch (e: Exception) {
+                            Log.d(TAG, "Permission not granted")
+                        }*/
                     }
                 } else {
                     Log.e(
@@ -155,12 +199,12 @@ class ResultRepositoryImpl(
         listId: String,
         fileName: String
     ): Flow<DownloadResult> = flow {
-        Log.d(TAG, "Download url: $url")
+        // Log.d(TAG, "Download url: $url")
         pdfDownloadResult.downloadPdf(url = url, fileName = fileName).collect { downloadStatus ->
-            Log.d(TAG, "Download status: $downloadStatus")
+            // Log.d(TAG, "Download status: $downloadStatus")
             when (downloadStatus) {
                 is DownloadResult.Error -> {
-                    Log.d(TAG, "Download error: ${downloadStatus.exception}")
+                    // Log.d(TAG, "Download error: ${downloadStatus.exception}")
                     resultDao.updatePdfPath(
                         path = null,
                         listId = listId,
@@ -170,7 +214,7 @@ class ResultRepositoryImpl(
                 }
 
                 is DownloadResult.Progress -> {
-                    Log.d(TAG, "Download progress: ${downloadStatus.percent}")
+                    // Log.d(TAG, "Download progress: ${downloadStatus.percent}")
                     resultDao.updateDownloadProgress(
                         progress = downloadStatus.percent,
                         listId = listId
@@ -185,7 +229,7 @@ class ResultRepositoryImpl(
                         listId = listId,
                         progress = 100
                     )
-                    Log.d(TAG, "Download path: ${downloadStatus.filePath}")
+                    // Log.d(TAG, "Download path: ${downloadStatus.filePath}")
                     emit(DownloadResult.Success(filePath = downloadStatus.filePath))
                 }
             }
@@ -195,7 +239,11 @@ class ResultRepositoryImpl(
     override suspend fun deleteFileByPath(path: String, listId: String) {
         pdfDownloadResult.deleteFile(path)
         resultDao.updatePdfPath(path = null, listId = listId, progress = null)
-        Log.d(TAG, "path deleted from room")
+        // Log.d(TAG, "path deleted from room")
+    }
+
+    override suspend fun markCourseAsRead(courseId: String) {
+        resultDao.markCourseAsRead(courseId)
     }
 }
 

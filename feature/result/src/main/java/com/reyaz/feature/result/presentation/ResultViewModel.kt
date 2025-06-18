@@ -1,9 +1,9 @@
 package com.reyaz.feature.result.presentation
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.feature.result.domain.repository.ResultRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,8 @@ import kotlinx.coroutines.launch
 private const val TAG = "RESULT_VIEW_MODEL"
 
 class ResultViewModel(
-    private val resultRepository: ResultRepository
+    private val resultRepository: ResultRepository,
+    context: Context
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
         ResultUiState(
@@ -25,6 +26,8 @@ class ResultViewModel(
     init {
         onEvent(ResultEvent.LoadSavedResults)
         onEvent(ResultEvent.LoadDegree)
+        //notificationManager.showNotification(notificationData = NotificationData(id = 1, title = "Notification Title", message = "Notification Message"))
+        onEvent(ResultEvent.RefreshResults)
     }
 
     fun onEvent(event: ResultEvent) {
@@ -57,9 +60,11 @@ class ResultViewModel(
             is ResultEvent.ToggleDownload -> {
                 Log.d(TAG, "Toggle download invoked with event: $event")
                 event.url?.let {
-                    downloadPdf(  url = it,
+                    downloadPdf(
+                        url = it,
                         listId = event.listId,
-                        listTitle = event.title )
+                        listTitle = event.title
+                    )
                 } ?: run {
                     event.path?.let { deletePdfByPath(path = it, listId = event.listId) }
                 }
@@ -71,10 +76,22 @@ class ResultViewModel(
                 listTitle = event.title
             )
 
+            is ResultEvent.RefreshResults -> refreshResults()
 //            is ResultEvent.DeleteFileByPath -> deletePdfByPath(event.path, event.listId)
 
+            is ResultEvent.MarkAsRead -> markAsRead(event.courseId)
             else -> {}
         }
+    }
+
+    private fun markAsRead(courseId: String) {
+        viewModelScope.launch {
+            resultRepository.markCourseAsRead(courseId)
+        }
+    }
+
+    private fun refreshResults() {
+        viewModelScope.launch { resultRepository.refreshLocalResults() }
     }
 
     private fun saveCourse() {
@@ -193,21 +210,22 @@ class ResultViewModel(
     }
 
     private fun downloadPdf(url: String, listId: String, listTitle: String) {
-            Log.d(TAG, "Download url: $url")
+        Log.d(TAG, "Download url: $url")
         viewModelScope.launch {
-            resultRepository.downloadPdf(url = url, listId = listId, fileName = listTitle).collect { downloadResult ->
-               /* when(downloadResult){
-                    is DownloadResult.Error -> {
-                        updateState { it.copy(error = downloadResult.exception) }
-                    }
-                    is DownloadResult.Progress -> {
-                        updateState { it.copy(progress = it.progress) }
-                    }
-                    is DownloadResult.Success -> {
-                        updateState { it.copy(progress = null) }
-                    }
-                }*/
-            }
+            resultRepository.downloadPdf(url = url, listId = listId, fileName = listTitle)
+                .collect { downloadResult ->
+                    /* when(downloadResult){
+                         is DownloadResult.Error -> {
+                             updateState { it.copy(error = downloadResult.exception) }
+                         }
+                         is DownloadResult.Progress -> {
+                             updateState { it.copy(progress = it.progress) }
+                         }
+                         is DownloadResult.Success -> {
+                             updateState { it.copy(progress = null) }
+                         }
+                     }*/
+                }
         }
     }
 

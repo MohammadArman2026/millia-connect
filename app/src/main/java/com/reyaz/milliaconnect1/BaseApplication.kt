@@ -8,7 +8,10 @@ import com.reyaz.feature.portal.di.portalModule
 import com.reyaz.feature.result.di.resultModule
 import com.reyaz.milliaconnect1.di.appModule
 import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 
 /**
  * The Application class is the first component of your app to be instantiated when the process starts.
@@ -26,8 +29,12 @@ class BaseApplication : Application() {
 
         // Initialize Koin for dependency injection
         startKoin {
+            androidLogger()
             androidContext(this@BaseApplication)
+            workManagerFactory()
             modules(appModule, scheduleModule, portalModule, resultModule, networkModule, notificationModule)
         }
+
     }
 }
+

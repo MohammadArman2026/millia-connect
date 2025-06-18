@@ -4,11 +4,11 @@ import com.reyaz.feature.result.data.local.dto.RemoteResultListDto
 import com.reyaz.feature.result.data.local.entities.ResultListEntity
 import java.util.Date
 
-fun RemoteResultListDto.dtoListItemToEntity(courseId: String): ResultListEntity {
+fun RemoteResultListDto.dtoListItemToEntity(courseId: String, isViewed: Boolean = true): ResultListEntity {
     return ResultListEntity(
         listId = srNo,
         remark = remark,
-        viewed = false,
+        viewed = isViewed,
         link = link,
         listOwnerId = courseId,
         pdfPath = null,
