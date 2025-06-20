@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 @Entity(
+    primaryKeys = ["listId", "listOwnerId"], // Composite primary key
     foreignKeys = [ForeignKey(
         entity = CourseEntity::class,
         parentColumns = ["courseId"],
@@ -16,10 +17,10 @@ import java.util.Date
     indices = [Index("listOwnerId")]
 )
 data class ResultListEntity(
-    @PrimaryKey
+//    @PrimaryKey
     val listId: String,
     val remark: String,
-    val date: Date = Date(), // current time
+    val releaseDate: Long?,
     val viewed: Boolean = false,
     val link: String?,
     val pdfPath: String?,

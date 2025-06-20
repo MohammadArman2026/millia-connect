@@ -32,20 +32,12 @@ internal fun ConnectedComposable(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        /*Image(
-            painter = painterResource(R.drawable.connectedimage),
-            "connected icon",
-            modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-        )*/
-
         Text(
             text = "You're connected to \nJamia Wifi.",
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             fontSize = 20.sp,
-            modifier = Modifier.padding(top = 8.dp),
+            //modifier = Modifier.padding(top = 8.dp),
             color = if (isSystemInDarkTheme()) Color(0xFFDFFFA1) else Color(0xFF008000)
         )
         primaryErrorMsg?.let {

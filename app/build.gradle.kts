@@ -50,6 +50,8 @@ dependencies {
     implementation(project(":feature:attendance"))
     implementation(project(":feature:portal"))
     implementation(project(":feature:result"))
+    implementation(project(":feature:notice"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

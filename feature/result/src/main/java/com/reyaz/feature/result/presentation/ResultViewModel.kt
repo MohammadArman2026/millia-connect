@@ -26,7 +26,6 @@ class ResultViewModel(
     init {
         onEvent(ResultEvent.LoadSavedResults)
         onEvent(ResultEvent.LoadDegree)
-        //notificationManager.showNotification(notificationData = NotificationData(id = 1, title = "Notification Title", message = "Notification Message"))
         onEvent(ResultEvent.RefreshResults)
     }
 
@@ -180,6 +179,7 @@ class ResultViewModel(
                 type = uiState.value.selectedTypeId,
                 course = uiState.value.selectedCourseId
             )
+            Log.d(TAG, "course id: ${ uiState.value.selectedTypeId}")
             if (result.isSuccess) {
                 updateState { it.copy(isLoading = false) }
             } else {

@@ -15,3 +15,9 @@ data class PortalUiState(
     val loginEnabled: Boolean = username.isNotEmpty() && password.isNotEmpty()
     val isLoading: Boolean  = !loadingMessage.isNullOrBlank()
 }
+
+/*
+* isJmiWifi
+* isLoggedIn
+* isLoading
+* */

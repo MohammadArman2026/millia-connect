@@ -34,7 +34,8 @@ class ResultApiService(
     suspend fun fetchProgramTypes(): Result<List<CourseType>> = withContext(Dispatchers.IO) {
         try {
             clearWebClientState()
-            val page: HtmlPage = webClient.getPage("https://admission.jmi.ac.in/EntranceResults/UniversityResult")
+            val page: HtmlPage =
+                webClient.getPage("https://admission.jmi.ac.in/EntranceResults/UniversityResult")
             webClient.waitForBackgroundJavaScript(5000)
 
             val dropdown = page.getElementByName<HtmlSelect>("frm_ProgramType")
@@ -48,46 +49,48 @@ class ResultApiService(
             Result.failure(e)
         }
     }
-    suspend fun fetchPrograms(courseTypeValue: String): Result<List<CourseName>> = withContext(Dispatchers.IO) {
-        return@withContext try {
-            trustAllHosts()
-            val url =
-                URL("https://admission.jmi.ac.in/EntranceResults/UniversityResult/getUniversityProgramName")
-            val conn = url.openConnection() as HttpURLConnection
-            conn.requestMethod = "POST"
-            conn.doOutput = true
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
 
-            val payload = "prgType=${URLEncoder.encode(courseTypeValue, "UTF-8")}"
-            OutputStreamWriter(conn.outputStream).use { it.write(payload) }
+    suspend fun fetchPrograms(courseTypeValue: String): Result<List<CourseName>> =
+        withContext(Dispatchers.IO) {
+            return@withContext try {
+                trustAllHosts()
+                val url =
+                    URL("https://admission.jmi.ac.in/EntranceResults/UniversityResult/getUniversityProgramName")
+                val conn = url.openConnection() as HttpURLConnection
+                conn.requestMethod = "POST"
+                conn.doOutput = true
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
 
-            val result = mutableListOf<CourseName>()
-            conn.inputStream.bufferedReader().use {
-                val response = it.readText()
-                val jsonArray = JSONArray(response)
-                for (i in 0 until jsonArray.length()) {
-                    val obj = jsonArray.getJSONObject(i)
-                    result.add(
-                        CourseName(
-                            id = obj.getString("CPD_ID"),
-                            name = obj.getString("PROGNAME")
+                val payload = "prgType=${URLEncoder.encode(courseTypeValue, "UTF-8")}"
+                OutputStreamWriter(conn.outputStream).use { it.write(payload) }
+
+                val result = mutableListOf<CourseName>()
+                conn.inputStream.bufferedReader().use {
+                    val response = it.readText()
+                    val jsonArray = JSONArray(response)
+                    for (i in 0 until jsonArray.length()) {
+                        val obj = jsonArray.getJSONObject(i)
+                        result.add(
+                            CourseName(
+                                id = obj.getString("CPD_ID"),
+                                name = obj.getString("PROGNAME")
+                            )
                         )
-                    )
+                    }
                 }
+                Result.success(result)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error fetching program names", e)
+                Result.failure(e)
             }
-            Result.success(result)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error fetching program names", e)
-            Result.failure(e)
         }
-    }
 
     suspend fun fetchResult(
         courseTypeId: String,
         courseNameId: String,
         phdDisciplineId: String
     ): Result<List<RemoteResultListDto>> = withContext(Dispatchers.IO) {
-         try {
+        try {
             trustAllHosts()
             val url =
                 URL("https://admission.jmi.ac.in/EntranceResults/UniversityResult/getUniversityResults")
@@ -104,12 +107,16 @@ class ResultApiService(
                 "${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
             }   // like: frm_ProgramType=PHD&frm_ProgramName=PH1&frm_PhDMainDiscipline=M0015
 
+            Log.d(TAG, "Payload: $payload")
             conn.outputStream.use { it.write(payload.toByteArray()) }
 
             val response = conn.inputStream.bufferedReader().readText()
+            //Log.d(TAG, "RAW Response from remote for course_type: ${courseTypeId} and courseId: ${courseNameId}: $response")
             val jsonResponse = JSONObject(response)
             val htmlContentResponse = jsonResponse.getString("UniversityResults")
+
             val parsedResult = parser.parse(htmlContentResponse)
+            Log.d(TAG, "Parsed result: $parsedResult")
             if (parsedResult.isSuccess) {
                 Result.success(parsedResult.getOrDefault(emptyList()))
             } else {

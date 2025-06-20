@@ -8,6 +8,7 @@ import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.core.notification.manager.AppNotificationManager
 import com.reyaz.core.notification.model.NotificationData
 import com.reyaz.feature.result.data.local.dao.ResultDao
+import com.reyaz.feature.result.data.local.dto.CourseWithList
 import com.reyaz.feature.result.data.local.dto.RemoteResultListDto
 import com.reyaz.feature.result.data.local.entities.CourseEntity
 import com.reyaz.feature.result.data.mapper.dtoListItemToEntity
@@ -19,10 +20,13 @@ import com.reyaz.feature.result.domain.model.ResultHistory
 import com.reyaz.feature.result.domain.repository.ResultRepository
 import com.reyaz.feature.result.util.NotificationConstant
 import com.reyaz.feature.result.worker.WorkScheduler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
+import java.util.Date
 
 private const val TAG = "RESULT_REPO_IMPL"
 
@@ -35,10 +39,20 @@ class ResultRepositoryImpl(
 ) : ResultRepository {
 
     override fun observeResults(): Flow<List<ResultHistory>> {
-        return resultDao.observeResults()
-            .map { resultsEntity ->
-                resultsEntity.map { it.toResultHistory() }
-            }
+        return resultDao.observeResults().map { courseWithLists ->
+            courseWithLists.sortedWith(
+                compareByDescending<CourseWithList> {
+                    // Priority 1: has any un-viewed list
+                    it.lists.any { list -> !list.viewed }
+                }.thenByDescending {
+                    // Priority 2: latest releaseDate from list
+                    it.lists.maxOfOrNull { list -> list.releaseDate ?: 0L } ?: 0L
+                }.thenByDescending {
+                    // Priority 3: course lastSync
+                    it.course.lastSync ?: 0L
+                }
+            ).map { it.toResultHistory() }
+        }
     }
 
     override suspend fun getCourseTypes(): Result<List<CourseType>> =
@@ -72,7 +86,8 @@ class ResultRepositoryImpl(
                 courseType = courseType,
                 courseTypeId = courseTypeId,
                 phdDepartmentId = phdDepartmentId,
-                phdDepartment = phdDepartment
+                phdDepartment = phdDepartment,
+                lastSync = Date().time
             )
         )
     }
@@ -89,18 +104,21 @@ class ResultRepositoryImpl(
     ): Result<Unit> {
         return try {
 //            val result: Result<List<RemoteResultListDto>> = resultApi.fetchResult(courseTypeId = "UG1", courseNameId = "B03", phdDisciplineId = phdDepartment)
-            val isExist: Boolean = resultDao.courseExist(courseId = course)
+            val isExist: Boolean =
+                withContext(Dispatchers.IO) { resultDao.courseExist(courseId = course) }
             if (!isExist) {
                 val remoteList =
                     fetchRemoteResultList(typeId = type, courseId = course, phdId = phdDepartment)
                 if (remoteList.isSuccess) {
-                    remoteList.getOrDefault(emptyList()).map { it ->
-                        resultDao.insertResultList(it.dtoListItemToEntity(
-                            courseId = course,
-                            isViewed = true
-                        ))
-                        workScheduler.schedulePeriodic(workName = course)
+                    remoteList.getOrDefault(emptyList()).forEach { it ->
+                        resultDao.insertResultList(
+                            it.dtoListItemToEntity(
+                                courseId = course,
+                                isViewed = false
+                            )
+                        )
                     }
+                    workScheduler.schedulePeriodic(workName = course)
                 } else {
                     Log.d(TAG, "Error fetching remote result list: ${remoteList.exceptionOrNull()}")
                     throw Exception("Unable to fetch from remote!")
@@ -139,17 +157,26 @@ class ResultRepositoryImpl(
         try {
             Log.d(TAG, "Refreshing local results")
             resultDao.observeResults().first().forEach { courseWithList ->
-
+                Log.d(TAG, "Refreshing course: ${courseWithList.course.courseId}")
                 val newListResponse = fetchRemoteResultList(
-                    typeId = courseWithList.course.courseType,
-                    courseId = courseWithList.course.courseName,
-                    phdId = courseWithList.course.phdDepartment ?: ""
+                    typeId = courseWithList.course.courseTypeId,
+                    courseId = courseWithList.course.courseId,
+                    phdId = courseWithList.course.phdDepartmentId ?: ""
                 )
                 if (newListResponse.isSuccess) {
-                    val newList : List<RemoteResultListDto> = newListResponse.getOrDefault(emptyList())
+                    val newList: List<RemoteResultListDto> =
+                        newListResponse.getOrDefault(emptyList())
                     if (newList.isNotEmpty() && newList.size != courseWithList.lists.size) {
-                        newList.forEach {it->
-                            resultDao.insertResultList(it.dtoListItemToEntity(courseId = courseWithList.course.courseId, isViewed = false))
+                        newList.forEach { it ->
+                            Log.d(TAG, "New result found: ${it.courseName}")
+                            withContext(Dispatchers.IO) {
+                                resultDao.insertResultList(
+                                    it.dtoListItemToEntity(
+                                        courseId = courseWithList.course.courseId,
+                                        isViewed = false
+                                    )
+                                )
+                            }
                             try {
                                 notificationManager.showNotification(
                                     NotificationData(
@@ -165,7 +192,7 @@ class ResultRepositoryImpl(
                             }
                         }
                     } else {
-                         Log.d(TAG, "No new results found")
+                        Log.d(TAG, "No new results found")
                         /*try {
                             notificationManager.showNotification(
                                 NotificationData(
@@ -180,6 +207,9 @@ class ResultRepositoryImpl(
                             Log.d(TAG, "Permission not granted")
                         }*/
                     }
+                    withContext(Dispatchers.IO) {
+                        resultDao.updateLastFetchedDate(courseId = courseWithList.course.courseId)
+                    }
                 } else {
                     Log.e(
                         TAG,
@@ -188,7 +218,6 @@ class ResultRepositoryImpl(
                     throw Exception("Unable to fetch from remote!")
                 }
             }
-
         } catch (e: Exception) {
             Log.e(TAG, "Error refreshing results: ${e.message}")
         }

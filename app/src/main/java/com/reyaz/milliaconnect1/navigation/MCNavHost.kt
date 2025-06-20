@@ -1,10 +1,13 @@
 package com.reyaz.milliaconnect1.navigation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import com.reyaz.core.navigation.NavigationRoute
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -16,7 +19,6 @@ import androidx.navigation.navArgument
 import com.reyaz.core.ui.screen.PdfViewerScreen
 import com.reyaz.feature.portal.presentation.PortalScreen
 import com.reyaz.feature.portal.presentation.PortalViewModel
-import com.reyaz.feature.result.presentation.ResultScreen
 import com.reyaz.milliaconnect1.navigation.graph.attendanceNavGraph
 import com.reyaz.milliaconnect1.navigation.graph.resultNavGraph
 
@@ -36,6 +38,7 @@ fun MCNavHost(
         navController = navController,
         startDestination =
 //            NavigationRoute.AttendanceGraph.route,
+//            NavigationRoute.Portal.route,
             NavigationRoute.ResultGraph.route,
         modifier = modifier.fillMaxSize()
     ) {
@@ -52,6 +55,7 @@ fun MCNavHost(
                 navController.navigateUp()
             })
         }
+        // pdf screen
         composable(
             route = NavigationRoute.PdfViewer.route,
             arguments = listOf(navArgument("path") { type = NavType.StringType })
@@ -69,13 +73,14 @@ fun MCNavHost(
             resultNavGraph(navController, snackbarHostState)
         }
 
-        // Notice Graph
-        /*navigation(
-            startDestination = NavigationRoute.Notice.route,
-            route = NavigationRoute.AllNotice.route
+        // Notice
+        composable(
+            route = NavigationRoute.Notice.route
         ) {
-            attendanceNavGraph(navController, snackbarHostState)
-        }*/
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                Text("Coming Soon...")
+            }
+        }
 
         // Side Navigation Graph
         /*navigation(

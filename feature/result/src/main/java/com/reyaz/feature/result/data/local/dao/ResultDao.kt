@@ -9,6 +9,7 @@ import com.reyaz.feature.result.data.local.dto.CourseWithList
 import com.reyaz.feature.result.data.local.entities.CourseEntity
 import com.reyaz.feature.result.data.local.entities.ResultListEntity
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 @Dao
 interface ResultDao {
@@ -19,18 +20,18 @@ interface ResultDao {
     @Query("SELECT * FROM CourseEntity")
     suspend fun getCourses(): List<CourseEntity>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertCourse(course: CourseEntity)
 
     @Query("SELECT * FROM ResultListEntity WHERE listOwnerId = :courseId")
     suspend fun getResults(courseId: String): List<ResultListEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertResultList(detail: ResultListEntity)
+    suspend fun insertResultList(detail: ResultListEntity) : Long
 
     // update course tracking
     @Query("UPDATE CourseEntity SET trackEnabled = :status WHERE courseId = :courseId")
-    suspend fun updateTrackingStatus(status: Boolean, courseId: String)
+    suspend fun updateTrackingStatus(status: Boolean, courseId: String) : Int
 
     @Query("UPDATE ResultListEntity SET pdfPath = :path, downloadProgress = :progress WHERE listId = :listId")
     suspend fun updatePdfPath(path: String? = null, listId: String, progress: Int? = null)
@@ -40,12 +41,15 @@ interface ResultDao {
 
     // delete course
     @Query("DELETE FROM CourseEntity WHERE courseId = :courseId")
-    suspend fun deleteCourse(courseId: String)
+    suspend fun deleteCourse(courseId: String) : Int
 
     @Query("SELECT EXISTS(SELECT 1 FROM CourseEntity WHERE courseId = :courseId)")
     suspend fun courseExist(courseId: String): Boolean
 
     @Query("UPDATE ResultListEntity SET viewed = 1 WHERE listOwnerId = :courseId")
-    suspend fun markCourseAsRead(courseId: String)
+    suspend fun markCourseAsRead(courseId: String) : Int
+
+    @Query("UPDATE CourseEntity SET lastSync = :lastSync WHERE courseId = :courseId")
+    fun updateLastFetchedDate(courseId: String, lastSync: Long = Date().time)
 
 }

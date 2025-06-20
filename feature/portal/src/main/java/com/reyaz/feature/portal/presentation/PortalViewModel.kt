@@ -85,7 +85,7 @@ class PortalViewModel(
 
     fun handleLogin() {
         viewModelScope.launch {
-//            repository.checkConnectionState()
+            //repository.checkConnectionState()
             if (uiState.value.loadingMessage == null) {
                 _uiState.update { it.copy(loadingMessage = "Logging in...") }
             }
@@ -110,6 +110,7 @@ class PortalViewModel(
                 }
                 .onFailure { exception ->
                     //AutoLoginWorker.cancel(appContext)
+                    _uiState.update { it.copy(isLoggedIn = false)};
                     onError(exception)
                 }
         }
@@ -210,7 +211,7 @@ class PortalViewModel(
                         it.copy(
                             loadingMessage = null,
                             isJamiaWifi = false,
-                            isLoggedIn = true,
+                            isLoggedIn = false,
                             message = null
                         )
                     }

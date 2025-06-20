@@ -38,7 +38,7 @@ object TopLevelDestinations {
     )
 
     val NOTICE = AppTopLevelDestination(
-        route = NavigationRoute.NoticeGraph,
+        route = NavigationRoute.Notice,
         selectedIcon = Icons.Filled.Newspaper,
         unselectedIcon = Icons.Outlined.Newspaper,
         titleResourceId = "Notice",
@@ -46,7 +46,7 @@ object TopLevelDestinations {
     )
 
     val RESULT = AppTopLevelDestination(
-        route = NavigationRoute.ResultGraph,
+        route = NavigationRoute.Result,
         selectedIcon = Icons.Filled.School,
         unselectedIcon = Icons.Outlined.School,
         titleResourceId = "Result",
@@ -56,7 +56,7 @@ object TopLevelDestinations {
     /**
      * List of all top-level destinations in the order they should appear
      */
-    val ALL = listOf(SCHEDULE, NOTICE, RESULT)
+    val ALL = listOf(RESULT, NOTICE, SCHEDULE)
 }
 
 /**

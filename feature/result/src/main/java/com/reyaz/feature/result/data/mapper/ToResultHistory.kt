@@ -3,6 +3,8 @@ package com.reyaz.feature.result.data.mapper
 import com.reyaz.feature.result.data.local.dto.CourseWithList
 import com.reyaz.feature.result.domain.model.ResultHistory
 import com.reyaz.feature.result.domain.model.ResultList
+import com.reyaz.feature.result.util.longToDateString
+import com.reyaz.feature.result.util.toTimeAgoString
 
 fun CourseWithList.toResultHistory(): ResultHistory {
     // Log.d(TAG, "Converting to ResultHistory")
@@ -10,16 +12,21 @@ fun CourseWithList.toResultHistory(): ResultHistory {
         courseId = course.courseId,
         courseName = course.courseName,
         courseType = course.courseType,
-        resultList = lists.map {
+        syncDate = course.lastSync?.toTimeAgoString(),
+        latestListDate = lists.maxByOrNull { it.releaseDate ?: 0L }?.releaseDate?.longToDateString(),
+        resultList = lists.sortedWith(
+            compareByDescending {
+                it.releaseDate ?: 0L
+            }
+        ).map {
             ResultList(
                 listId = it.listId,
                 listTitle = it.remark,
                 link = it.link,
-                date = it.date.toString(),
+                date = it.releaseDate?.longToDateString(),
                 viewed = it.viewed,
                 localPath = it.pdfPath,
                 downloadProgress = it.downloadProgress
-
             )
         }
     )

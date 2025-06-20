@@ -57,14 +57,6 @@ fun NavController.isCurrentRoute(route: NavigationRoute): Boolean {
     return currentDestination?.route == route.route
 }
 
-/**
- * Extension function to get current route as NavigationRoute
- */
-fun NavController.getCurrentNavigationRoute(): NavigationRoute? {
-    val currentRoute = currentDestination?.route ?: return null
-    return NavigationRoute.bottomNavigationRoutes.find { it.route == currentRoute }
-        ?: NavigationRoute.authRoutes.find { it.route == currentRoute }
-}
 
 /**
  * Extension function to add nested navigation graph

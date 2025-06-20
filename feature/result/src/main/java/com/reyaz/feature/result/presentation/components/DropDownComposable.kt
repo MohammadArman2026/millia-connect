@@ -1,7 +1,9 @@
 package com.reyaz.feature.result.presentation.components
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -9,6 +11,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +43,8 @@ fun DropDownComposable(
     ) {
         OutlinedTextField(
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled)
+                //.exposedDropdownSize(matchTextFieldWidth = true)
                 .fillMaxWidth(),
             value = value,
             onValueChange = {},
@@ -58,7 +62,7 @@ fun DropDownComposable(
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.height(400.dp)
+            matchTextFieldWidth = true,
         ) {
             options.forEachIndexed { index, selectionOption ->
                 DropdownMenuItem(
@@ -69,7 +73,7 @@ fun DropDownComposable(
                         expanded = false
                         onOptionSelected(index)
                     },
-                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    contentPadding = /*ExposedDropdownMenuDefaults.ItemContentPadding +*/ PaddingValues(16.dp),
                 )
                 if (index != options.lastIndex) {
                     HorizontalDivider()

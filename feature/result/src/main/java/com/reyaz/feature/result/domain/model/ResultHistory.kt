@@ -7,15 +7,18 @@ data class ResultHistory(
     val resultList: List<ResultList> = emptyList(),
 
     val link: String? = "",
-    val date: String = "",
-    val remarks: String = ""
-)
+    val syncDate: String?,
+    val remarks: String = "",
+    val latestListDate: String?
+) {
+    val hasNewResult: Boolean = resultList.any { list -> !list.viewed }
+}
 
 data class ResultList(
     val listId: String = "",
     val listTitle: String = "",
     val link: String? = null,
-    val date: String = "",
+    val date: String?,
     val localPath: String? = null,
     val downloadProgress: Int? = null,
     val viewed: Boolean = true

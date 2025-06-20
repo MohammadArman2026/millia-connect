@@ -20,11 +20,10 @@ fun CaptivePortalDialogContent(
 
     Box (
         modifier = modifier
-            .padding(top = 12.dp)
+            //.padding(top = 12.dp)
             .padding(24.dp)
             .verticalScroll(rememberScrollState())
     ){
-
         if (!uiState.isJamiaWifi) {  // not JMI-WiFi
             NotJmiWifiComposable(
                 onRetry = { viewModel.retry() },
@@ -37,7 +36,6 @@ fun CaptivePortalDialogContent(
         } else {    // login form
             LoginFormComposable(modifier = modifier, uiState, viewModel)
         }
-
     }
 }
 

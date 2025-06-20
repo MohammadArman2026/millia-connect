@@ -126,9 +126,10 @@ class PortalScraper(
             connection.connectTimeout = 2000
             connection.connect()
             val responseCode = connection.responseCode
+            Log.d(TAG, "Response code: $responseCode")
             connection.disconnect()
             val isJmiWifi = responseCode == 200 || responseCode == 302 // 302 if redirect to login
-            // Log.d(TAG, "JMI Wifi $isJmiWifi")
+             Log.d(TAG, "JMI Wifi $isJmiWifi")
             isJmiWifi
         } catch (e: IOException) {
             Log.d(TAG, "JMI Wifi false")

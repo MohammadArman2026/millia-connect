@@ -20,13 +20,13 @@ import androidx.compose.ui.unit.sp
 
 @Composable
  fun NotJmiWifiComposable(onRetry: () -> Unit) {
-    Card(
+    Column(
         modifier = Modifier
             .fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        ),
+//        shape = MaterialTheme.shapes.medium,
+//        colors = CardDefaults.cardColors(
+//            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+//        ),
     ) {
         Column(
             modifier = Modifier

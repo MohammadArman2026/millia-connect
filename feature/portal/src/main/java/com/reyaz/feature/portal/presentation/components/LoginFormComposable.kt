@@ -44,7 +44,7 @@ internal fun LoginFormComposable(
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     Column(
-        modifier = modifier.padding(top = 10.dp),
+        modifier = modifier.padding(top = 4.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
