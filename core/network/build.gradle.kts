@@ -45,4 +45,7 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.core.coroutines)
+
+    // screen scraping
+    implementation(libs.htmlunit.android)
 }

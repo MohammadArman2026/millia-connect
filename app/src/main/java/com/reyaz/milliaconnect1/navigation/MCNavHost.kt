@@ -6,9 +6,11 @@ import com.reyaz.core.navigation.NavigationRoute
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -17,10 +19,13 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.reyaz.core.ui.screen.PdfViewerScreen
+import com.reyaz.feature.notice.presentation.NoticeScreen
+import com.reyaz.feature.notice.presentation.NoticeViewModel
 import com.reyaz.feature.portal.presentation.PortalScreen
 import com.reyaz.feature.portal.presentation.PortalViewModel
 import com.reyaz.milliaconnect1.navigation.graph.attendanceNavGraph
 import com.reyaz.milliaconnect1.navigation.graph.resultNavGraph
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * Main navigation host for the Millia Connect App
@@ -39,7 +44,8 @@ fun MCNavHost(
         startDestination =
 //            NavigationRoute.AttendanceGraph.route,
 //            NavigationRoute.Portal.route,
-            NavigationRoute.ResultGraph.route,
+//            NavigationRoute.ResultGraph.route,
+        NavigationRoute.Notice.route,
         modifier = modifier.fillMaxSize()
     ) {
         // Attendance Feature Graph
@@ -77,9 +83,11 @@ fun MCNavHost(
         composable(
             route = NavigationRoute.Notice.route
         ) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                Text("Coming Soon...")
-            }
+            val noticeViewModel : NoticeViewModel = koinViewModel()
+            val uiState by noticeViewModel.uiState.collectAsStateWithLifecycle()
+           NoticeScreen(
+               uiState = uiState
+           )
         }
 
         // Side Navigation Graph

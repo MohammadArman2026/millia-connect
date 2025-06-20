@@ -26,6 +26,7 @@ val resultModule = module {
     // scraping
 //    single { ResultScraper(get(), get()) }
     single {ResultApiService(get(), get())}
+    // web client
     single {
         WebClient(BrowserVersion.CHROME).apply {
             options.isJavaScriptEnabled = true
