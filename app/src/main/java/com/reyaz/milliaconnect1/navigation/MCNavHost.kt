@@ -1,14 +1,11 @@
 package com.reyaz.milliaconnect1.navigation
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import com.reyaz.core.navigation.NavigationRoute
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -86,7 +83,8 @@ fun MCNavHost(
             val noticeViewModel : NoticeViewModel = koinViewModel()
             val uiState by noticeViewModel.uiState.collectAsStateWithLifecycle()
            NoticeScreen(
-               uiState = uiState
+               uiState = uiState,
+               onEvent = noticeViewModel::event
            )
         }
 

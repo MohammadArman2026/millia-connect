@@ -19,7 +19,7 @@ import org.htmlunit.html.HtmlPage
 import org.htmlunit.html.HtmlPasswordInput
 import org.htmlunit.html.HtmlTextInput
 
-
+private const val TAG = "WEB_LOGIN_MANAGER"
 class WebLoginManager(
     private val notificationHelper: NotificationHelper,
     private val wifiNetworkManager: NetworkConnectivityObserver

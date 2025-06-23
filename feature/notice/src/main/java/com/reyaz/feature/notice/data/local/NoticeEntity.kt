@@ -6,11 +6,10 @@ import androidx.room.PrimaryKey
 @Entity
 data class NoticeEntity(
     @PrimaryKey
-    val noticeId: String,   // todo
-    val typeName: String,
     val title: String,
-    val date: String,
-    val path: String?,
     val link: String?,
-    val listOwnerId: String,
+    val createdOn: Long,
+    val path: String? = null,
+    val typeId: String,
+    val isViewed: Boolean = true
 )

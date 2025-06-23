@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.combine
 
+private const val TAG = "NETWORK_MANAGER"
+
 class NetworkManager(private val context: Context) {
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -25,20 +27,20 @@ class NetworkManager(private val context: Context) {
     // Method to set the captive portal from the activity receiving ACTION_CAPTIVE_PORTAL_SIGN_IN
     fun setCaptivePortal(intent: Intent?) {
         captivePortal = intent?.getParcelableExtra(ConnectivityManager.EXTRA_CAPTIVE_PORTAL)
-        Log.d("NetworkConnectivityObserver", "CaptivePortal object received: ${captivePortal != null}")
+        // Log.d(TAG, "CaptivePortal object received: ${captivePortal != null}")
     }
 
     // Method to report captive portal dismissed
     fun reportCaptivePortalDismissed() {
         captivePortal?.let {
-            Log.d("NetworkConnectivityObserver", "Reporting captive portal dismissed")
+            // Log.d(TAG, "Reporting captive portal dismissed")
             it.reportCaptivePortalDismissed()
             captivePortal = null
         }
     }
 
     fun forceUseWifi() {
-        Log.d("WifiNetworkManager", "Forcing Wi-Fi usage...")
+        // Log.d(TAG, "Forcing Wi-Fi usage...")
         val request = NetworkRequest.Builder()
             .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
