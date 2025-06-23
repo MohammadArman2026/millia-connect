@@ -84,7 +84,11 @@ fun MCNavHost(
             val uiState by noticeViewModel.uiState.collectAsStateWithLifecycle()
            NoticeScreen(
                uiState = uiState,
-               onEvent = noticeViewModel::event
+               onEvent = noticeViewModel::event,
+               openPdf = {
+                   navController.navigate(NavigationRoute.PdfViewer.createRoute(it))
+               },
+               modifier = Modifier,
            )
         }
 

@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.reyaz.feature.notice.data.local.dao.NoticeDao
 
-@Database(entities = [NoticeEntity::class], version = 3, exportSchema = true)
+@Database(entities = [NoticeEntity::class], version = 4, exportSchema = true)
 abstract class NoticeDatabase : RoomDatabase() {
     abstract fun noticeDao(): NoticeDao
 

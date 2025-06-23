@@ -1,119 +1,150 @@
 package com.reyaz.feature.notice.presentation
 
-import android.content.Intent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
+import com.reyaz.core.ui.components.ListItemWithTrailingIcon
+import com.reyaz.core.ui.helper.LinkHandler
+import com.reyaz.core.ui.helper.getListItemModel
 import com.reyaz.feature.notice.domain.model.Tabs
-import androidx.core.net.toUri
-import kotlinx.coroutines.delay
+import com.reyaz.feature.notice.presentation.components.CustomTrailingIcon
+
+private const val TAG = "NOTICE_SCREEN"
 
 @Composable
 fun NoticeScreen(
     modifier: Modifier = Modifier,
     uiState: NoticeUiState,
-    onEvent: (NoticeEvent) -> Unit
+    onEvent: (NoticeEvent) -> Unit,
+    openPdf: (String) -> Unit,
 ) {
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
-    var isLoading by remember { mutableStateOf(true) }
-    val mContext = LocalContext.current
-    LaunchedEffect(selectedTabIndex, uiState.noticeList) {
-        isLoading = true
-        delay(2000)
+    val context = LocalContext.current
+    val linkHandler = remember { LinkHandler(context) }
+
+    /*var prog by remember { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) {
+        while(prog <= 100){
+            prog++;
+            delay(1000)
+        }
+    }*/
+
+    /*LaunchedEffect(uiState.selectedTabIndex, uiState.noticeList) {
+        uiState.isLoading = true
+        delay(1000)
         if (uiState.noticeList.isNotEmpty())
             isLoading = false
-    }
+    }*/
+
     Column(
         modifier = modifier.background(MaterialTheme.colorScheme.background)
     ) {
         ScrollableTabRow(
             modifier = Modifier.fillMaxWidth(),
-            selectedTabIndex = selectedTabIndex,
+            selectedTabIndex = uiState.selectedTabIndex,
             edgePadding = 0.dp
         ) {
             Tabs.entries.forEach { it ->
-                val index = it.ordinal
                 Tab(
                     text = {
                         Text(
                             text = it.title,
-                            color = if (selectedTabIndex == index) {
+                            color = if (uiState.selectedTabIndex == it.ordinal) {
                                 MaterialTheme.colorScheme.primary
                             } else {
                                 MaterialTheme.colorScheme.onBackground
                             }
                         )
                     },
-                    selected = selectedTabIndex == index,
+                    selected = uiState.selectedTabIndex == it.ordinal,
                     onClick = {
-                        selectedTabIndex = index
+                        onEvent(NoticeEvent.UpdateTabIndex(it.ordinal))
                         onEvent(NoticeEvent.ObserveNotice(it.type))
                     }
                 )
             }
         }
-        AnimatedVisibility(isLoading) {
+        /*AnimatedVisibility(isLoading || !uiState.errorMessage.isNullOrEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(color = MaterialTheme.colorScheme.tertiaryContainer),
+                    .background(color = if (isLoading) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.errorContainer),
                 contentAlignment = Alignment.Center
             ) {
-                Row(
-                    modifier = Modifier.padding(4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    CircularProgressIndicator(modifier = Modifier.size(18.dp), color = MaterialTheme.colorScheme.onTertiaryContainer)
-                    Text("Loading...")
-                }
+                if (isLoading)
+                    Row(
+                        modifier = Modifier.padding(4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                        Text("Loading...")
+                    }
+                else
+                    Text("${uiState.errorMessage}")
             }
-            /*} else if (uiState.error != null) {
-                Text("Error: ${uiState.error}")*/
-        }
-        LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
+        }*/
+        LazyColumn(modifier = Modifier) {
             items(uiState.noticeList) { notice ->
-                notice.title?.let {
-                    Text(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .clickable {
-                                val intent = Intent(Intent.ACTION_VIEW, notice.link?.toUri())
-                                startActivity(mContext, intent, null)
-                            },
-                        text = it
+//                val notice = notice1.copy(progress = prog)
+                notice.title?.let { it ->
+                    val actionModel = getListItemModel(
+                        link = notice.link,
+                        path = notice.path,
+                        downloadPdf = {
+                            notice.link?.let {
+                                onEvent(
+                                    NoticeEvent.DownloadPdf(
+                                        url = it,
+                                        title = notice.title
+                                    )
+                                )
+                            }
+                        },
+                        deletePdf = { notice.path?.let{ onEvent(NoticeEvent.DeleteFileByPath(title = notice.title, path = it))} },
+                        openLink = { notice.link?.let { linkHandler.openInBrowser(it) } },
                     )
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+                    ListItemWithTrailingIcon(
+                        listTitle = it,
+                        date = notice.fetchedOn,
+                        trailingIcon = {
+                            notice.link?.let {
+                                CustomTrailingIcon(
+                                    downloadProgress = notice.progress ?: 0,
+//                                    downloadProgress = prog,
+                                    onIconClick = { actionModel.onClick?.let { it() } },
+                                    icon = actionModel.icon
+                                )
+                            }
+                        },
+                        onClick = {
+                            when {
+                                notice.path != null -> {
+                                    openPdf(notice.path)
+                                }
+
+                                else -> actionModel.onClick?.let { it() }
+                            }
+                        },
+                        isNewItem = !notice.isRead
+                    )
                 }
             }
         }
     }
-
 }
+

@@ -1,6 +1,5 @@
 package com.reyaz.feature.result.presentation.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.ArrowCircleDown
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CircularProgressIndicator
@@ -25,11 +25,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.reyaz.feature.result.domain.model.ResultList
+import com.reyaz.feature.result.domain.model.ResultItem
 
 @Composable
-fun ListItemComposable(
-    item: ResultList,
+fun DownloadableListItemComposable(
+    item: ResultItem,
     toggleDownload: (String?, String?) -> Unit, // link, path
     openPdf: () -> Unit,
 ) {
@@ -47,16 +47,16 @@ fun ListItemComposable(
                 .weight(1f)
                 .clip(RoundedCornerShape(8.dp))
                 .clickable {
-                    item.localPath?.let {
-                        // open pdf
-                        openPdf()
-                    } ?: run {
-                        //Log.d("LIST_ITEM_COMPOSABLE", "ListItemComposable: ${item.link}")
-                        // download pdf
-                        // todo: check if the given link is ending at .pdf else open the link
-                        toggleDownload(item.link, null)
+                    if(item.isDownloadable){
+                        item.localPath?.let {
+                            openPdf()
+                        } ?: run {
+                            // todo: check if the given link is ending at .pdf else open the link
+                            toggleDownload(item.link, null)
+                        }
+                    } else {
+                        // todo: open the link in browser
                     }
-//                        if ()
                 }
                 .padding(start = 8.dp),
         ) {
@@ -80,6 +80,7 @@ fun ListItemComposable(
 
         // trailing icon
         if (!item.link.isNullOrEmpty()) {
+            if (item.isDownloadable)
             if (item.localPath.isNullOrEmpty()) {
                 if (item.downloadProgress != null && (item.downloadProgress in 0..99)) {
                     // circular progress
@@ -113,6 +114,17 @@ fun ListItemComposable(
                 // delete btn
                 Icon(
                     imageVector = Icons.Default.Delete, contentDescription = "",
+                    tint = MaterialTheme.colorScheme.error,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable { toggleDownload(null, item.localPath) }
+                        .padding(12.dp),
+                )
+            }
+            else {
+                // open link
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.OpenInNew, contentDescription = "",
                     tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier
                         .clip(CircleShape)

@@ -1,10 +1,8 @@
 package com.reyaz.feature.result.presentation.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,16 +29,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.reyaz.feature.result.domain.model.ResultList
+import com.reyaz.feature.result.domain.model.ResultItem
 import com.reyaz.feature.result.presentation.ResultEvent
-import kotlin.math.exp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CourseItemComposable(
     modifier: Modifier = Modifier,
     courseName: String = "",
-    resultList: List<ResultList>,
+    resultList: List<ResultItem>,
     onResultEvent: (ResultEvent) -> Unit,
     courseId: String,
     openPdf: (String) -> Unit,

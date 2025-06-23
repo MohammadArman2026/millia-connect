@@ -3,6 +3,7 @@ package com.reyaz.feature.notice.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.feature.notice.data.NoticeRepository
 import com.reyaz.feature.notice.data.model.NoticeType
 import com.reyaz.feature.notice.domain.model.Tabs
@@ -30,15 +31,18 @@ class NoticeViewModel(
             }
             is NoticeEvent.FetchLocalNotice -> observeLocalNotices(event.type)
             is NoticeEvent.RefreshNotice -> refreshRemoteNotice(event.type)
-            else -> {
+            is NoticeEvent.DownloadPdf -> downloadPdf(url = event.url, title = event.title)
+            is NoticeEvent.DeleteFileByPath -> deletePdfByPath(title = event.title,path = event.path)
+            is NoticeEvent.UpdateTabIndex -> updateState { it.copy(selectedTabIndex = event.index) }
+            /*else -> {
                 Log.d(TAG, "Unknown event: $event")
-            }
+            }*/
         }
     }
 
     private fun refreshRemoteNotice(type: NoticeType) {
         viewModelScope.launch {
-            updateState { it.copy(isLoading = true) }
+            updateState { it.copy(isLoading = true, errorMessage = null) }
             val refreshResult = noticeRepository.refreshNotice(type)
             if (refreshResult.isSuccess) {
                 updateState { it.copy(isLoading = false) }
@@ -50,9 +54,32 @@ class NoticeViewModel(
         viewModelScope.launch {
             updateState { it.copy(noticeList = emptyList()) }
             noticeRepository.observeNotice(type).collect { notices ->
-                Log.d(TAG, "Notices: ${notices}")
+               // Log.d(TAG, "Notices: ${notices}")
                 updateState { it.copy(noticeList = notices) }
             }
+        }
+    }
+
+    private fun downloadPdf(url: String, title: String) {
+        Log.d(TAG, "Download url: $url")
+        viewModelScope.launch {
+            noticeRepository.downloadPdf(url = url, fileName = title)
+                .collect { downloadResult ->
+                    when (downloadResult) {
+                        is DownloadResult.Error -> {
+                            updateState { it.copy(errorMessage = downloadResult.exception.message) }
+                        }
+                        else -> {
+                            //updateState { it.copy(errorMessage = null) }
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun deletePdfByPath(path: String, title: String) {
+        viewModelScope.launch {
+            noticeRepository.deleteFileByPath(path, title)
         }
     }
 

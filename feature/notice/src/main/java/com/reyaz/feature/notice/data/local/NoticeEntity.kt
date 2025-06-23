@@ -12,5 +12,6 @@ data class NoticeEntity(
     val createdOn: Long,
     val path: String? = null,
     val typeId: String,
-    val isViewed: Boolean = true
+    val isViewed: Boolean = true,
+    val progress: Int? = null
 )

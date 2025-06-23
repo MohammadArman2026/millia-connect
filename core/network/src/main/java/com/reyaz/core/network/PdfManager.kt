@@ -30,6 +30,7 @@ class PdfManager(
         try {
             val urlConnection = URL(url)
             connection = urlConnection.openConnection() as HttpURLConnection
+            connection.instanceFollowRedirects = true
             connection.connect()
 
             if (connection.responseCode != HttpURLConnection.HTTP_OK) {

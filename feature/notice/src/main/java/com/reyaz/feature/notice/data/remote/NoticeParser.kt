@@ -103,14 +103,13 @@ class NoticeParser {
             val anchors = page.getByXPath<HtmlAnchor>("//marquee//a")
             val admissionNotices: List<NoticeDto> = anchors.mapNotNull { anchor ->
                 val title = anchor.textContent.trim()   // Also captures <p> inside
-                val href = anchor.hrefAttribute.trim()
+                val href = anchor.hrefAttribute.trim().replace(" ", "%20")
                 if (href.isNotBlank()) {
                     val fullUrl = URL(page.baseURL, href).toString()
                     NoticeDto(title = title, url = fullUrl, type = NoticeType.Urgent)
                 } else null
             }
             return Result.success(admissionNotices)
-
         } catch (e: Exception) {
             Log.d(TAG, "Error while parsing notice", e)
             return Result.failure(Exception("Error while parsing the admission notices"))

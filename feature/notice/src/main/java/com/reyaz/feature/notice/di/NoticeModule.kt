@@ -1,17 +1,20 @@
-package com.reyaz.feature.notice.presentation
+package com.reyaz.feature.notice.di
 
 import androidx.room.Room
+import com.reyaz.core.ui.helper.LinkHandler
 import com.reyaz.feature.notice.data.NoticeRepository
 import com.reyaz.feature.notice.data.local.NoticeDatabase
 import com.reyaz.feature.notice.data.remote.NoticeParser
 import com.reyaz.feature.notice.data.remote.NoticeScraper
+import com.reyaz.feature.notice.presentation.NoticeViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val noticeModule = module {
     single { NoticeParser() }
+    single { LinkHandler(get()) }
     single { NoticeScraper(webClient = get(), parser = get()) }
-    single { NoticeRepository(get(), get()) }
+    single { NoticeRepository(get(), get(), get()) }
     viewModel { NoticeViewModel(get()) }
     //database
     single {

@@ -1,8 +1,8 @@
 package com.reyaz.feature.result.data.mapper
 
+import com.reyaz.core.common.utlis.dateStringToLong
 import com.reyaz.feature.result.data.local.dto.RemoteResultListDto
 import com.reyaz.feature.result.data.local.entities.ResultListEntity
-import com.reyaz.feature.result.util.dateStringToLong
 import java.util.Date
 
 fun RemoteResultListDto.dtoListItemToEntity(courseId: String, isViewed: Boolean = true): ResultListEntity {

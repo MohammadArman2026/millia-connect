@@ -1,4 +1,4 @@
-package com.reyaz.feature.result.presentation.components
+package com.reyaz.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,7 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// todo: move to core:ui
 fun textWithIndicator(
     text: String,
     hasNewResults: Boolean
