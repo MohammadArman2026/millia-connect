@@ -20,8 +20,10 @@ import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import com.reyaz.feature.notice.domain.model.Tabs
 import androidx.core.net.toUri
+import kotlinx.coroutines.delay
+
 @Composable
 fun NoticeScreen(
     modifier: Modifier = Modifier,
@@ -38,8 +42,14 @@ fun NoticeScreen(
     onEvent: (NoticeEvent) -> Unit
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
+    var isLoading by remember { mutableStateOf(true) }
     val mContext = LocalContext.current
-
+    LaunchedEffect(selectedTabIndex, uiState.noticeList) {
+        isLoading = true
+        delay(2000)
+        if (uiState.noticeList.isNotEmpty())
+            isLoading = false
+    }
     Column(
         modifier = modifier.background(MaterialTheme.colorScheme.background)
     ) {
@@ -69,7 +79,7 @@ fun NoticeScreen(
                 )
             }
         }
-        AnimatedVisibility(uiState.isLoading) {
+        AnimatedVisibility(isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -77,11 +87,11 @@ fun NoticeScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Row(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    CircularProgressIndicator(modifier = Modifier.size(18.dp), color = MaterialTheme.colorScheme.onPrimary)
+                    CircularProgressIndicator(modifier = Modifier.size(18.dp), color = MaterialTheme.colorScheme.onTertiaryContainer)
                     Text("Loading...")
                 }
             }

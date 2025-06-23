@@ -27,6 +27,11 @@ class NoticeScraper(
                     when (noticeType) {
                         NoticeType.AcademicCalendar -> parser.parseAcademicCalendar(page)
                         NoticeType.Holiday -> parser.parseHoliday(page)
+                        NoticeType.Admission -> parser.parseAdmissionNotices(page, noticeType)
+                        NoticeType.Examination -> parser.parseAdmissionNotices(page, noticeType)
+                        NoticeType.General -> parser.parseAdmissionNotices(page, noticeType)
+                        NoticeType.Academics -> parser.parseAdmissionNotices(page, noticeType)
+                        NoticeType.Urgent -> parser.parseUrgentNotices(page)
 
                         else -> {
                             Log.d(TAG, "Unknown notice type: $noticeType")

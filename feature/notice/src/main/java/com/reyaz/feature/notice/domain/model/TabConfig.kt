@@ -15,6 +15,11 @@ enum class Tabs(
     val title: String,
     val type: NoticeType
 ){
+    URGENT(title = "Urgent", type = NoticeType.Urgent),
+    ACADEMICS(title = "Academics", type = NoticeType.Academics),
+    GENERAL(title = "General", type = NoticeType.General),
+    EXAMINATION(title = "Examination", type = NoticeType.Examination),
+    ADMISSION(title = "Admission", type = NoticeType.Admission),
     HOSTEL(title = "Holiday", type = NoticeType.Holiday),
     CALENDAR(title = "Calendar", type = NoticeType.AcademicCalendar),
 }

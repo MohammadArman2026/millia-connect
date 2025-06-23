@@ -3,9 +3,10 @@ package com.reyaz.feature.notice.data.local
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(
+    primaryKeys = ["title"]
+)
 data class NoticeEntity(
-    @PrimaryKey
     val title: String,
     val link: String?,
     val createdOn: Long,

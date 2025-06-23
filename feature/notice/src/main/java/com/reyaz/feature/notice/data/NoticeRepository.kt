@@ -18,19 +18,19 @@ class NoticeRepository(
 ) {
 
     fun observeNotice(noticeType: NoticeType): Flow<List<Notice>> {
-        val localList: Flow<List<Notice>> = noticeDao.observeNotices(noticeType.typeId).map {
-            it.sortedByDescending { noticeList -> noticeList.createdOn }
-                .map { noticeEntity -> noticeEntity.entityToDomain() }
-        }
-        return localList
+//        val localList: Flow<List<Notice>> = noticeDao.observeNotices(noticeType.typeId)
+//            .map { it.sortedByDescending { noticeList -> noticeList.createdOn }
+//                .map { noticeEntity -> noticeEntity.entityToDomain() }
+//        }
+//        return localList
+        return noticeDao.observeNotices(noticeType.typeId).map { noticeEntities -> noticeEntities.map { noticeEntity -> noticeEntity.entityToDomain() } }
     }
 
     suspend fun refreshNotice(noticeType: NoticeType): Result<Unit> {
         return try {
-            val academicRes = scraper.scrapNotices(noticeType)
-            val calendar : List<NoticeDto> = academicRes.getOrThrow()
-            if (academicRes.isSuccess && calendar.isNotEmpty()) {
-                calendar.map { noticeDao.insertNotice(it.toNoticeEntity()) }
+            val noticeResult = scraper.scrapNotices(noticeType)
+            if (noticeResult.isSuccess) {
+                noticeResult.getOrThrow().map { noticeDao.insertNotice(it.toNoticeEntity()) }
                 Result.success(Unit)
             } else {
                 throw Exception("Error while refreshing notice")

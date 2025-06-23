@@ -3,17 +3,37 @@ package com.reyaz.feature.notice.data.model
 sealed class NoticeType(
     val url: String,
     val typeId: String,
-    //val selector: String
 ) {
     data object AcademicCalendar : NoticeType(
         url = "https://jmi.ac.in/ACADEMICS/Academic-Calendar/Academic-Calendar",
-        //selector = "//div[contains(@class, 'bg_gray')]//ul[contains(@class, 'unorder-list')]//li[1]//a",
         typeId = "CAL"
     )
 
     data object Holiday : NoticeType(
         url = "https://jmi.ac.in/ACADEMICS/Academic-Calendar/List-Of-Holidays",
-        //selector = "//div[contains(@class, 'bg_gray')]//ul[contains(@class, 'unorder-list')]//li[1]//a",
         typeId = "HOL"
+    )
+
+    data object Admission : NoticeType(
+        url = "https://jmi.ac.in/BULLETIN-BOARD/Notices/Circulars/Latest",
+        typeId = "ADMISSION"
+    )
+
+    data object Examination : NoticeType(
+        url = "https://jmi.ac.in/BULLETIN-BOARD/Notices/Circulars/Latest/6",
+        typeId = "EXAMINATION"
+    )
+
+    data object General : NoticeType(
+        url = "https://jmi.ac.in/BULLETIN-BOARD/Notices/Circulars/Latest/9",
+        typeId = "GENERAL"
+    )
+    data object Academics : NoticeType(
+        url = "https://jmi.ac.in/BULLETIN-BOARD/Notices/Circulars/Latest/10",
+        typeId = "ACADEMICS"
+    )
+    data object Urgent : NoticeType(
+        url = "https://jmicoe.in/",
+        typeId = "URGENT"
     )
 }
