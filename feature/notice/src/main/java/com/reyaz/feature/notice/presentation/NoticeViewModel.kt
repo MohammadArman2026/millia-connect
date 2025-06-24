@@ -8,7 +8,9 @@ import com.reyaz.feature.notice.data.NoticeRepository
 import com.reyaz.feature.notice.data.model.NoticeType
 import com.reyaz.feature.notice.domain.model.Tabs
 import com.reyaz.feature.notice.domain.usecase.GetNoticeFromNetworkUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -27,8 +29,9 @@ class NoticeViewModel(
     private var observeJob: Job? = null
 
     init {
-        event(NoticeEvent.ObserveNotice(Tabs.entries[0].type))
+//        event(NoticeEvent.ObserveNotice(Tabs.entries[0].type))
 //        event(NoticeEvent.DownloadPdf(link, "dummy"))
+        onTabSelect(tab = Tabs.entries[0])
     }
 
     fun event(event: NoticeEvent) {
@@ -57,6 +60,14 @@ class NoticeViewModel(
         updateState { it.copy(selectedTabIndex = tab.ordinal, errorMessage = null) }
         refreshRemoteNotice(type = tab.type)
         observeLocalNotices(type = tab.type)
+        markAsRead(tab.type.typeId)
+    }
+
+    private fun markAsRead(typeId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            delay(5000)
+            noticeRepository.markNoticesAsRead(typeId)
+        }
     }
 
     private fun refreshRemoteNotice(type: NoticeType) {

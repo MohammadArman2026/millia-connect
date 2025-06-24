@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
@@ -24,15 +25,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.reyaz.core.ui.components.ListItemWithTrailingIcon
+import com.reyaz.core.ui.components.textWithIndicator
 import com.reyaz.core.ui.helper.LinkHandler
 import com.reyaz.core.ui.helper.getListItemModel
+import com.reyaz.core.ui.theme.MilliaConnectTheme
 import com.reyaz.feature.notice.domain.model.Tabs
 import com.reyaz.feature.notice.presentation.components.CustomTrailingIcon
-import kotlinx.coroutines.delay
 
 private const val TAG = "NOTICE_SCREEN"
 
@@ -62,7 +68,7 @@ fun NoticeScreen(
     }
 
     LaunchedEffect(uiState.errorMessage) {
-            showLoadingBar = !uiState.errorMessage.isNullOrEmpty()
+        showErrorBar = !uiState.errorMessage.isNullOrEmpty()
     }
 
     Column(
@@ -75,7 +81,38 @@ fun NoticeScreen(
         ) {
             Tabs.entries.forEach { it ->
                 Tab(
+                    modifier = Modifier.padding(horizontal = 8.dp),
                     text = {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = it.title,
+                                color = if (uiState.selectedTabIndex == it.ordinal) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onBackground
+                                }
+                            )
+                            /*if (uiState.unreadCount != 0)
+                                Box(
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .size(16.dp)
+                                        .background(MaterialTheme.colorScheme.errorContainer),
+                                ) {
+                                    Text(
+                                        text = uiState.unreadCount.toString(),
+                                        modifier = Modifier.align(Alignment.Center),
+                                        textAlign = TextAlign.Center,
+                                        fontSize = 12.sp
+                                    )
+                                }*/
+                        }
+
+                        /*Row(
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
                         Text(
                             text = it.title,
                             color = if (uiState.selectedTabIndex == it.ordinal) {
@@ -84,6 +121,15 @@ fun NoticeScreen(
                                 MaterialTheme.colorScheme.onBackground
                             }
                         )
+                        Text(
+                            uiState.unreadCount.toString(),
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.errorContainer)
+                                .padding(8.dp)
+                        )
+                    }*/
+
                     },
                     selected = uiState.selectedTabIndex == it.ordinal,
                     onClick = { onEvent(NoticeEvent.OnTabClick(it)) }
@@ -150,7 +196,7 @@ fun NoticeScreen(
                         openLink = { notice.link?.let { linkHandler.openInBrowser(it) } },
                     )
                     ListItemWithTrailingIcon(
-                        listTitle = it,
+                        textWithIndicator = textWithIndicator(it, !notice.isRead),
                         date = notice.fetchedOn,
                         trailingIcon = {
                             notice.link?.let {
@@ -172,7 +218,6 @@ fun NoticeScreen(
                                 else -> actionModel.onClick?.let { it() }
                             }
                         },
-                        isNewItem = !notice.isRead,
                     )
                 }
             }
@@ -192,3 +237,37 @@ fun LoadingErrorBar(color: Color, content: @Composable () -> Unit) {
     }
 }
 
+
+@Preview(showBackground = true)
+@Composable
+fun TabPreview() {
+    MilliaConnectTheme {
+        Tab(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            text = {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "Notice",
+                    )
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(16.dp)
+                            .background(MaterialTheme.colorScheme.errorContainer),
+                    ) {
+                        Text(
+                            text = "6",
+                            modifier = Modifier.align(Alignment.Center),
+                            textAlign = TextAlign.Center,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+            },
+            selected = false,
+            onClick = { }
+        )
+    }
+}

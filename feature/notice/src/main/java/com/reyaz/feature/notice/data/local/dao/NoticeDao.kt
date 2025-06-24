@@ -19,8 +19,8 @@ interface NoticeDao {
     @Query("UPDATE NoticeEntity SET path = :path, progress = :progress WHERE title = :fileName")
     suspend fun updatePdfPath(path: String?, fileName: String, progress: Int? = null)
 
-    @Query("UPDATE NoticeEntity SET isViewed = 1 WHERE title = :title")
-    suspend fun markCourseAsRead(title: String)
+    @Query("UPDATE NoticeEntity SET isViewed = 1 WHERE typeId = :id")
+    suspend fun markNoticeAsRead(id: String)
 
     @Query("UPDATE NoticeEntity SET progress = :progress WHERE title = :filename")
     suspend fun updateDownloadProgress(progress: Int?, filename: String)

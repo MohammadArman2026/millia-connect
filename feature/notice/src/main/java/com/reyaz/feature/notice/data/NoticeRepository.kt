@@ -89,8 +89,8 @@ class NoticeRepository(
         // Log.d(TAG, "path deleted from room")
     }
 
-    suspend fun markCourseAsRead(courseId: String) {
-        noticeDao.markCourseAsRead(courseId)
+    suspend fun markNoticesAsRead(id: String) {
+        noticeDao.markNoticeAsRead(id)
     }
 }
 
@@ -102,5 +102,6 @@ fun NoticeDto.toNoticeEntity(): NoticeEntity {
         title = title,
         link = url,
         createdOn = createdOn,
+        isViewed = false
     )
 }

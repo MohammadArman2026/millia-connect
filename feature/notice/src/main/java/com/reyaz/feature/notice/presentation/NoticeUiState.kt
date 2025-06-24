@@ -7,4 +7,6 @@ data class NoticeUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val selectedTabIndex: Int = 0
-)
+){
+    val unreadCount: Int = noticeList.count { !it.isRead }
+}
