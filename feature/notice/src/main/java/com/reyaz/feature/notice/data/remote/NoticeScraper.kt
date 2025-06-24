@@ -18,11 +18,11 @@ class NoticeScraper(
     suspend fun scrapNotices(noticeType: NoticeType): Result<List<NoticeDto>> =
         withContext(Dispatchers.IO) {
             try {
-                Log.d(TAG, "Fetching notices for $noticeType")
+                //Log.d(TAG, "Fetching notices for $noticeType")
                 val page: HtmlPage = webClient.getPage(noticeType.url)
                 webClient.waitForBackgroundJavaScript(3000)
 
-                Log.d(TAG, "Fetched page length: ${page.asNormalizedText().length}")
+                //Log.d(TAG, "Fetched page length: ${page.asNormalizedText().length}")
                 val parseResult: Result<List<NoticeDto>> =
                     when (noticeType) {
                         NoticeType.AcademicCalendar -> parser.parseAcademicCalendar(page)
@@ -32,18 +32,11 @@ class NoticeScraper(
                         NoticeType.General -> parser.parseAdmissionNotices(page, noticeType)
                         NoticeType.Academics -> parser.parseAdmissionNotices(page, noticeType)
                         NoticeType.Urgent -> parser.parseUrgentNotices(page)
-
-                        else -> {
-                            Log.d(TAG, "Unknown notice type: $noticeType")
-                            Result.failure(Exception("Unknown notice type: $noticeType"))
-                        }
                     }
                 parseResult
             } catch (e: Exception) {
                 Log.d(TAG, "Error While fetching notices", e)
-                Result.failure(e)
-            } finally {
-                //webClient.close()
+                Result.failure(Exception("Fetching failed"))
             }
         }
 }

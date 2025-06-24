@@ -31,11 +31,11 @@ class NoticeRepository(
                 noticeResult.getOrThrow().map { noticeDao.insertNotice(it.toNoticeEntity()) }
                 Result.success(Unit)
             } else {
-                throw Exception("Error while refreshing notice")
+                throw noticeResult.exceptionOrNull() ?: Exception("Error while refreshing notice")
             }
         } catch (e: Exception) {
             Log.d(TAG, "Error: $e")
-            Result.failure(Exception("Error while refreshing notice"))
+            Result.failure(e)
         }
     }
 

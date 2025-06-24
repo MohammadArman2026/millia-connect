@@ -39,11 +39,11 @@ class NoticeParser {
                 }
                 return Result.success(acadList)
             } else {
-                throw Exception("Tag not found while parsing")
+                throw Exception("Error while parsing")
             }
         } catch (e: Exception) {
-            Log.d(TAG, "Error while parsing notice", e)
-            return Result.failure(Exception("Error while parsing the academic calender"))
+            Log.d(TAG, "Error while parsing notice")
+            return Result.failure(e)
         }
     }
 
@@ -69,31 +69,35 @@ class NoticeParser {
                 }
                 return Result.success(notices)
             } else {
-                throw Exception("Tag not found while parsing")
+                throw Exception("Error while parsing")
             }
         } catch (e: Exception) {
-            Log.d(TAG, "Error while parsing notice", e)
-            return Result.failure(Exception("Error while parsing the academic calender"))
+            Log.d(TAG, "Error while parsing notice")
+            return Result.failure(e)
         }
     }
 
     fun parseAdmissionNotices(page: HtmlPage, noticeType: NoticeType): Result<List<NoticeDto>> {
         try {
-            Log.d(TAG, "Parsing Admission Notices..")
+            Log.d(TAG, "Parsing ${noticeType.typeId}..")
             val anchors = page.getByXPath<HtmlAnchor>("//span[@id='datatable1']//a")
-
-            val admissionNotices: List<NoticeDto> = anchors.mapNotNull { anchor ->
-                val title = anchor.textContent.trim()
-                val href = anchor.hrefAttribute.trim()
-                if (href.isNotBlank()) {
-                    val fullUrl = URL(page.baseURL, href).toString()
-                    NoticeDto(title = title, url = fullUrl, type = noticeType)
-                } else null
+            if (anchors != null) {
+                val admissionNotices: List<NoticeDto> = anchors.mapNotNull { anchor ->
+                    val title = anchor.textContent.trim()
+                    val href = anchor.hrefAttribute.trim()
+                    if (href.isNotBlank()) {
+                        val fullUrl = URL(page.baseURL, href).toString()
+                        NoticeDto(title = title, url = fullUrl, type = noticeType)
+                    } else null
+                }
+                Log.d(TAG, "Admission notices: $admissionNotices")
+                return Result.success(admissionNotices)
+            } else {
+                throw Exception("Error while parsing")
             }
-            return Result.success(admissionNotices)
         } catch (e: Exception) {
-            Log.d(TAG, "Error while parsing notice", e)
-            return Result.failure(Exception("Error while parsing the admission notices"))
+            Log.d(TAG, "Error while parsing notice")
+            return Result.failure(e)
         }
     }
 
@@ -101,18 +105,22 @@ class NoticeParser {
         try {
             Log.d(TAG, "Parsing urgent Notices..")
             val anchors = page.getByXPath<HtmlAnchor>("//marquee//a")
-            val admissionNotices: List<NoticeDto> = anchors.mapNotNull { anchor ->
-                val title = anchor.textContent.trim()   // Also captures <p> inside
-                val href = anchor.hrefAttribute.trim().replace(" ", "%20")
-                if (href.isNotBlank()) {
-                    val fullUrl = URL(page.baseURL, href).toString()
-                    NoticeDto(title = title, url = fullUrl, type = NoticeType.Urgent)
-                } else null
+            if (anchors != null) {
+                val admissionNotices: List<NoticeDto> = anchors.mapNotNull { anchor ->
+                    val title = anchor.textContent.trim()   // Also captures <p> inside
+                    val href = anchor.hrefAttribute.trim().replace(" ", "%20")
+                    if (href.isNotBlank()) {
+                        val fullUrl = URL(page.baseURL, href).toString()
+                        NoticeDto(title = title, url = fullUrl, type = NoticeType.Urgent)
+                    } else null
+                }
+                return Result.success(admissionNotices)
+            } else {
+                throw Exception("Error while parsing")
             }
-            return Result.success(admissionNotices)
         } catch (e: Exception) {
-            Log.d(TAG, "Error while parsing notice", e)
-            return Result.failure(Exception("Error while parsing the admission notices"))
+            Log.d(TAG, "Error while parsing notice")
+            return Result.failure(e)
         }
     }
 }

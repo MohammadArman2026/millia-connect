@@ -7,6 +7,7 @@ import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.feature.notice.data.NoticeRepository
 import com.reyaz.feature.notice.data.model.NoticeType
 import com.reyaz.feature.notice.domain.model.Tabs
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -18,6 +19,8 @@ class NoticeViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(NoticeUiState())
     val uiState = _uiState.asStateFlow()
+
+    private var observeJob: Job? = null
 
     init {
         event(NoticeEvent.ObserveNotice(Tabs.entries[0].type))
@@ -34,6 +37,11 @@ class NoticeViewModel(
             is NoticeEvent.DownloadPdf -> downloadPdf(url = event.url, title = event.title)
             is NoticeEvent.DeleteFileByPath -> deletePdfByPath(title = event.title,path = event.path)
             is NoticeEvent.UpdateTabIndex -> updateState { it.copy(selectedTabIndex = event.index) }
+            is NoticeEvent.OnTabClick -> {
+                updateState { it.copy(selectedTabIndex = event.tab.ordinal) }
+                refreshRemoteNotice(type = event.tab.type)
+                observeLocalNotices(type = event.tab.type)
+            }
             /*else -> {
                 Log.d(TAG, "Unknown event: $event")
             }*/
@@ -46,15 +54,18 @@ class NoticeViewModel(
             val refreshResult = noticeRepository.refreshNotice(type)
             if (refreshResult.isSuccess) {
                 updateState { it.copy(isLoading = false) }
+            } else{
+                updateState { it.copy(isLoading = false, errorMessage = refreshResult.exceptionOrNull()?.message) }
             }
         }
     }
 
     private fun observeLocalNotices(type: NoticeType) {
-        viewModelScope.launch {
+        observeJob?.cancel()
+        observeJob = viewModelScope.launch {
             updateState { it.copy(noticeList = emptyList()) }
             noticeRepository.observeNotice(type).collect { notices ->
-               // Log.d(TAG, "Notices: ${notices}")
+                    Log.d(TAG, "Notice type: ${type.typeId}")
                 updateState { it.copy(noticeList = notices) }
             }
         }
