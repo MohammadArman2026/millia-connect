@@ -13,6 +13,7 @@ val networkModule  = module{
     single {
         WebClient(BrowserVersion.CHROME).apply {
             options.isJavaScriptEnabled = true
+            options.isRedirectEnabled = true
             options.isCssEnabled = false
             options.isThrowExceptionOnScriptError = false
             options.isThrowExceptionOnFailingStatusCode = false

@@ -48,4 +48,7 @@ dependencies {
 
     // screen scraping
     implementation(libs.htmlunit.android)
+
+    // datastore
+    implementation(libs.androidx.datastore.preferences)
 }

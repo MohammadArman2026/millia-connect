@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,7 +58,7 @@ fun NoticeScreen(
     LaunchedEffect(uiState.isLoading, uiState.errorMessage) {
         showStatus = true
         delay(200)
-        if (uiState.noticeList.isNotEmpty())
+        //if (uiState.noticeList.isNotEmpty())
             showStatus = false
     }
 
@@ -115,11 +114,14 @@ fun NoticeScreen(
         LazyColumn(modifier = Modifier) {
             items(uiState.noticeList) { notice ->
 //                val notice = notice1.copy(progress = prog)
+                var isDownloading by remember { mutableStateOf(false) }
+
                 notice.title?.let { it ->
                     val actionModel = getListItemModel(
                         link = notice.link,
                         path = notice.path,
                         downloadPdf = {
+                            isDownloading = true
                             notice.link?.let {
                                 onEvent(
                                     NoticeEvent.DownloadPdf(
@@ -130,6 +132,7 @@ fun NoticeScreen(
                             }
                         },
                         deletePdf = {
+                            isDownloading = false
                             notice.path?.let {
                                 onEvent(
                                     NoticeEvent.DeleteFileByPath(
@@ -147,10 +150,11 @@ fun NoticeScreen(
                         trailingIcon = {
                             notice.link?.let {
                                 CustomTrailingIcon(
-                                    downloadProgress = notice.progress ?: 0,
+                                    downloadProgress = notice.progress,
 //                                    downloadProgress = prog,
                                     onIconClick = { actionModel.onClick?.let { it() } },
-                                    icon = actionModel.icon
+                                    icon = actionModel.icon,
+                                    isDownloading = isDownloading
                                 )
                             }
                         },
@@ -163,7 +167,7 @@ fun NoticeScreen(
                                 else -> actionModel.onClick?.let { it() }
                             }
                         },
-                        isNewItem = !notice.isRead
+                        isNewItem = !notice.isRead,
                     )
                 }
             }

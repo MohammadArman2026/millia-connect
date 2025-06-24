@@ -25,4 +25,5 @@ interface NoticeDao {
     @Query("UPDATE NoticeEntity SET progress = :progress WHERE title = :filename")
     suspend fun updateDownloadProgress(progress: Int?, filename: String)
 
+
 }

@@ -28,7 +28,10 @@ class NoticeRepository(
         return try {
             val noticeResult = scraper.scrapNotices(noticeType)
             if (noticeResult.isSuccess) {
-                noticeResult.getOrThrow().map { noticeDao.insertNotice(it.toNoticeEntity()) }
+                Log.d(TAG, noticeResult.getOrNull().toString())
+                noticeResult.getOrThrow().map {
+                    noticeDao.insertNotice(it.toNoticeEntity())
+                }
                 Result.success(Unit)
             } else {
                 throw noticeResult.exceptionOrNull() ?: Exception("Error while refreshing notice")
@@ -91,7 +94,7 @@ class NoticeRepository(
     }
 }
 
-fun NoticeEntity.entityToDomain() = Notice(title = title, link = link, path = path, progress = progress ?: 0, isRead = isViewed, fetchedOn = createdOn.toTimeAgoString())
+fun NoticeEntity.entityToDomain() = Notice(title = title, link = link, path = path, progress = progress, isRead = isViewed, fetchedOn = createdOn.toTimeAgoString())
 
 fun NoticeDto.toNoticeEntity(): NoticeEntity {
     return NoticeEntity(

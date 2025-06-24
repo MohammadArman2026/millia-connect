@@ -23,21 +23,24 @@ class PdfManager(
 ) {
 
     fun downloadPdf(url: String, fileName: String): Flow<DownloadResult> = flow {
-//        withContext(Dispatchers.IO) {
 //        Log.d(TAG, "connection opening...")
         SSLTrustUtils.trustAllHosts()
         var connection: HttpURLConnection? = null
         try {
-            val urlConnection = URL(url)
+            /*val urlConnection = URL(url)
             connection = urlConnection.openConnection() as HttpURLConnection
-            connection.instanceFollowRedirects = true
+            connection.instanceFollowRedirects = false
             connection.connect()
 
             if (connection.responseCode != HttpURLConnection.HTTP_OK) {
-                throw IOException("Server returned HTTP ${connection.responseCode}")
-            }
+//                throw IOException("Server returned HTTP ${connection.responseCode}")
+            }*/
+            connection = followRedirects(url)
 
             val fileSize = connection.contentLength
+//            Log.d(TAG, "File size: $fileSize")
+            if (fileSize < 0) emit(DownloadResult.Progress(null))
+
             val input = BufferedInputStream(connection.inputStream)
             val file = File(context.filesDir, sanitizeFileName(fileName))
 
@@ -69,17 +72,16 @@ class PdfManager(
                         emit(DownloadResult.Progress(progress))
                         lastProgress = progress
                     }
-                } else {
-                    // If file size is unknown, emit progress differently or not at all
-                    emit(DownloadResult.Progress(null))
                 }
             }
             output.flush()
             output.close()
             input.close()
-            Log.d(TAG, "File '$fileName' downloaded successfully.")
+//            Log.d(TAG, "File '$fileName' downloaded successfully.")
+//            Log.d(TAG, "Downloaded file size: $total bytes")
             emit(DownloadResult.Success(file.absolutePath))
         } catch (e: Exception) {
+            Log.d(TAG, "Error: $e")
             emit(DownloadResult.Error(e))
         } finally {
             connection?.disconnect()
@@ -87,7 +89,32 @@ class PdfManager(
 //        }
     }.flowOn(Dispatchers.IO)
 
-    suspend fun deleteFile(path: String)= withContext(Dispatchers.IO) {
+    private fun followRedirects(originalUrl: String): HttpURLConnection {
+        var url = URL(originalUrl)
+        var connection = url.openConnection() as HttpURLConnection
+        connection.instanceFollowRedirects = false
+
+        while (true) {
+            connection.connect()
+            val responseCode = connection.responseCode
+            if (responseCode in 300..399) {
+//                Log.d(TAG, "Response code: $responseCode")
+//                Log.d(TAG, "Redirecting to: ${connection.getHeaderField("Location")}")
+                val newLocation = connection.getHeaderField("Location") ?: break
+                connection.disconnect()
+                url = URL(newLocation)
+                connection = url.openConnection() as HttpURLConnection
+                connection.instanceFollowRedirects = false
+            } else {
+                Log.d(TAG, "Redirects completed")
+                break
+            }
+        }
+
+        return connection
+    }
+
+    suspend fun deleteFile(path: String) = withContext(Dispatchers.IO) {
         val file = File(path)
         if (file.exists()) {
             file.delete()

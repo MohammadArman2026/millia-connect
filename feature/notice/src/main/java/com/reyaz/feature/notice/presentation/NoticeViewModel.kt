@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 private const val TAG = "NOTICE_VIEW_MODEL"
+//private const val link = "https://tourism.gov.in/sites/default/files/2019-04/dummy-pdf_2.pdf"
+//private const val link = "http://jmicoe.in/pdf25/online%20offline%20extension%20notice.jpeg.pdf"
 
 class NoticeViewModel(
     private val noticeRepository: NoticeRepository
@@ -24,6 +26,7 @@ class NoticeViewModel(
 
     init {
         event(NoticeEvent.ObserveNotice(Tabs.entries[0].type))
+//        event(NoticeEvent.DownloadPdf(link, "dummy"))
     }
 
     fun event(event: NoticeEvent) {

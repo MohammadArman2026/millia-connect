@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 fun ListItemWithTrailingIcon(
     listTitle: String,
     date: String?,
-    trailingIcon: (@Composable () -> Unit)?,
+    trailingIcon: @Composable() (() -> Unit)?,
     onClick: () -> Unit,
     isNewItem: Boolean,
 ) {

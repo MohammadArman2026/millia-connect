@@ -80,7 +80,12 @@ class NoticeParser {
     fun parseAdmissionNotices(page: HtmlPage, noticeType: NoticeType): Result<List<NoticeDto>> {
         try {
             Log.d(TAG, "Parsing ${noticeType.typeId}..")
+//            Log.d(TAG, "Page to be Parsed: ${page.asNormalizedText()}..")
             val anchors = page.getByXPath<HtmlAnchor>("//span[@id='datatable1']//a")
+//            Log.d(TAG, "Anchor Size: ${anchors.size}..")
+            /*anchors.forEach{
+                Log.d(TAG, "Anchor: ${it}..")
+            }*/
             if (anchors != null) {
                 val admissionNotices: List<NoticeDto> = anchors.mapNotNull { anchor ->
                     val title = anchor.textContent.trim()
@@ -90,7 +95,7 @@ class NoticeParser {
                         NoticeDto(title = title, url = fullUrl, type = noticeType)
                     } else null
                 }
-                Log.d(TAG, "Admission notices: $admissionNotices")
+//                Log.d(TAG, "Admission notices size: ${admissionNotices.size}")
                 return Result.success(admissionNotices)
             } else {
                 throw Exception("Error while parsing")
