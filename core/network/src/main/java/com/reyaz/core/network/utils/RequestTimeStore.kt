@@ -16,9 +16,9 @@ class RequestTimeStore(
 ) {
     private fun getKey(typeId: String): Preferences.Key<Long> = longPreferencesKey("last_fetched_$typeId")
 
-    suspend fun saveRequestTime(timeStamp: Long, typeId: String) {
+    suspend fun saveRequestTime(typeId: String) {
         context.requestTimeDataStore.edit { preferences ->
-            preferences[getKey(typeId)] = timeStamp
+            preferences[getKey(typeId)] = System.currentTimeMillis()
         }
     }
 
@@ -27,7 +27,11 @@ class RequestTimeStore(
         return prefs[getKey(typeId)]
     }
 
-    suspend fun shouldRefresh(typeId: String, thresholdMillis: Long = 60 * 60 * 1000): Boolean {
+    suspend fun shouldRefresh(
+        typeId: String,
+        threshHoldHours: Int = 1,
+        thresholdMillis: Long = threshHoldHours.toLong() * 60 * 60 * 1000,
+    ): Boolean {
         val lastTime = getLastFetchedTime(typeId)
         val currentTime = System.currentTimeMillis()
         return lastTime == null || currentTime - lastTime > thresholdMillis

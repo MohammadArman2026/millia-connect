@@ -101,7 +101,7 @@ class NoticeParser {
                 throw Exception("Error while parsing")
             }
         } catch (e: Exception) {
-            Log.d(TAG, "Error while parsing notice")
+            Log.e(TAG, "Error: ", e)
             return Result.failure(e)
         }
     }

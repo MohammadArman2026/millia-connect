@@ -7,6 +7,7 @@ import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.feature.notice.data.NoticeRepository
 import com.reyaz.feature.notice.data.model.NoticeType
 import com.reyaz.feature.notice.domain.model.Tabs
+import com.reyaz.feature.notice.domain.usecase.GetNoticeFromNetworkUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +18,8 @@ private const val TAG = "NOTICE_VIEW_MODEL"
 //private const val link = "http://jmicoe.in/pdf25/online%20offline%20extension%20notice.jpeg.pdf"
 
 class NoticeViewModel(
-    private val noticeRepository: NoticeRepository
+    private val noticeRepository: NoticeRepository,
+    private val getNoticeFromNetworkUseCase: GetNoticeFromNetworkUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(NoticeUiState())
     val uiState = _uiState.asStateFlow()
@@ -35,30 +37,41 @@ class NoticeViewModel(
                 observeLocalNotices(event.type)
                 refreshRemoteNotice(event.type)
             }
+
             is NoticeEvent.FetchLocalNotice -> observeLocalNotices(event.type)
             is NoticeEvent.RefreshNotice -> refreshRemoteNotice(event.type)
             is NoticeEvent.DownloadPdf -> downloadPdf(url = event.url, title = event.title)
-            is NoticeEvent.DeleteFileByPath -> deletePdfByPath(title = event.title,path = event.path)
-            is NoticeEvent.UpdateTabIndex -> updateState { it.copy(selectedTabIndex = event.index) }
-            is NoticeEvent.OnTabClick -> {
-                updateState { it.copy(selectedTabIndex = event.tab.ordinal) }
-                refreshRemoteNotice(type = event.tab.type)
-                observeLocalNotices(type = event.tab.type)
-            }
+            is NoticeEvent.DeleteFileByPath -> deletePdfByPath(
+                title = event.title,
+                path = event.path
+            )
+
+            is NoticeEvent.OnTabClick -> onTabSelect(tab = event.tab)
             /*else -> {
                 Log.d(TAG, "Unknown event: $event")
             }*/
         }
     }
 
+    private fun onTabSelect(tab: Tabs) {
+        updateState { it.copy(selectedTabIndex = tab.ordinal, errorMessage = null) }
+        refreshRemoteNotice(type = tab.type)
+        observeLocalNotices(type = tab.type)
+    }
+
     private fun refreshRemoteNotice(type: NoticeType) {
         viewModelScope.launch {
             updateState { it.copy(isLoading = true, errorMessage = null) }
-            val refreshResult = noticeRepository.refreshNotice(type)
+            val refreshResult = getNoticeFromNetworkUseCase(type = type, forceRefresh = false)
             if (refreshResult.isSuccess) {
                 updateState { it.copy(isLoading = false) }
-            } else{
-                updateState { it.copy(isLoading = false, errorMessage = refreshResult.exceptionOrNull()?.message) }
+            } else {
+                updateState {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = refreshResult.exceptionOrNull()?.message
+                    )
+                }
             }
         }
     }
@@ -68,7 +81,7 @@ class NoticeViewModel(
         observeJob = viewModelScope.launch {
             updateState { it.copy(noticeList = emptyList()) }
             noticeRepository.observeNotice(type).collect { notices ->
-                    Log.d(TAG, "Notice type: ${type.typeId}")
+                Log.d(TAG, "Notice type: ${type.typeId}")
                 updateState { it.copy(noticeList = notices) }
             }
         }
@@ -83,6 +96,7 @@ class NoticeViewModel(
                         is DownloadResult.Error -> {
                             updateState { it.copy(errorMessage = downloadResult.exception.message) }
                         }
+
                         else -> {
                             //updateState { it.copy(errorMessage = null) }
                         }

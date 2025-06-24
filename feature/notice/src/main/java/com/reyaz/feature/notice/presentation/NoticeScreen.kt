@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.reyaz.core.ui.components.ListItemWithTrailingIcon
@@ -45,7 +46,8 @@ fun NoticeScreen(
     val context = LocalContext.current
     val linkHandler = remember { LinkHandler(context) }
 
-    var showStatus by remember { mutableStateOf(true) }
+    var showLoadingBar by remember { mutableStateOf(true) }
+    var showErrorBar by remember { mutableStateOf(false) }
 
     /*var prog by remember { mutableIntStateOf(0) }
     LaunchedEffect(Unit) {
@@ -55,11 +57,12 @@ fun NoticeScreen(
         }
     }*/
 
-    LaunchedEffect(uiState.isLoading, uiState.errorMessage) {
-        showStatus = true
-        delay(200)
-        //if (uiState.noticeList.isNotEmpty())
-            showStatus = false
+    LaunchedEffect(uiState.isLoading) {
+        showLoadingBar = uiState.isLoading
+    }
+
+    LaunchedEffect(uiState.errorMessage) {
+            showLoadingBar = !uiState.errorMessage.isNullOrEmpty()
     }
 
     Column(
@@ -87,29 +90,31 @@ fun NoticeScreen(
                 )
             }
         }
-        AnimatedVisibility(showStatus) {
-            if (uiState.isLoading || uiState.errorMessage != null)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = if (uiState.isLoading) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.errorContainer),
-                    contentAlignment = Alignment.Center
+        AnimatedVisibility(showLoadingBar) {
+            LoadingErrorBar(
+                color = MaterialTheme.colorScheme.tertiaryContainer
+            ) {
+                Row(
+                    modifier = Modifier.padding(4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    if (uiState.isLoading)
-                        Row(
-                            modifier = Modifier.padding(4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(18.dp),
-                                color = MaterialTheme.colorScheme.onTertiaryContainer
-                            )
-                            Text("Loading...")
-                        }
-                    else
-                        Text("${uiState.errorMessage}")
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        color = MaterialTheme.colorScheme.onTertiaryContainer
+                    )
+                    Text("Loading...")
                 }
+            }
+        }
+        AnimatedVisibility(showErrorBar) {
+            uiState.errorMessage?.let {
+                LoadingErrorBar(
+                    color = MaterialTheme.colorScheme.errorContainer
+                ) {
+                    Text(it)
+                }
+            }
         }
         LazyColumn(modifier = Modifier) {
             items(uiState.noticeList) { notice ->
@@ -172,6 +177,18 @@ fun NoticeScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun LoadingErrorBar(color: Color, content: @Composable () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color),
+        contentAlignment = Alignment.Center
+    ) {
+        content()
     }
 }
 
