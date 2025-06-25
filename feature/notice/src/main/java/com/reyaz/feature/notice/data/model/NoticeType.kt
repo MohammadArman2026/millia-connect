@@ -3,6 +3,7 @@ package com.reyaz.feature.notice.data.model
 sealed class NoticeType(
     val url: String,
     val typeId: String,
+    val selector: String = ""
 ) {
     data object AcademicCalendar : NoticeType(
         url = "https://jmi.ac.in/ACADEMICS/Academic-Calendar/Academic-Calendar",
@@ -35,5 +36,15 @@ sealed class NoticeType(
     data object Urgent : NoticeType(
         url = "https://jmicoe.in/",
         typeId = "URGENT"
+    )
+
+    data object NRI : NoticeType(
+        url = "https://jmicoe.in/",
+        typeId = "NRI"
+    )
+    data object Hostel : NoticeType(
+        url = "https://jmi.ac.in/ACADEMICS/Hostels/University-Boys-Hostels/Notices",
+        typeId = "HOSTEL",
+        selector = "//div[contains(@class, 'post-desc') and contains(@class, 'tb_dott')]//a"
     )
 }

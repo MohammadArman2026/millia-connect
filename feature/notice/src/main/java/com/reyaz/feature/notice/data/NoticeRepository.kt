@@ -28,7 +28,7 @@ class NoticeRepository(
         return try {
             val noticeResult = scraper.scrapNotices(noticeType)
             if (noticeResult.isSuccess) {
-                Log.d(TAG, noticeResult.getOrNull().toString())
+                Log.d(TAG,"Fetching notice from network successfully")
                 noticeResult.getOrThrow().map {
                     noticeDao.insertNotice(it.toNoticeEntity())
                 }

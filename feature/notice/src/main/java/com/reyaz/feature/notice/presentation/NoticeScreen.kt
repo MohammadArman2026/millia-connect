@@ -37,7 +37,7 @@ import com.reyaz.core.ui.components.textWithIndicator
 import com.reyaz.core.ui.helper.LinkHandler
 import com.reyaz.core.ui.helper.getListItemModel
 import com.reyaz.core.ui.theme.MilliaConnectTheme
-import com.reyaz.feature.notice.domain.model.Tabs
+import com.reyaz.feature.notice.domain.model.TabConfig
 import com.reyaz.feature.notice.presentation.components.CustomTrailingIcon
 
 private const val TAG = "NOTICE_SCREEN"
@@ -79,7 +79,7 @@ fun NoticeScreen(
             selectedTabIndex = uiState.selectedTabIndex,
             edgePadding = 0.dp
         ) {
-            Tabs.entries.forEach { it ->
+            TabConfig.entries.forEach { it ->
                 Tab(
                     modifier = Modifier.padding(horizontal = 8.dp),
                     text = {

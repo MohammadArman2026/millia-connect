@@ -2,25 +2,18 @@ package com.reyaz.feature.notice.domain.model
 
 import com.reyaz.feature.notice.data.model.NoticeType
 
-//
-//data class TabConfig(
-//    val noticeType : String,
-//    val tabName : String,
-//    val unReadCount : Int = 0,
-//    val isSelected : Boolean,
-//    val notices : List<Notice>
-//)
-
-enum class Tabs(
+enum class TabConfig(
     val title: String,
     val type: NoticeType
 ){
-    GENERAL(title = "General", type = NoticeType.General),
     CALENDAR(title = "Calendar", type = NoticeType.AcademicCalendar),
+    HOSTEL(title = "Hostel", type = NoticeType.Hostel),
+    GENERAL(title = "General", type = NoticeType.General),
     URGENT(title = "Urgent", type = NoticeType.Urgent),
     ACADEMICS(title = "Academics", type = NoticeType.Academics),
     EXAMINATION(title = "Examination", type = NoticeType.Examination),
     ADMISSION(title = "Admission", type = NoticeType.Admission),
-    HOSTEL(title = "Holiday", type = NoticeType.Holiday),
+    HOLIDAY(title = "Holiday", type = NoticeType.Holiday),
+    NRI(title = "NRI", type = NoticeType.NRI),
 }
 

@@ -29,8 +29,8 @@ class RequestTimeStore(
 
     suspend fun shouldRefresh(
         typeId: String,
-        threshHoldHours: Int = 1,
-        thresholdMillis: Long = threshHoldHours.toLong() * 60 * 60 * 1000,
+        threshHoldMin: Int = 60,
+        thresholdMillis: Long = threshHoldMin.toLong() * 60 * 1000,
     ): Boolean {
         val lastTime = getLastFetchedTime(typeId)
         val currentTime = System.currentTimeMillis()

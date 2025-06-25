@@ -13,7 +13,7 @@ interface NoticeDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertNotice(notice: NoticeEntity)
 
-    @Query("SELECT * FROM NoticeEntity WHERE typeId = :noticeType ORDER BY createdOn ASC")
+    @Query("SELECT * FROM NoticeEntity WHERE typeId = :noticeType ORDER BY createdOn DESC")
     fun observeNotices(noticeType: String): Flow<List<NoticeEntity>>
 
     @Query("UPDATE NoticeEntity SET path = :path, progress = :progress WHERE title = :fileName")

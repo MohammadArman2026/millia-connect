@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.feature.notice.data.NoticeRepository
 import com.reyaz.feature.notice.data.model.NoticeType
-import com.reyaz.feature.notice.domain.model.Tabs
+import com.reyaz.feature.notice.domain.model.TabConfig
 import com.reyaz.feature.notice.domain.usecase.GetNoticeFromNetworkUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -31,7 +31,7 @@ class NoticeViewModel(
     init {
 //        event(NoticeEvent.ObserveNotice(Tabs.entries[0].type))
 //        event(NoticeEvent.DownloadPdf(link, "dummy"))
-        onTabSelect(tab = Tabs.entries[0])
+        onTabSelect(tab = TabConfig.entries[0])
     }
 
     fun event(event: NoticeEvent) {
@@ -56,7 +56,7 @@ class NoticeViewModel(
         }
     }
 
-    private fun onTabSelect(tab: Tabs) {
+    private fun onTabSelect(tab: TabConfig) {
         updateState { it.copy(selectedTabIndex = tab.ordinal, errorMessage = null) }
         refreshRemoteNotice(type = tab.type)
         observeLocalNotices(type = tab.type)
@@ -73,7 +73,7 @@ class NoticeViewModel(
     private fun refreshRemoteNotice(type: NoticeType) {
         viewModelScope.launch {
             updateState { it.copy(isLoading = true, errorMessage = null) }
-            val refreshResult = getNoticeFromNetworkUseCase(type = type, forceRefresh = false)
+            val refreshResult = getNoticeFromNetworkUseCase(type = type, forceRefresh = true)
             if (refreshResult.isSuccess) {
                 updateState { it.copy(isLoading = false) }
             } else {
@@ -92,7 +92,7 @@ class NoticeViewModel(
         observeJob = viewModelScope.launch {
             updateState { it.copy(noticeList = emptyList()) }
             noticeRepository.observeNotice(type).collect { notices ->
-                Log.d(TAG, "Notice type: ${type.typeId}")
+                //Log.d(TAG, "Notice type: ${type.typeId}")
                 updateState { it.copy(noticeList = notices) }
             }
         }
