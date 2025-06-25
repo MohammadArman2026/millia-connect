@@ -145,7 +145,7 @@ class NetworkManager(private val context: Context) {
         when {
             isWifiConnected && isMobileDataConnected -> NetworkPreference.BOTH_CONNECTED
             isWifiConnected && !isMobileDataConnected -> NetworkPreference.WIFI_ONLY
-            //isMobileDataConnected -> NetworkPreference.MOBILE_DATA_ONLY
+            isMobileDataConnected -> NetworkPreference.MOBILE_DATA_ONLY
             else -> NetworkPreference.NONE
         }
     }
@@ -167,7 +167,7 @@ class NetworkManager(private val context: Context) {
 // Enum to represent the network preference status
 enum class NetworkPreference {
     WIFI_ONLY,
-    // MOBILE_DATA_ONLY,
+     MOBILE_DATA_ONLY,
     BOTH_CONNECTED,
     NONE
 }

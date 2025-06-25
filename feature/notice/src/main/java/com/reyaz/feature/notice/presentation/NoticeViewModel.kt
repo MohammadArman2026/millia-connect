@@ -21,7 +21,7 @@ private const val TAG = "NOTICE_VIEW_MODEL"
 
 class NoticeViewModel(
     private val noticeRepository: NoticeRepository,
-    private val getNoticeFromNetworkUseCase: GetNoticeFromNetworkUseCase
+    private val getNoticeFromNetworkUseCase: GetNoticeFromNetworkUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(NoticeUiState())
     val uiState = _uiState.asStateFlow()
@@ -29,8 +29,6 @@ class NoticeViewModel(
     private var observeJob: Job? = null
 
     init {
-//        event(NoticeEvent.ObserveNotice(Tabs.entries[0].type))
-//        event(NoticeEvent.DownloadPdf(link, "dummy"))
         onTabSelect(tab = TabConfig.entries[0])
     }
 
@@ -77,13 +75,16 @@ class NoticeViewModel(
             if (refreshResult.isSuccess) {
                 updateState { it.copy(isLoading = false) }
             } else {
-                updateState {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = refreshResult.exceptionOrNull()?.message
-                    )
-                }
+                setError(error = refreshResult.exceptionOrNull()?.message ?: "Unknown Error")
             }
+        }
+    }
+
+    private fun setError(error: String? = null) {
+        viewModelScope.launch {
+            updateState { it.copy(isLoading = false, errorMessage = error) }
+            delay(2000)
+            updateState { it.copy(errorMessage = null) }
         }
     }
 

@@ -16,7 +16,7 @@ val noticeModule = module {
     single { LinkHandler(get()) }
     single { NoticeScraper(webClient = get(), parser = get()) }
     single { NoticeRepository(get(), get(), get()) }
-    single { GetNoticeFromNetworkUseCase(get(), get()) }
+    single { GetNoticeFromNetworkUseCase(get(), get(), get()) }
     viewModel { NoticeViewModel(get(), get()) }
     //database
     single {

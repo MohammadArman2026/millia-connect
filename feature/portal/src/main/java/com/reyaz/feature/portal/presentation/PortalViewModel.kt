@@ -67,6 +67,7 @@ class PortalViewModel(
                         // No connectivity
                         _uiState.update { it.copy(isJamiaWifi = false, loadingMessage = null) }
                     }
+                    else -> {}
                 }
             }
         }
