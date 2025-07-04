@@ -34,11 +34,11 @@ fun Long.toTimeAgoString(): String {
     val weeks   = days / 7
 
     return when {
-        seconds < 60        -> "Just now"
-        minutes < 60        -> "$minutes min ago"
-        hours < 24          -> "$hours hour${if (hours > 1) "s" else ""} ago"
-        days < 7            -> "$days day${if (days > 1) "s" else ""} ago"
-        weeks < 5           -> "$weeks week${if (weeks > 1) "s" else ""} ago"
-        else                -> SimpleDateFormat("d MMM yyyy", Locale.getDefault()).format(Date(this))
+        seconds < 60        -> "Fetched Just now"
+        minutes < 60        -> "Fetched $minutes min ago"
+        hours < 24          -> "Fetched $hours hour${if (hours > 1) "s" else ""} ago"
+        days < 7            -> "Fetched $days day${if (days > 1) "s" else ""} ago"
+        weeks < 5           -> "Fetched $weeks week${if (weeks > 1) "s" else ""} ago"
+        else                -> "Fetched on ${SimpleDateFormat("d MMM yyyy", Locale.getDefault()).format(Date(this))}"
     }
 }

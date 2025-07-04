@@ -20,15 +20,17 @@ class NoticeRepository(
     private val scraper: NoticeScraper,
     private val noticeDao: NoticeDao,
     private val pdfManager: PdfManager,
-    ) {
+) {
 
-    fun observeNotice(noticeType: NoticeType): Flow<List<Notice>> = noticeDao.observeNotices(noticeType.typeId).map { noticeEntities -> noticeEntities.map { noticeEntity -> noticeEntity.entityToDomain() } }
+    fun observeNotice(noticeType: NoticeType): Flow<List<Notice>> =
+        noticeDao.observeNotices(noticeType.typeId)
+            .map { noticeEntities -> noticeEntities.map { noticeEntity -> noticeEntity.entityToDomain() } }
 
     suspend fun refreshNotice(noticeType: NoticeType): Result<Unit> {
         return try {
             val noticeResult = scraper.scrapNotices(noticeType)
             if (noticeResult.isSuccess) {
-                Log.d(TAG,"Fetching notice from network successfully")
+                Log.d(TAG, "Fetching notice from network successfully")
                 noticeResult.getOrThrow().map {
                     noticeDao.insertNotice(it.toNoticeEntity())
                 }
@@ -46,9 +48,9 @@ class NoticeRepository(
         url: String,
         fileName: String
     ): Flow<DownloadResult> = flow {
-         Log.d(TAG, "Download url: $url")
+        Log.d(TAG, "Download url: $url")
         pdfManager.downloadPdf(url = url, fileName = fileName).collect { downloadStatus ->
-             Log.d(TAG, "Download status: $downloadStatus")
+            Log.d(TAG, "Download status: $downloadStatus")
             when (downloadStatus) {
                 is DownloadResult.Error -> {
                     // Log.d(TAG, "Download error: ${downloadStatus.exception}")
@@ -83,7 +85,7 @@ class NoticeRepository(
         }
     }
 
-     suspend fun deleteFileByPath(path: String, filename: String) {
+    suspend fun deleteFileByPath(path: String, filename: String) {
         pdfManager.deleteFile(path)
         noticeDao.updatePdfPath(path = null, fileName = filename, progress = null)
         // Log.d(TAG, "path deleted from room")
@@ -94,7 +96,14 @@ class NoticeRepository(
     }
 }
 
-fun NoticeEntity.entityToDomain() = Notice(title = title, link = link, path = path, progress = progress, isRead = isViewed, fetchedOn = createdOn.toTimeAgoString())
+fun NoticeEntity.entityToDomain() = Notice(
+    title = title,
+    link = link,
+    path = path,
+    progress = progress,
+    isRead = isViewed,
+    fetchedOn = createdOn.toTimeAgoString()
+)
 
 fun NoticeDto.toNoticeEntity(): NoticeEntity {
     return NoticeEntity(

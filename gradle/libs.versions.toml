@@ -3,6 +3,7 @@
 pdfViewer = "2.3.7"
 room = "2.7.1"
 ksp = "2.0.0-1.0.24"        # kotlin version of this project - kotlin compatible ksp version
+swiperefreshlayout = "1.2.0-beta01"
 
 # Google Accompanist - Jetpack Compose utilities and extensions
 # A collection of libraries that complement Jetpack Compose with frequently requested functionalities
@@ -287,6 +288,9 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 # While you're using Compose Material 3, this might be a transitive dependency or needed for
 # certain legacy Android framework components (e.g., splash screen compatible theme).
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
+# swipe refresh
+androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 
 #Kotlin Extensions and Coroutines support for Room
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }

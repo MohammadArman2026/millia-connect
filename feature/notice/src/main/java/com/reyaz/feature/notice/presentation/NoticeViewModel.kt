@@ -3,6 +3,7 @@ package com.reyaz.feature.notice.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.reyaz.core.common.Resource
 import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.feature.notice.data.NoticeRepository
 import com.reyaz.feature.notice.data.model.NoticeType
@@ -36,11 +37,10 @@ class NoticeViewModel(
         when (event) {
             is NoticeEvent.ObserveNotice -> {
                 observeLocalNotices(event.type)
-                refreshRemoteNotice(event.type)
+                refreshRemoteNotice(event.type, forceRefresh = false)
             }
-
             is NoticeEvent.FetchLocalNotice -> observeLocalNotices(event.type)
-            is NoticeEvent.RefreshNotice -> refreshRemoteNotice(event.type)
+            is NoticeEvent.RefreshNotice -> refreshRemoteNotice(event.type, event.forceRefresh)
             is NoticeEvent.DownloadPdf -> downloadPdf(url = event.url, title = event.title)
             is NoticeEvent.DeleteFileByPath -> deletePdfByPath(
                 title = event.title,
@@ -56,7 +56,7 @@ class NoticeViewModel(
 
     private fun onTabSelect(tab: TabConfig) {
         updateState { it.copy(selectedTabIndex = tab.ordinal, errorMessage = null) }
-        refreshRemoteNotice(type = tab.type)
+        refreshRemoteNotice(type = tab.type, forceRefresh = false)
         observeLocalNotices(type = tab.type)
         markAsRead(tab.type.typeId)
     }
@@ -68,21 +68,22 @@ class NoticeViewModel(
         }
     }
 
-    private fun refreshRemoteNotice(type: NoticeType) {
+    private fun refreshRemoteNotice(type: NoticeType, forceRefresh: Boolean) {
         viewModelScope.launch {
-            updateState { it.copy(isLoading = true, errorMessage = null) }
-            val refreshResult = getNoticeFromNetworkUseCase(type = type, forceRefresh = true)
-            if (refreshResult.isSuccess) {
-                updateState { it.copy(isLoading = false) }
-            } else {
-                setError(error = refreshResult.exceptionOrNull()?.message ?: "Unknown Error")
+           // updateState { it.copy(isLoading = true, errorMessage = null) }
+            getNoticeFromNetworkUseCase(type = type, forceRefresh = forceRefresh).collect{ resource ->
+                when(resource){
+                    is Resource.Error -> setResetError(error = resource.message)
+                    is Resource.Loading -> updateState { it.copy(isLoading = !forceRefresh, isRefreshing = forceRefresh, errorMessage = null) }
+                    is Resource.Success -> updateState { it.copy(isLoading = false, isRefreshing = false, errorMessage = null) }
+                }
             }
         }
     }
 
-    private fun setError(error: String? = null) {
+    private fun setResetError(error: String? = null) {
         viewModelScope.launch {
-            updateState { it.copy(isLoading = false, errorMessage = error) }
+            updateState { it.copy(isLoading = false, isRefreshing = false, errorMessage = error) }
             delay(2000)
             updateState { it.copy(errorMessage = null) }
         }
