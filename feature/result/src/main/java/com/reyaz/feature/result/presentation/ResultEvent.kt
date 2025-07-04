@@ -23,6 +23,7 @@ sealed class ResultEvent {
 
     data class DeleteFileByPath(val path: String) : ResultEvent()
     data object RefreshResults : ResultEvent()
+    data object Initialize : ResultEvent()
 
     data class MarkAsRead(val courseId : String) : ResultEvent()
 

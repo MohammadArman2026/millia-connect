@@ -1,5 +1,6 @@
 package com.reyaz.feature.result.presentation.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,7 +43,7 @@ fun DropDownComposable(
         onExpandedChange = { if(enabled) expanded = !expanded },
     ) {
         OutlinedTextField(
-            modifier = Modifier
+            modifier = Modifier.animateContentSize()
                 .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled)
                 //.exposedDropdownSize(matchTextFieldWidth = true)
                 .fillMaxWidth(),

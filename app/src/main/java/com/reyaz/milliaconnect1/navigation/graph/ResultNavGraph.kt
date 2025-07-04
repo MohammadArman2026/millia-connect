@@ -27,7 +27,8 @@ fun NavGraphBuilder.resultNavGraph(
             },
             onNavigateBack = {
                 navController.popBackStack()
-            }
+            },
+            snackbarHostState = snackbarHostState
         )
     }
 

@@ -32,7 +32,7 @@ import org.koin.androidx.compose.koinViewModel
 fun MCNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    snackbarHostState: SnackbarHostState,
     portalViewModel: PortalViewModel,
 ) {
 
@@ -41,8 +41,8 @@ fun MCNavHost(
         startDestination =
 //            NavigationRoute.AttendanceGraph.route,
 //            NavigationRoute.Portal.route,
-//            NavigationRoute.ResultGraph.route,
-        NavigationRoute.Notice.route,
+            NavigationRoute.ResultGraph.route,
+//        NavigationRoute.Notice.route,
         modifier = modifier.fillMaxSize()
     ) {
         // Attendance Feature Graph

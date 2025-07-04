@@ -105,7 +105,7 @@ class ResultRepositoryImpl(
         return try {
 //            val result: Result<List<RemoteResultListDto>> = resultApi.fetchResult(courseTypeId = "UG1", courseNameId = "B03", phdDisciplineId = phdDepartment)
             val isExist: Boolean =
-                withContext(Dispatchers.IO) { resultDao.courseExist(courseId = course) }
+                withContext(Dispatchers.IO) { resultDao.havePreviousResult(courseId = course) }
             if (!isExist) {
                 val remoteList =
                     fetchRemoteResultList(typeId = type, courseId = course, phdId = phdDepartment)
@@ -152,7 +152,7 @@ class ResultRepositoryImpl(
         }
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission")      // todo: remove it
     override suspend fun refreshLocalResults() {
         try {
             Log.d(TAG, "Refreshing local results")

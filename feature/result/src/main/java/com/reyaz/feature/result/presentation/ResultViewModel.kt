@@ -24,13 +24,12 @@ class ResultViewModel(
     val uiState: StateFlow<ResultUiState> = _uiState.asStateFlow()
 
     init {
-        onEvent(ResultEvent.LoadSavedResults)
-        onEvent(ResultEvent.LoadDegree)
-        onEvent(ResultEvent.RefreshResults)
+        onEvent(ResultEvent.Initialize)
     }
 
     fun onEvent(event: ResultEvent) {
         when (event) {
+            ResultEvent.Initialize -> initializeResultScreen()
             ResultEvent.LoadDegree -> getCourseTypes()
             is ResultEvent.LoadCourse -> {
                 getCourses()
@@ -75,12 +74,18 @@ class ResultViewModel(
                 listTitle = event.title
             )
 
-            is ResultEvent.RefreshResults -> refreshResults()
+            is ResultEvent.RefreshResults -> refreshResultsFromRemote()
 //            is ResultEvent.DeleteFileByPath -> deletePdfByPath(event.path, event.listId)
 
             is ResultEvent.MarkAsRead -> markAsRead(event.courseId)
             else -> {}
         }
+    }
+
+    private fun initializeResultScreen() {
+        onEvent(ResultEvent.LoadSavedResults)
+        onEvent(ResultEvent.LoadDegree)
+        onEvent(ResultEvent.RefreshResults)
     }
 
     private fun markAsRead(courseId: String) {
@@ -89,7 +94,7 @@ class ResultViewModel(
         }
     }
 
-    private fun refreshResults() {
+    private fun refreshResultsFromRemote() {
         viewModelScope.launch { resultRepository.refreshLocalResults() }
     }
 
@@ -115,7 +120,7 @@ class ResultViewModel(
     private fun observeSavedResults() {
         viewModelScope.launch {
             resultRepository.observeResults().collect { resultHistories ->
-//                Log.d(TAG, "Results in viewmodel: ${resultHistories}")
+                Log.d(TAG, "Results in viewmodel: ${resultHistories}")
                 updateState { it.copy(isLoading = false, historyList = resultHistories) }
             }
         }
@@ -123,9 +128,9 @@ class ResultViewModel(
 
     private fun getCourseTypes() {
         viewModelScope.launch {
+            updateState { it.copy(typeLoading = true) }
             val typeList = resultRepository.getCourseTypes()
             // Log.d(TAG, "List: $typeList")
-            updateState { it.copy(typeLoading = true) }
             if (typeList.isSuccess) {
                 updateState {
                     it.copy(
@@ -173,7 +178,7 @@ class ResultViewModel(
 
     private fun getResult() {
         viewModelScope.launch {
-            // Log.d(TAG, "Loading Course")
+             Log.d(TAG, "Loading Course")
             updateState { it.copy(isLoading = true) }
             val result = resultRepository.getResult(
                 type = uiState.value.selectedTypeId,
