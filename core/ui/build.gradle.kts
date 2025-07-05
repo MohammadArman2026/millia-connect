@@ -61,7 +61,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.androidx.material.icons.extended)
-        //pdf
+    //pdf
     implementation(libs.pdf.viewer)
 
+//    implementation(libs.androidx)
+    implementation(libs.androidx.material.icons.extended)
 }

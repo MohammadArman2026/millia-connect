@@ -1,5 +1,6 @@
 package com.reyaz.core.ui.components
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -101,17 +102,24 @@ fun NavigationDrawerContent(
 
             // about developer
             Column(
-                modifier = Modifier.clickable {
-                    showAboutDeveloper = !showAboutDeveloper
-                }.padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
-            ){
+                modifier = Modifier
+                    .clickable {
+                        showAboutDeveloper = !showAboutDeveloper
+                    }
+                    .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
+            ) {
                 // heading
                 Row(
-                    Modifier.padding(end = 8.dp).fillMaxWidth(),
+                    Modifier
+                        .padding(end = 8.dp)
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
-                ){
-                    Text(text  = "About Developer", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                ) {
+                    Text(
+                        text = "About Developer",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     Icon(
                         imageVector = Icons.Outlined.ArrowDropDown,
                         contentDescription = null,
@@ -121,7 +129,9 @@ fun NavigationDrawerContent(
                 // social
                 AnimatedVisibility(showAboutDeveloper) {
                     Row(
-                        modifier = Modifier.height(80.dp).padding(top = 16.dp),
+                        modifier = Modifier
+                            .height(80.dp)
+                            .padding(top = 16.dp),
 //                        horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -129,28 +139,68 @@ fun NavigationDrawerContent(
                             painter = painterResource(R.drawable.sadique),
                             contentDescription = "sadique",
                             contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxHeight()
+                            modifier = Modifier
+                                .fillMaxHeight()
                                 .aspectRatio(1f)
                                 .clip(CircleShape)
                         )
                         Column(
-                            modifier = Modifier.fillMaxSize().padding(vertical = 4.dp),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(vertical = 4.dp),
                             verticalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = "Sadique Reyaz", fontSize = 20.sp, modifier = Modifier.padding(start = 16.dp))
+                            Text(
+                                text = "Sadique Reyaz",
+                                fontSize = 20.sp,
+                                modifier = Modifier.padding(start = 16.dp)
+                            )
                             //Spacer(modifier = Modifier.weight(1f))
                             Row(
-                                modifier = Modifier.fillMaxWidth().padding(start = 8.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 8.dp),
 //                                horizontalArrangement = Arrangement.spacedBy(16.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                SocialButton(onClick = { context.openUrl("https://github.com/mdsadique47") }, text = "linkedin")
-                                SocialButton(onClick = { context.openUrl("mailto:mdsadique47@gmail.com") }, text = "mdsadique47@gmail.com")
+                                SocialButton(
+                                    onClick = { context.openUrl("https://github.com/mdsadique47") },
+                                    text = "linkedin"
+                                )
+                                SocialButton(
+                                    onClick = { context.openUrl("mailto:mdsadique47@gmail.com") },
+                                    text = "mdsadique47@gmail.com"
+                                )
                             }
                         }
                     }
                 }
             }
+            HorizontalDivider(modifier = Modifier)
+            Text(
+                text = "JMI Official Websites",
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 0.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            CustomModalLinkText(text = "jmi.coe", link = "https://jmicoe.in/")
+            CustomModalLinkText(text = "jmi.ac.in", link = "https://jmi.ac.in/")
+            CustomModalLinkText(
+                text = "admissions.jmi.ac.in",
+                link = "https://admission.jmi.ac.in/"
+            )
+            CustomModalLinkText(
+                text = "Entrance Result",
+                link = "https://admission.jmi.ac.in/EntranceResults/UniversityResult"
+            )
+            CustomModalLinkText(
+                text = "MyJamia ( Fee payment, Wifi, hostel registration etc. )",
+                link = "https://mj.jmi.ac.in/"
+            )
+            CustomModalLinkText(
+                text = "Regular Student Login (Academic Info)",
+                link = "http://jmiregular.ucanapply.com/universitysystem/student/"
+            )
+            Spacer(Modifier.height(8.dp))
             HorizontalDivider(modifier = Modifier)
 
             // share button
@@ -199,11 +249,29 @@ private fun SocialButton(onClick: () -> Unit, text: String) {
         onClick = { onClick.invoke() }
     ) {
         Text(
-            text =text,
+            text = text,
             fontSize = 12.sp,
             fontStyle = FontStyle.Italic,
             textDecoration = TextDecoration.Underline,
             color = MaterialTheme.colorScheme.outline
         )
+    }
+}
+
+@Composable
+private fun CustomModalLinkText(text: String, link: String) {
+    val context = LocalContext.current
+    TextButton(
+        onClick = { context.openUrl(link) }
+    ) {
+        Text(
+            text = text,
+            fontSize = 12.sp,
+            fontStyle = FontStyle.Italic,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+//        Icon(ImageVector.vectorResource(R.drawable))
     }
 }
