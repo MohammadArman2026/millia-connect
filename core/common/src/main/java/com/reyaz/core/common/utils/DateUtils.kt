@@ -1,4 +1,4 @@
-package com.reyaz.core.common.utlis
+package com.reyaz.core.common.utils
 
 import java.text.SimpleDateFormat
 import java.util.Date

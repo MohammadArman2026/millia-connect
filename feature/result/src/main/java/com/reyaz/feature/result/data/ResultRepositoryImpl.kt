@@ -2,7 +2,7 @@ package com.reyaz.feature.result.data
 
 import android.annotation.SuppressLint
 import android.util.Log
-import com.reyaz.core.common.utlis.safeSuspendCall
+import com.reyaz.core.common.utils.safeSuspendCall
 import com.reyaz.core.network.PdfManager
 import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.core.notification.manager.AppNotificationManager

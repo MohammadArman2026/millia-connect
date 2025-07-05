@@ -1,7 +1,7 @@
 package com.reyaz.feature.result.data.mapper
 
-import com.reyaz.core.common.utlis.longToDateString
-import com.reyaz.core.common.utlis.toTimeAgoString
+import com.reyaz.core.common.utils.longToDateString
+import com.reyaz.core.common.utils.toTimeAgoString
 import com.reyaz.feature.result.data.local.dto.CourseWithList
 import com.reyaz.feature.result.domain.model.ResultHistory
 import com.reyaz.feature.result.domain.model.ResultItem

@@ -1,10 +1,11 @@
 package com.reyaz.feature.portal.data.repository
 
-import android.util.Log
+import com.reyaz.core.common.utils.Resource
 import com.reyaz.feature.portal.data.PortalScraper
 import com.reyaz.feature.portal.data.local.PortalDataStore
 import com.reyaz.feature.portal.domain.model.ConnectRequest
 import com.reyaz.feature.portal.domain.repository.PortalRepository
+import kotlinx.coroutines.flow.Flow
 
 class PortalRepositoryImpl(
     private val dataStore: PortalDataStore,
@@ -30,20 +31,9 @@ class PortalRepositoryImpl(
         }
     }
 
-    override suspend fun connect(request: ConnectRequest): Result<String> {
-        return try {
-            val result =
-                portalScraper.performLogin(username = request.username, password = request.password)
-            if (result.isSuccess) {
-                result
-            } else {
-                // return Result.failure(result.exceptionOrNull() ?: Exception("Unknown Error"))
-                throw Exception(result.exceptionOrNull())
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
+    override suspend fun connect(request: ConnectRequest): Flow<Resource<String>> =
+        portalScraper.performLogin(username = request.username, password = request.password)
+
 
     override suspend fun disconnect(): Result<String> {
         return try {
@@ -60,18 +50,32 @@ class PortalRepositoryImpl(
         }
     }
 
+    /**
+     * Checks the current connection state of the JMI Wi-Fi.
+     *
+     * This function determines whether the device is connected to the JMI Wi-Fi network
+     * and if it has internet access. Based on these two conditions, it returns the
+     * appropriate [JmiWifiState].
+     *
+     * @return [JmiWifiState] indicating the current connection status:
+     *   - [JmiWifiState.LOGGED_IN] if connected to JMI Wi-Fi and has internet access.
+     *   - [JmiWifiState.NOT_LOGGED_IN] if connected to JMI Wi-Fi but does not have internet access.
+     *   - [JmiWifiState.NOT_CONNECTED] if not connected to JMI Wi-Fi.
+     */
     override suspend fun checkConnectionState(): JmiWifiState {
         val isJmiWifi = portalScraper.isJmiWifi()
-        val hasInternetAccess = portalScraper.hasInternetAccess()
+        val hasInternetAccess = portalScraper.isJmiWifi(forceUseWifi = false)
         return if (isJmiWifi && hasInternetAccess) {
             JmiWifiState.LOGGED_IN
-        } else if (isJmiWifi && !hasInternetAccess) {
+        } else if (isJmiWifi) {
             JmiWifiState.NOT_LOGGED_IN
         } else {
-           JmiWifiState.NOT_CONNECTED
+            JmiWifiState.NOT_CONNECTED
         }
     }
-    override suspend fun isWifiPrimary(): Boolean  {
+
+    @Deprecated("Already checking while logging in in portal scraper")
+    override suspend fun isWifiPrimary(): Boolean {
         val res = portalScraper.isJmiWifi(false)
         // Log.d(TAG, "isWifiPrimary: $res")
         return res

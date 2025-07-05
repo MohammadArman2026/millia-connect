@@ -132,7 +132,7 @@ internal fun LoginFormComposable(
             }
         }
 
-        uiState.message?.let {
+        uiState.errorMsg?.let {
             Text(
                 text = it,
                 color = MaterialTheme.colorScheme.error,
@@ -142,6 +142,5 @@ internal fun LoginFormComposable(
                 textAlign = TextAlign.Center
             )
         }
-        //Spacer(Modifier.weight(1.2f))
     }
 }

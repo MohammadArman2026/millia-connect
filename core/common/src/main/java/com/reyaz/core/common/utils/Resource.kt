@@ -1,4 +1,4 @@
-package com.reyaz.core.common
+package com.reyaz.core.common.utils
 
 sealed class Resource<T>(
     data: T? = null,

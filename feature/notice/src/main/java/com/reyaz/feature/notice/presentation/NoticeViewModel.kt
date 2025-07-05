@@ -3,7 +3,7 @@ package com.reyaz.feature.notice.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.reyaz.core.common.Resource
+import com.reyaz.core.common.utils.Resource
 import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.feature.notice.data.NoticeRepository
 import com.reyaz.feature.notice.data.model.NoticeType

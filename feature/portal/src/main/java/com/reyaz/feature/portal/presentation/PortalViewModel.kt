@@ -5,8 +5,9 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.reyaz.core.common.utlis.NetworkManager
-import com.reyaz.core.common.utlis.NetworkPreference
+import com.reyaz.core.common.utils.Resource
+import com.reyaz.core.common.utils.NetworkManager
+import com.reyaz.core.common.utils.NetworkPreference
 import com.reyaz.feature.portal.data.local.PortalDataStore
 import com.reyaz.feature.portal.data.repository.JmiWifiState
 import com.reyaz.feature.portal.domain.model.ConnectRequest
@@ -30,12 +31,12 @@ class PortalViewModel(
 
     private val _uiState = MutableStateFlow(
         PortalUiState(
-//        username = "202207696",
-//     password = "ique@7696595",
-//        isJamiaWifi = true,
-//            isLoggedIn = true,
-//        autoConnect = true,
-//        message = null,
+//            username = "202207696",
+//            password = "ique@7696595",
+//            isJamiaWifi = true,
+//            isLoggedIn = false,
+//            autoConnect = false,
+//            errorMsg = null,
 //            loadingMessage = null
 
         )
@@ -45,29 +46,26 @@ class PortalViewModel(
     init {
         viewModelScope.launch {
             fetchCredentials()
-            networkObserver.observeNetworkPreference().collect { preference ->
-                when (preference) {
-                    NetworkPreference.BOTH_CONNECTED -> {
-                        Log.d("Network", "Both connected")
+            networkObserver.observeNetworkType().collect { networkPreference ->
+                when (networkPreference) {
+                    NetworkPreference.BOTH_CONNECTED, NetworkPreference.WIFI_ONLY -> {
+                        Log.d(TAG, "Both or only wifi connected")
                         // Show alert to user suggesting they turn off mobile data
-                        _uiState.update { it.copy(isMobileDataOn = true) }
+                        _uiState.update { it.copy() }
                         // login start
                         initialize()
                     }
 
-                    NetworkPreference.WIFI_ONLY -> {
-                        _uiState.update { it.copy(isMobileDataOn = false) }
-                        // Ideal state - WiFi only
-                        Log.d("Network", "WiFi connection only - optimal!")
-                        // login start
-                        initialize()
+                    else -> {
+                        Log.d(TAG, "No connection")
+                        _uiState.update {
+                            it.copy(
+                                isJamiaWifi = false,
+                                loadingMessage = null,
+                                isLoggedIn = false
+                            )
+                        }
                     }
-
-                    NetworkPreference.NONE -> {
-                        // No connectivity
-                        _uiState.update { it.copy(isJamiaWifi = false, loadingMessage = null) }
-                    }
-                    else -> {}
                 }
             }
         }
@@ -87,33 +85,49 @@ class PortalViewModel(
     fun handleLogin() {
         viewModelScope.launch {
             //repository.checkConnectionState()
-            if (uiState.value.loadingMessage == null) {
-                _uiState.update { it.copy(loadingMessage = "Logging in...") }
-            }
+//            if (uiState.value.loadingMessage == null) _uiState.update { it.copy(loadingMessage = "Logging in...") } // todo uncomment
             val request = ConnectRequest(
                 _uiState.value.username,
                 _uiState.value.password,
                 _uiState.value.autoConnect
             )
-            repository.connect(request)
-                .onSuccess { message ->
-                    _uiState.update {
-                        it.copy(
-                            message = message,
-                            isLoggedIn = true,
-                            loadingMessage = null,
-                        )
+            repository.connect(request).collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        _uiState.update {
+                            it.copy(
+                                loadingMessage = resource.message,
+                                errorMsg = null,
+                            )
+                        }
                     }
-                    updatePrimaryConnectionError()
-                    saveCredentials(true)
+
+                    is Resource.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                errorMsg = resource.message,
+                                isLoggedIn = true,
+                                loadingMessage = null
+                            )
+                        }
+                        //updatePrimaryConnectionError()    // todo: uncomment
+                        saveCredentials(true)
 //                    if (_uiState.value.autoConnect)
-                    //AutoLoginWorker.schedule(context = appContext)
+                        //AutoLoginWorker.schedule(context = appContext)
+                    }
+
+                    is Resource.Error -> {
+                        //AutoLoginWorker.cancel(appContext)
+                        _uiState.update {
+                            it.copy(
+                                isLoggedIn = false,
+                                loadingMessage = null,
+                                errorMsg = resource.message
+                            )
+                        }
+                    }
                 }
-                .onFailure { exception ->
-                    //AutoLoginWorker.cancel(appContext)
-                    _uiState.update { it.copy(isLoggedIn = false)};
-                    onError(exception)
-                }
+            }
         }
     }
 
@@ -127,7 +141,7 @@ class PortalViewModel(
                         it.copy(
                             isLoggedIn = false,
                             loadingMessage = null,
-                            message = message
+                            errorMsg = message
                         )
                     }
                     saveCredentials(false)
@@ -152,7 +166,7 @@ class PortalViewModel(
             _uiState.update {
                 it.copy(
                     loadingMessage = null,
-                    message = error
+                    errorMsg = error
                 )
             }
 
@@ -178,7 +192,7 @@ class PortalViewModel(
             _uiState.update { it.copy(autoConnect = autoConnect) }
             if (!uiState.value.autoConnect)
 //                AutoLoginWorker.cancel(context = context)
-            else if (uiState.value.isLoggedIn && uiState.value.loginEnabled){
+            else if (uiState.value.isLoggedIn && uiState.value.loginEnabled) {
 //                AutoLoginWorker.schedule(context = context)
             }
             userPreferences.setAutoConnect(autoConnect)
@@ -189,14 +203,14 @@ class PortalViewModel(
     }
 
     private fun saveCredentials(isLoggedIn: Boolean) {
-         viewModelScope.launch {
-             userPreferences.saveCredentials(
-                 _uiState.value.username,
-                 _uiState.value.password,
-                 isLoggedIn,
-                 _uiState.value.autoConnect
-             )
-         }
+        viewModelScope.launch {
+            userPreferences.saveCredentials(
+                _uiState.value.username,
+                _uiState.value.password,
+                isLoggedIn,
+                _uiState.value.autoConnect
+            )
+        }
     }
 
     fun retry() {
@@ -213,7 +227,7 @@ class PortalViewModel(
                             loadingMessage = null,
                             isJamiaWifi = false,
                             isLoggedIn = false,
-                            message = null
+                            errorMsg = null
                         )
                     }
                     saveCredentials(false)
@@ -225,7 +239,7 @@ class PortalViewModel(
                             loadingMessage = null,
                             isLoggedIn = false,
                             isJamiaWifi = true,
-                            message = if (uiState.value.loginEnabled) null else "One time credential needed to login automatically.",
+                            errorMsg = if (uiState.value.loginEnabled) null else "One time credential needed to login automatically.",
                         )
                     }
                     if (uiState.value.loginEnabled) {
@@ -240,7 +254,7 @@ class PortalViewModel(
                             loadingMessage = null,
                             isLoggedIn = true,
                             isJamiaWifi = true,
-                            message = null,
+                            errorMsg = null,
                         )
                     }
                     updatePrimaryConnectionError()
@@ -252,7 +266,7 @@ class PortalViewModel(
 
     private suspend fun updatePrimaryConnectionError() =
         _uiState.update {
-            it.copy(primaryErrorMsg = if (repository.isWifiPrimary()) null else "Turn Off Mobile Data to make wifi your primary connection.")
+            it.copy(errorMsg = if (repository.isWifiPrimary()) null else "Turn Off Mobile Data to make wifi your primary connection.")
         }
 
 }

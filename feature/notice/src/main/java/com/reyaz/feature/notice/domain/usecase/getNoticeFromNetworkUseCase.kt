@@ -1,9 +1,9 @@
 package com.reyaz.feature.notice.domain.usecase
 
 import android.util.Log
-import com.reyaz.core.common.Resource
-import com.reyaz.core.common.utlis.NetworkManager
-import com.reyaz.core.common.utlis.NetworkPreference
+import com.reyaz.core.common.utils.Resource
+import com.reyaz.core.common.utils.NetworkManager
+import com.reyaz.core.common.utils.NetworkPreference
 import com.reyaz.core.network.utils.RequestTimeStore
 import com.reyaz.feature.notice.data.NoticeRepository
 import com.reyaz.feature.notice.data.model.NoticeType
@@ -30,7 +30,7 @@ class GetNoticeFromNetworkUseCase(
         ) {
             emit(Resource.Loading())
             Log.d(TAG, "Refreshing new data")
-            if (networkManager.observeNetworkPreference().first() != NetworkPreference.NONE) {
+            if (networkManager.observeNetworkType().first() != NetworkPreference.NONE) {
                 val result = noticeRepository.refreshNotice(type)
                 if (result.isSuccess) {
                     requestTimeStore.saveRequestTime(type.typeId)

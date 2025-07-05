@@ -1,7 +1,7 @@
 package com.reyaz.feature.notice.data
 
 import android.util.Log
-import com.reyaz.core.common.utlis.toTimeAgoString
+import com.reyaz.core.common.utils.toTimeAgoString
 import com.reyaz.core.network.PdfManager
 import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.feature.notice.data.local.NoticeEntity

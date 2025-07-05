@@ -56,7 +56,11 @@ object TopLevelDestinations {
     /**
      * List of all top-level destinations in the order they should appear
      */
-    val ALL = listOf(RESULT, NOTICE, SCHEDULE)
+    val ALL = listOf(
+        SCHEDULE,
+        RESULT,
+        NOTICE,
+    )
 }
 
 /**

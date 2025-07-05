@@ -31,7 +31,7 @@ fun CaptivePortalDialogContent(
         } else if (uiState.isLoggedIn) {
             ConnectedComposable(
                 onDisconnect = { viewModel.logout() },
-                primaryErrorMsg = uiState.primaryErrorMsg
+                errorMsg = uiState.errorMsg
             )
         } else {    // login form
             LoginFormComposable(modifier = modifier, uiState, viewModel)

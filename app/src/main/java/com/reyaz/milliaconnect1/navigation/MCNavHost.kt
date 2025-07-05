@@ -3,9 +3,10 @@ package com.reyaz.milliaconnect1.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import com.reyaz.core.navigation.NavigationRoute
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -22,6 +23,7 @@ import com.reyaz.feature.portal.presentation.PortalScreen
 import com.reyaz.feature.portal.presentation.PortalViewModel
 import com.reyaz.milliaconnect1.navigation.graph.attendanceNavGraph
 import com.reyaz.milliaconnect1.navigation.graph.resultNavGraph
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -35,13 +37,13 @@ fun MCNavHost(
     snackbarHostState: SnackbarHostState,
     portalViewModel: PortalViewModel,
 ) {
-
+    val scope = rememberCoroutineScope()
     NavHost(
         navController = navController,
         startDestination =
 //            NavigationRoute.AttendanceGraph.route,
-//            NavigationRoute.Portal.route,
-            NavigationRoute.ResultGraph.route,
+            NavigationRoute.Portal.route,
+//            NavigationRoute.ResultGraph.route,
 //        NavigationRoute.Notice.route,
         modifier = modifier.fillMaxSize()
     ) {
@@ -49,14 +51,32 @@ fun MCNavHost(
         navigation(
             route = NavigationRoute.AttendanceGraph.route,
             startDestination = NavigationRoute.Schedule.route
-        ){
+        ) {
             attendanceNavGraph(navController, snackbarHostState)
         }
 
-        dialog(route = NavigationRoute.Portal.route){
-            PortalScreen(viewModel = portalViewModel, dismissDialog = {
-                navController.navigateUp()
-            })
+        dialog(route = NavigationRoute.Portal.route) {
+            PortalScreen(
+                viewModel = portalViewModel,
+                dismissDialog = {
+                    navController.navigateUp()
+                },
+                /*showSnackBar = { error: String, action: (()->Unit)? ->
+                    scope.launch {
+                        val result = snackbarHostState.showSnackbar(
+                            message = error,
+                            actionLabel = "Retry",
+                        )
+                        when(result){
+                            SnackbarResult.Dismissed -> {}
+                            SnackbarResult.ActionPerformed -> if (action != null) {
+                                action()
+                            }
+                        }
+
+                    }
+                }*/
+            )
         }
         // pdf screen
         composable(
@@ -72,7 +92,7 @@ fun MCNavHost(
         navigation(
             route = NavigationRoute.ResultGraph.route,
             startDestination = NavigationRoute.Result.route
-        ){
+        ) {
             resultNavGraph(navController, snackbarHostState)
         }
 
@@ -80,16 +100,16 @@ fun MCNavHost(
         composable(
             route = NavigationRoute.Notice.route
         ) {
-            val noticeViewModel : NoticeViewModel = koinViewModel()
+            val noticeViewModel: NoticeViewModel = koinViewModel()
             val uiState by noticeViewModel.uiState.collectAsStateWithLifecycle()
-           NoticeScreen(
-               uiState = uiState,
-               onEvent = noticeViewModel::event,
-               openPdf = {
-                   navController.navigate(NavigationRoute.PdfViewer.createRoute(it))
-               },
-               modifier = Modifier,
-           )
+            NoticeScreen(
+                uiState = uiState,
+                onEvent = noticeViewModel::event,
+                openPdf = {
+                    navController.navigate(NavigationRoute.PdfViewer.createRoute(it))
+                },
+                modifier = Modifier,
+            )
         }
 
         // Side Navigation Graph

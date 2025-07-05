@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 internal fun ConnectedComposable(
     modifier: Modifier = Modifier,
     onDisconnect: () -> Unit,
-    primaryErrorMsg: String?
+    errorMsg: String?
     ) {
     val context = LocalContext.current
     Column(
@@ -40,7 +40,7 @@ internal fun ConnectedComposable(
             //modifier = Modifier.padding(top = 8.dp),
             color = if (isSystemInDarkTheme()) Color(0xFFDFFFA1) else Color(0xFF008000)
         )
-        primaryErrorMsg?.let {
+        errorMsg?.let {
             Text(
                 text = it,
                 fontWeight = FontWeight.Bold,
@@ -60,7 +60,7 @@ internal fun ConnectedComposable(
                     .padding(4.dp, 12.dp, 4.dp, 0.dp)
                     .fillMaxWidth(),
             ) {
-                Text(text = "Go to Setting")
+                Text(text = "Turn Off Mobile Internet")
             }
         }
         OutlinedButton(

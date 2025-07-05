@@ -1,4 +1,4 @@
-package com.reyaz.core.common.utlis
+package com.reyaz.core.common.utils
 
 import android.util.Log
 

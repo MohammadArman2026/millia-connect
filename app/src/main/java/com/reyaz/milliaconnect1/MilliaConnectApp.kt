@@ -53,10 +53,13 @@ fun MilliaConnectApp() {
         )
     }
     val snackbarHostState = remember { SnackbarHostState() }
+
     val portalViewModel: PortalViewModel = koinViewModel()
     val portalUiState by portalViewModel.uiState.collectAsState()
+
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {

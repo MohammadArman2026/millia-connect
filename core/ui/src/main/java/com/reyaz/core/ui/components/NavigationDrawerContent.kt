@@ -1,6 +1,5 @@
 package com.reyaz.core.ui.components
 
-import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -54,8 +53,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.reyaz.core.common.utlis.openUrl
-import com.reyaz.core.common.utlis.shareTextExternally
+import com.reyaz.core.common.utils.openUrl
+import com.reyaz.core.common.utils.shareTextExternally
 import com.reyaz.core.ui.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
