@@ -54,7 +54,7 @@ fun ResultScreen(
 
     LaunchedEffect(isRefreshing) {
         if (isRefreshing) {
-//            delay(1)
+            delay(1)
             isRefreshing = false
         }
     }

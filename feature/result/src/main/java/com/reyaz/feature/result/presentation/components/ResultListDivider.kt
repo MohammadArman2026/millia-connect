@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
     HorizontalDivider(
         modifier = Modifier.padding(vertical = 8.dp),
         thickness = 1.dp,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+//        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+        color = MaterialTheme.colorScheme.outlineVariant
     )
 }

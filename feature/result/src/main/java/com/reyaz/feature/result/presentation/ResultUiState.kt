@@ -30,6 +30,6 @@ data class ResultUiState(
     val courseTypeEnabled: Boolean = courseTypeList.isNotEmpty() && !typeLoading
     val courseEnabled: Boolean =
         selectedTypeIndex != null && courseNameList.isNotEmpty() && !courseLoading
-    val btnEnabled: Boolean = selectedTypeIndex != null && selectedCourseIndex != null
+    val btnEnabled: Boolean = selectedTypeIndex != null && selectedCourseIndex != null && !isLoading
 }
 
