@@ -1,22 +1,17 @@
 package com.reyaz.feature.portal.presentation
 
-
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.reyaz.core.common.utils.Resource
 import com.reyaz.core.common.utils.NetworkManager
 import com.reyaz.core.common.utils.NetworkPreference
+import com.reyaz.core.common.utils.Resource
 import com.reyaz.feature.portal.data.local.PortalDataStore
 import com.reyaz.feature.portal.data.repository.JmiWifiState
 import com.reyaz.feature.portal.domain.model.ConnectRequest
 import com.reyaz.feature.portal.domain.repository.PortalRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 private const val TAG = "PORTAL_VM"
@@ -25,109 +20,81 @@ private const val LOGGING = true
 class PortalViewModel(
     private val repository: PortalRepository,
     private val networkObserver: NetworkManager,
-    private val userPreferences: PortalDataStore,
-//    private val portalScraper: PortalScraper,
-//    private val appContext: Context,
+    private val userPreferences: PortalDataStore
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(
-        PortalUiState(
-//            username = "202207696",
-//            password = "ique@7696595",
-//            isJamiaWifi = true,
-//            isLoggedIn = false,
-//            autoConnect = false,
-//            errorMsg = null,
-//            loadingMessage = null
-
-        )
-    )
+    private val _uiState = MutableStateFlow(PortalUiState())
     val uiState: StateFlow<PortalUiState> = _uiState.asStateFlow()
 
     init {
+        observeNetworkAndInitialize()
+    }
+
+    private fun log(message: String) {
+        if (LOGGING) Log.d(TAG, message)
+    }
+
+    private fun observeNetworkAndInitialize() {
         viewModelScope.launch {
             _uiState.update { it.copy(loadingMessage = "Loading...") }
-            fetchCredentials()
+            fetchStoredCredentials()
+
             networkObserver.observeNetworkType().collect { networkPreference ->
                 when (networkPreference) {
                     NetworkPreference.BOTH_CONNECTED, NetworkPreference.WIFI_ONLY -> {
-                        Log.d(TAG, "Both or only wifi connected")
-                        // login start
+                        log("Wifi or both connected")
                         initialize()
                     }
-
                     else -> {
-                        Log.d(TAG, "No connection")
-                        _uiState.update {
-                            it.copy(
-                                isJamiaWifi = false,
-                                loadingMessage = null,
-                                isLoggedIn = false,
-                            )
-                        }
+                        log("No connection")
+                        updateState(
+                            isJamiaWifi = false,
+                            isLoggedIn = false,
+                            loadingMessage = null
+                        )
                     }
                 }
             }
         }
     }
 
-    private fun log(log: String)  { if (LOGGING) Log.d(TAG, log) }
-
-    private suspend fun fetchCredentials() {
+    private suspend fun fetchStoredCredentials() {
         _uiState.update {
             it.copy(
                 username = userPreferences.username.first(),
                 password = userPreferences.password.first(),
-                autoConnect = userPreferences.autoConnect.first(),
+                autoConnect = userPreferences.autoConnect.first()
             )
         }
     }
 
-
     fun handleLogin() {
         viewModelScope.launch {
-            //repository.checkConnectionState()
-//            if (uiState.value.loadingMessage == null) _uiState.update { it.copy(loadingMessage = "Logging in...") } // todo uncomment
             val request = ConnectRequest(
                 _uiState.value.username,
                 _uiState.value.password,
                 _uiState.value.autoConnect
             )
-            repository.connect(request).collect { resource ->
-                when (resource) {
-                    is Resource.Loading -> {
-                        _uiState.update {
-                            it.copy(
-                                errorMsg = null,
-                            )
-                        }
-                    }
 
+            repository.connect(request).collect { result ->
+                when (result) {
+                    is Resource.Loading -> updateState(errorMsg = null, loadingMessage = "Loading...")
                     is Resource.Success -> {
-                        _uiState.update {
-                            it.copy(
-                                errorMsg = resource.message,
-                                isLoggedIn = true,
-                                loadingMessage = null,
-                                isWifiPrimary = resource.message.isNullOrBlank()
-                            )
-                        }
-                        //updatePrimaryConnectionError()    // todo: uncomment
-                        saveCredentials(true)
-//                    if (_uiState.value.autoConnect)
-                        //AutoLoginWorker.schedule(context = appContext)
+                        updateState(
+                            isLoggedIn = true,
+                            loadingMessage = null,
+                            errorMsg = result.message,
+                            isWifiPrimary = result.message.isNullOrBlank()
+                        )
+                        saveCredentials(isLoggedIn = true)
                     }
-
                     is Resource.Error -> {
-                        //AutoLoginWorker.cancel(appContext)
-                        _uiState.update {
-                            it.copy(
-                                isLoggedIn = false,
-                                loadingMessage = null,
-                                errorMsg = resource.message
-                            )
-                        }
-                        saveCredentials(false)
+                        updateState(
+                            isLoggedIn = false,
+                            loadingMessage = null,
+                            errorMsg = result.message
+                        )
+                        saveCredentials(isLoggedIn = false)
                     }
                 }
             }
@@ -136,143 +103,128 @@ class PortalViewModel(
 
     fun logout() {
         viewModelScope.launch {
-            _uiState.update { it.copy(loadingMessage = "Logging Out...") }
+            updateState(loadingMessage = "Logging Out...")
             repository.disconnect()
-                .onSuccess { message ->
-                    Log.d("VMLogin", "Logout successful")
-                    _uiState.update {
-                        it.copy(
-                            isLoggedIn = false,
-                            loadingMessage = null,
-                            errorMsg = message
-                        )
-                    }
-                    saveCredentials(false)
+                .onSuccess {
+                    log("Logout successful")
+                    updateState(isLoggedIn = false, loadingMessage = null, errorMsg = it)
+                    saveCredentials(isLoggedIn = false)
                 }
-                .onFailure { exception ->
-                    Log.e("VMLogin", "Logout failed", exception)
-                    onError(exception)
+                .onFailure {
+                    Log.e(TAG, "Logout failed", it)
+                    handleError(it)
                 }
-            //AutoLoginWorker.cancel(appContext)
         }
     }
 
-    private fun onError(exception: Throwable) {
+    fun retry() {
+        updateState(loadingMessage = "Retrying...", errorMsg = null)
+        initialize()
+    }
+
+    private fun initialize() {
         viewModelScope.launch {
-            val error = if (exception.message?.contains("10.2.0.10:8090") == true)
-                "You're not connected to Jamia Wifi.\nPlease connect and try again."
-            else if (exception.message?.contains("Wrong Username or Password") == true)
-                "Wrong Username or Password"
-            else
-                exception.message ?: "Oops! An error occurred."
+            when (repository.checkConnectionState()) {
+                JmiWifiState.NOT_CONNECTED -> {
+                    log("Not connected")
+                    updateState(isJamiaWifi = false, isLoggedIn = false, loadingMessage = null, errorMsg = null)
+                }
 
-            _uiState.update {
-                it.copy(
-                    loadingMessage = null,
-                    errorMsg = error
-                )
+                JmiWifiState.NOT_LOGGED_IN -> {
+                    log("Not logged in")
+                    updateState(
+                        isJamiaWifi = true,
+                        isLoggedIn = false,
+                        loadingMessage = null,
+                        errorMsg = if (uiState.value.loginEnabled) null else "One time credential needed to login automatically."
+                    )
+                    if (uiState.value.loginEnabled) handleLogin()
+                }
+
+                JmiWifiState.LOGGED_IN -> {
+                    log("Logged in")
+                    updateState(isJamiaWifi = true, isLoggedIn = true, loadingMessage = null, errorMsg = null)
+                }
             }
-
         }
+    }
+
+    private fun handleError(exception: Throwable) {
+        val message = when {
+            exception.message?.contains("10.2.0.10:8090") == true ->
+                "You're not connected to Jamia Wifi.\nPlease connect and try again."
+
+            exception.message?.contains("Wrong Username or Password") == true ->
+                "Wrong Username or Password"
+
+            else -> exception.message ?: "Oops! An error occurred."
+        }
+
+        updateState(loadingMessage = null, errorMsg = message)
     }
 
     fun updateUsername(username: String) {
         _uiState.update { it.copy(username = username) }
-        viewModelScope.launch {
-            saveCredentials(isLoggedIn = false)
-        }
+        saveCredentials(false)
     }
 
-    fun updatePassword(newPassword: String) {
-        _uiState.update { it.copy(password = newPassword) }
-        viewModelScope.launch {
-            saveCredentials(isLoggedIn = false)
-        }
+    fun updatePassword(password: String) {
+        _uiState.update { it.copy(password = password) }
+        saveCredentials(false)
     }
 
     fun updateAutoConnect(autoConnect: Boolean, context: Context) {
         viewModelScope.launch {
             _uiState.update { it.copy(autoConnect = autoConnect) }
-            if (!uiState.value.autoConnect)
-//                AutoLoginWorker.cancel(context = context)
-            else if (uiState.value.isLoggedIn && uiState.value.loginEnabled) {
-//                AutoLoginWorker.schedule(context = context)
-            }
             userPreferences.setAutoConnect(autoConnect)
-        }
-        viewModelScope.launch {
-            saveCredentials(isLoggedIn = false)
+
+            // Optional: handle AutoLoginWorker scheduling
+            // if (autoConnect && uiState.value.isLoggedIn && uiState.value.loginEnabled) { ... }
+
+            saveCredentials(false)
         }
     }
 
     private fun saveCredentials(isLoggedIn: Boolean) {
         viewModelScope.launch {
             userPreferences.saveCredentials(
-                _uiState.value.username,
-                _uiState.value.password,
-                isLoggedIn,
-                _uiState.value.autoConnect
+                username = _uiState.value.username,
+                password = _uiState.value.password,
+                isLoggedIn = isLoggedIn,
+                autoConnect = _uiState.value.autoConnect
             )
         }
     }
 
-    fun retry() {
-        initialize()
-    }
-
-    private fun initialize() {
-        viewModelScope.launch {
-//            _uiState.update { it.copy(loadingMessage = "Connecting...") }
-            when (repository.checkConnectionState()) {
-                JmiWifiState.NOT_CONNECTED -> {
-                    log("Not Connected")
-                    _uiState.update {
-                        it.copy(
-                            loadingMessage = null,
-                            isJamiaWifi = false,
-                            isLoggedIn = false,
-                            errorMsg = null
-                        )
-                    }
-//                    saveCredentials(false)
-                }
-
-                JmiWifiState.NOT_LOGGED_IN -> {
-                    log("Not logged in")
-                    _uiState.update {
-                        it.copy(
-                            loadingMessage = null,
-                            isLoggedIn = false,
-                            isJamiaWifi = true,
-                            errorMsg = if (uiState.value.loginEnabled) null else "One time credential needed to login automatically.",
-                        )
-                    }
-                    if (uiState.value.loginEnabled) {
-                        handleLogin()
-//                        saveCredentials(true)
-                    }
-                }
-
-                JmiWifiState.LOGGED_IN -> {
-                    log("Logged in")
-                    _uiState.update {
-                        it.copy(
-                            loadingMessage = null,
-                            isLoggedIn = true,
-                            isJamiaWifi = true,
-                            errorMsg = null,
-                        )
-                    }
-//                    updatePrimaryConnectionError()
-//                    saveCredentials(true)
-                }
-            }
-        }
-    }
-
-    private suspend fun updatePrimaryConnectionError() =
+    private fun updateState(
+        username: String? = null,
+        password: String? = null,
+        isLoggedIn: Boolean? = null,
+        isJamiaWifi: Boolean? = null,
+        autoConnect: Boolean? = null,
+        loadingMessage: String? = _uiState.value.loadingMessage,
+        errorMsg: String? = _uiState.value.errorMsg,
+        isWifiPrimary: Boolean = _uiState.value.isWifiPrimary
+    ) {
         _uiState.update {
-            it.copy(errorMsg = if (repository.isCurrentConnectionIsJmiWifi()) null else "Turn Off Mobile Data to make wifi your primary connection.")
+            it.copy(
+                username = username ?: it.username,
+                password = password ?: it.password,
+                isLoggedIn = isLoggedIn ?: it.isLoggedIn,
+                isJamiaWifi = isJamiaWifi ?: it.isJamiaWifi,
+                autoConnect = autoConnect ?: it.autoConnect,
+                loadingMessage = loadingMessage,
+                errorMsg = errorMsg,
+                isWifiPrimary = isWifiPrimary
+            )
         }
+    }
 
+    // Optional, use if you want to notify user to disable mobile data
+    private suspend fun updatePrimaryConnectionError() {
+        updateState(
+            errorMsg = if (repository.isCurrentConnectionIsJmiWifi()) null
+            else "Turn Off Mobile Data to make wifi your primary connection."
+        )
+    }
 }
