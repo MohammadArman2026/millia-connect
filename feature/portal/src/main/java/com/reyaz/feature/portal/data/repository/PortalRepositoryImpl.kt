@@ -1,5 +1,6 @@
 package com.reyaz.feature.portal.data.repository
 
+import android.util.Log
 import com.reyaz.core.common.utils.Resource
 import com.reyaz.feature.portal.data.PortalScraper
 import com.reyaz.feature.portal.data.local.PortalDataStore
@@ -63,8 +64,9 @@ class PortalRepositoryImpl(
      *   - [JmiWifiState.NOT_CONNECTED] if not connected to JMI Wi-Fi.
      */
     override suspend fun checkConnectionState(): JmiWifiState {
-        val isJmiWifi = portalScraper.isJmiWifi()
+        val isJmiWifi = portalScraper.isJmiWifi(forceUseWifi = true)
         val hasInternetAccess = portalScraper.isJmiWifi(forceUseWifi = false)
+        Log.d(TAG, "HasInternet: $hasInternetAccess, IsJmiWifi: $isJmiWifi")
         return if (isJmiWifi && hasInternetAccess) {
             JmiWifiState.LOGGED_IN
         } else if (isJmiWifi) {
@@ -75,8 +77,8 @@ class PortalRepositoryImpl(
     }
 
     @Deprecated("Already checking while logging in in portal scraper")
-    override suspend fun isWifiPrimary(): Boolean {
-        val res = portalScraper.isJmiWifi(false)
+    override suspend fun isCurrentConnectionIsJmiWifi(): Boolean {
+        val res = portalScraper.isJmiWifi(true)
         // Log.d(TAG, "isWifiPrimary: $res")
         return res
     }

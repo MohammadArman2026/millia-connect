@@ -10,6 +10,6 @@ interface PortalRepository {
     suspend fun connect(request: ConnectRequest): Flow<Resource<String>>
     suspend fun disconnect(): Result<String>
     suspend fun checkConnectionState(): JmiWifiState
-    suspend fun isWifiPrimary(): Boolean
+    suspend fun isCurrentConnectionIsJmiWifi(): Boolean
 }
 

@@ -8,7 +8,7 @@ data class PortalUiState(
     val isLoggedIn: Boolean = false,
     val isJamiaWifi: Boolean = true,
     val autoConnect: Boolean = true,
-//    val isMobileDataOn: Boolean = false,
+    val isWifiPrimary: Boolean = true,
 
     val loadingMessage: String? = "Loading...",
     val errorMsg: String? = null,
@@ -16,3 +16,8 @@ data class PortalUiState(
     val loginEnabled: Boolean = username.isNotEmpty() && password.isNotEmpty()
     val isLoading: Boolean  = !loadingMessage.isNullOrBlank()
 }
+
+// not connected to preferred wifi
+// connected but not logged in
+// logged in
+// loading

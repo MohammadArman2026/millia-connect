@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private const val TAG = "PORTAL_VM"
+private const val LOGGING = true
 
 class PortalViewModel(
     private val repository: PortalRepository,
@@ -45,13 +46,12 @@ class PortalViewModel(
 
     init {
         viewModelScope.launch {
+            _uiState.update { it.copy(loadingMessage = "Loading...") }
             fetchCredentials()
             networkObserver.observeNetworkType().collect { networkPreference ->
                 when (networkPreference) {
                     NetworkPreference.BOTH_CONNECTED, NetworkPreference.WIFI_ONLY -> {
                         Log.d(TAG, "Both or only wifi connected")
-                        // Show alert to user suggesting they turn off mobile data
-                        _uiState.update { it.copy() }
                         // login start
                         initialize()
                     }
@@ -62,7 +62,7 @@ class PortalViewModel(
                             it.copy(
                                 isJamiaWifi = false,
                                 loadingMessage = null,
-                                isLoggedIn = false
+                                isLoggedIn = false,
                             )
                         }
                     }
@@ -70,6 +70,8 @@ class PortalViewModel(
             }
         }
     }
+
+    private fun log(log: String)  { if (LOGGING) Log.d(TAG, log) }
 
     private suspend fun fetchCredentials() {
         _uiState.update {
@@ -96,7 +98,6 @@ class PortalViewModel(
                     is Resource.Loading -> {
                         _uiState.update {
                             it.copy(
-                                loadingMessage = resource.message,
                                 errorMsg = null,
                             )
                         }
@@ -107,7 +108,8 @@ class PortalViewModel(
                             it.copy(
                                 errorMsg = resource.message,
                                 isLoggedIn = true,
-                                loadingMessage = null
+                                loadingMessage = null,
+                                isWifiPrimary = resource.message.isNullOrBlank()
                             )
                         }
                         //updatePrimaryConnectionError()    // todo: uncomment
@@ -125,6 +127,7 @@ class PortalViewModel(
                                 errorMsg = resource.message
                             )
                         }
+                        saveCredentials(false)
                     }
                 }
             }
@@ -219,9 +222,10 @@ class PortalViewModel(
 
     private fun initialize() {
         viewModelScope.launch {
-            _uiState.update { it.copy(loadingMessage = "Connecting...") }
+//            _uiState.update { it.copy(loadingMessage = "Connecting...") }
             when (repository.checkConnectionState()) {
                 JmiWifiState.NOT_CONNECTED -> {
+                    log("Not Connected")
                     _uiState.update {
                         it.copy(
                             loadingMessage = null,
@@ -230,10 +234,11 @@ class PortalViewModel(
                             errorMsg = null
                         )
                     }
-                    saveCredentials(false)
+//                    saveCredentials(false)
                 }
 
                 JmiWifiState.NOT_LOGGED_IN -> {
+                    log("Not logged in")
                     _uiState.update {
                         it.copy(
                             loadingMessage = null,
@@ -244,11 +249,12 @@ class PortalViewModel(
                     }
                     if (uiState.value.loginEnabled) {
                         handleLogin()
-                        saveCredentials(true)
+//                        saveCredentials(true)
                     }
                 }
 
                 JmiWifiState.LOGGED_IN -> {
+                    log("Logged in")
                     _uiState.update {
                         it.copy(
                             loadingMessage = null,
@@ -257,8 +263,8 @@ class PortalViewModel(
                             errorMsg = null,
                         )
                     }
-                    updatePrimaryConnectionError()
-                    saveCredentials(true)
+//                    updatePrimaryConnectionError()
+//                    saveCredentials(true)
                 }
             }
         }
@@ -266,7 +272,7 @@ class PortalViewModel(
 
     private suspend fun updatePrimaryConnectionError() =
         _uiState.update {
-            it.copy(errorMsg = if (repository.isWifiPrimary()) null else "Turn Off Mobile Data to make wifi your primary connection.")
+            it.copy(errorMsg = if (repository.isCurrentConnectionIsJmiWifi()) null else "Turn Off Mobile Data to make wifi your primary connection.")
         }
 
 }

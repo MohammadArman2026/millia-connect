@@ -10,108 +10,111 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import org.htmlunit.WebClient
-import org.htmlunit.html.HtmlElement
-import org.htmlunit.html.HtmlPage
-import org.htmlunit.html.HtmlPasswordInput
-import org.htmlunit.html.HtmlTextInput
+import org.htmlunit.html.*
 import java.net.HttpURLConnection
 import java.net.URL
 
-
 class PortalScraper(
-//    private val notificationHelper: NotificationHelper,
     private val networkManager: NetworkManager,
     private val webClient: WebClient
 ) {
-    private val enableLogging = true
-    private fun log(message: String) {
-        if (enableLogging) Log.d(TAG, message)
-    }
 
     fun performLogin(username: String, password: String): Flow<Resource<String>> = flow {
         emit(Resource.Loading("Logging In"))
 
-        // default login credentials for testing
-        if (username == "99999" && password == "sssss") {
-            delay(2_000)
-            // Report captive portal dismissed for successful dummy login
-            networkManager.reportCaptivePortalDismissed()
-            emit(Resource.Success(data = "Successfully Logged in!"))
+        if (isTestUser(username, password)) {
+            emit(dummyLoginSuccess())
+            return@flow
         }
 
         networkManager.bindToWifiNetwork()
-        //notificationHelper.showNotification("performing login", "in weblogin manager")
-        val loginUrl = "http://10.2.0.10:8090/login?dummy"
+
         try {
-            val page: HtmlPage = webClient.getPage(loginUrl)
-            val usernameField: HtmlTextInput =
-                page.getFirstByXPath("//input[@type='text']")
-            val passwordField: HtmlPasswordInput =
-                page.getFirstByXPath("//input[@type='password']")
-            val loginButton: HtmlElement =
-                page.getFirstByXPath("/html/body/div[1]/form/div[3]/button")
+            val page = webClient.getPage<HtmlPage>(LOGIN_URL)
+
+            val usernameField = page.getFirstByXPath<HtmlTextInput>(USERNAME_XPATH)
+            val passwordField = page.getFirstByXPath<HtmlPasswordInput>(PASSWORD_XPATH)
+            val loginButton = page.getFirstByXPath<HtmlElement>(LOGIN_BUTTON_XPATH)
 
             usernameField.valueAttribute = username
             passwordField.valueAttribute = password
             val responsePage: HtmlPage = loginButton.click()
             val pageText = responsePage.asNormalizedText()
-            if (pageText.contains("Note: Please enter your valid credentials."))
-                throw (Exception("Wrong Username or Password"))
-            else {
-                networkManager.resetNetworkBinding()
-                networkManager.reportCaptivePortalDismissed()
-                val isWifiPrimary = isJmiWifi(forceUseWifi = false)
-                if (isWifiPrimary) {
-                    log("Wifi is Primary")
-                    emit(Resource.Success(data = "Successfully Logged in!"))
-                } else {
-                    log("Wifi is not Primary")
-                    emit(Resource.Success(data = "Successfully Logged in!", message = "But you may not enjoy it because your internet is on!"))
-                }
+
+            if (pageText.contains(INVALID_CREDENTIALS_TEXT)) {
+                throw Exception("Wrong Username or Password")
             }
+
+            networkManager.resetNetworkBinding()
+            networkManager.reportCaptivePortalDismissed()
+
+            val isWifiPrimary = isJmiWifi(forceUseWifi = false)
+            val message = if (isWifiPrimary) null else WIFI_NOT_PRIMARY_MSG
+
+            emit(Resource.Success(data = "Successfully Logged in!", message = message))
+
         } catch (e: Exception) {
-            log("Error: ${e.message}")
+            log("Login error: ${e.message}")
             emit(Resource.Error(e.message ?: "Unknown Error"))
         }
     }.flowOn(Dispatchers.IO)
 
-
     suspend fun performLogout(): Result<String> = withContext(Dispatchers.IO) {
-//                    return@withContext Result.failure<String>(Exception("dummy errorrr"))
-//        return@withContext Result.success<String>("dummy errorrr")
-        try {
+        return@withContext try {
             networkManager.bindToWifiNetwork()
-            val logoutUrl = "http://10.2.0.10:8090/logout?dummy"
-            val page: HtmlPage = webClient.getPage(logoutUrl)
-
-            // Log.d("WebScrapingService", "Logout Response Page text\n: ${page.asNormalizedText()}")
-//            Log.d("WebScrapingService", "Logout Response Page xml: ${page.asXml()}")
-            return@withContext Result.success("Successfully Logged out!")
+            webClient.getPage<HtmlPage>(LOGOUT_URL)
+            Result.success("Successfully Logged out!")
         } catch (e: Exception) {
-            return@withContext Result.failure(e)
+            Result.failure(e)
         }
     }
 
     suspend fun isJmiWifi(forceUseWifi: Boolean = true): Boolean = withContext(Dispatchers.IO) {
-        return@withContext try {
-            log("inside isJmiWifi")
-            val url = URL("http://10.92.0.3/cgi-bin/koha/opac-elogin.pl")
-            if (forceUseWifi)
-                networkManager.bindToWifiNetwork()
-            val connection = url.openConnection() as HttpURLConnection
-            connection.connectTimeout = 2000
-            connection.connect()
-            val responseCode = connection.responseCode
-            log("Response code: $responseCode")
-            connection.disconnect()
-            val isJmiWifi = responseCode == 200 || responseCode == 302 // 302 if redirect to login
-            //log( "JMI Wifi $isJmiWifi")
-            isJmiWifi
+        try {
+            if (forceUseWifi) networkManager.bindToWifiNetwork()
+            val connection = (URL(JMI_CHECK_URL).openConnection() as HttpURLConnection).apply {
+                connectTimeout = 2000
+                connect()
+            }
+
+            log("JMI check response code: ${connection.responseCode}")
+            return@withContext connection.responseCode == 200 || connection.responseCode == 302
+
         } catch (e: Exception) {
-            log("Error: ${e.message}")
-            false
+            log("isJmiWifi error: ${e.message}")
+            return@withContext false
+        } finally {
+            networkManager.resetNetworkBinding()
         }
     }
+
+    private fun isTestUser(username: String, password: String): Boolean {
+        return username == "99999" && password == "sssss"
+    }
+
+    private suspend fun dummyLoginSuccess(): Resource.Success<String> {
+        delay(2000)
+        networkManager.reportCaptivePortalDismissed()
+        return Resource.Success("Successfully Logged in!")
+    }
+
+    private fun log(message: String) {
+        if (ENABLE_LOGGING) Log.d(TAG, message)
+    }
+
 }
 
+
 private const val TAG = "PORTAL_SCRAPER"
+private const val ENABLE_LOGGING = true
+
+private const val LOGIN_URL = "http://10.2.0.10:8090/login?dummy"
+private const val LOGOUT_URL = "http://10.2.0.10:8090/logout?dummy"
+private const val JMI_CHECK_URL = "http://10.92.0.3/cgi-bin/koha/opac-elogin.pl"
+
+private const val USERNAME_XPATH = "//input[@type='text']"
+private const val PASSWORD_XPATH = "//input[@type='password']"
+private const val LOGIN_BUTTON_XPATH = "/html/body/div[1]/form/div[3]/button"
+private const val INVALID_CREDENTIALS_TEXT = "Note: Please enter your valid credentials."
+private const val WIFI_NOT_PRIMARY_MSG = "But you may not enjoy it because your internet is on!"
+

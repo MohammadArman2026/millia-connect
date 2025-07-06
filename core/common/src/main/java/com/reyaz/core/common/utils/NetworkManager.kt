@@ -26,7 +26,7 @@ class NetworkManager(private val context: Context) {
     private var captivePortal: CaptivePortal? = null
     private var wifiForceCallback: ConnectivityManager.NetworkCallback? = null
 
-    private val enableLogging = true
+    private val enableLogging = false
     private fun log(message: String) {
         if (enableLogging) Log.d(TAG, message)
     }
@@ -115,8 +115,6 @@ class NetworkManager(private val context: Context) {
      *
      * The [distinctUntilChanged] operator ensures that only distinct connectivity states are emitted.
      *
-     * **Note:** Requires the [Manifest.permission.ACCESS_NETWORK_STATE] permission.
-     *
      * @param transportType The network transport type to observe (e.g., [NetworkCapabilities.TRANSPORT_WIFI], [NetworkCapabilities.TRANSPORT_CELLULAR]).
      * @return A [Flow] of [Boolean] indicating the connectivity status (true if connected, false otherwise).
      */
@@ -131,9 +129,12 @@ class NetworkManager(private val context: Context) {
                 log("onAvailable: $transportType = $hasTransport")
             }
 
+            @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
             override fun onLost(network: Network) {
-                trySend(false)
-                log("onLost: $transportType")
+                // Only emit false if this was the last network of this type
+                val stillConnected = getAllNetworksConnected(transportType)
+                trySend(stillConnected)
+                log("onLost: $transportType, still connected: $stillConnected")
             }
 
             override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) {
@@ -149,8 +150,8 @@ class NetworkManager(private val context: Context) {
 
         connectivityManager.registerNetworkCallback(request, callback)
 
-        // Initial state
-        val connected = isCurrentlyConnected(transportType)
+        // Get initial state more comprehensively
+        val connected = getAllNetworksConnected(transportType)
         trySend(connected)
         log("Initial state: $transportType = $connected")
 
@@ -166,10 +167,22 @@ class NetworkManager(private val context: Context) {
         observeMobileDataConnectivity()
     ) { isWifiConnected, isMobileDataConnected ->
         when {
-            isWifiConnected && isMobileDataConnected -> NetworkPreference.BOTH_CONNECTED
-            isWifiConnected -> NetworkPreference.WIFI_ONLY
-            isMobileDataConnected -> NetworkPreference.MOBILE_DATA_ONLY
-            else -> NetworkPreference.NONE
+            isWifiConnected && isMobileDataConnected -> {
+                log("Both wifi and mobile data connected")
+                NetworkPreference.BOTH_CONNECTED
+            }
+            isWifiConnected -> {
+                log("Only wifi connected")
+                NetworkPreference.WIFI_ONLY
+            }
+            isMobileDataConnected -> {
+                log("Only mobile data connected")
+                NetworkPreference.MOBILE_DATA_ONLY
+            }
+            else -> {
+                log("No connection")
+                NetworkPreference.NONE
+            }
         }
     }
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
@@ -177,6 +190,25 @@ class NetworkManager(private val context: Context) {
         val network = connectivityManager.activeNetwork ?: return false
         val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
         return capabilities.hasTransport(transportType)
+    }
+
+    /**
+     * Checks if any network of the specified transport type is available,
+     * not just the active network.
+     */
+    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
+    private fun getAllNetworksConnected(transportType: Int): Boolean {
+        return try {
+            val allNetworks = connectivityManager.allNetworks
+            allNetworks.any { network ->
+                val capabilities = connectivityManager.getNetworkCapabilities(network)
+                capabilities?.hasTransport(transportType) == true
+            }
+        } catch (e: Exception) {
+            log("Error checking all networks: ${e.message}")
+            // Fallback to active network check
+            isCurrentlyConnected(transportType)
+        }
     }
 }
 

@@ -41,8 +41,8 @@ fun MCNavHost(
     NavHost(
         navController = navController,
         startDestination =
-//            NavigationRoute.AttendanceGraph.route,
-            NavigationRoute.Portal.route,
+            NavigationRoute.AttendanceGraph.route,
+//            NavigationRoute.Portal.route,
 //            NavigationRoute.ResultGraph.route,
 //        NavigationRoute.Notice.route,
         modifier = modifier.fillMaxSize()
