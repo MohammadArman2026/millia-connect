@@ -22,6 +22,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.reyaz.feature.portal.presentation.PortalUiState
 import com.reyaz.feature.portal.presentation.PortalViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun LoginFormComposable(
@@ -43,6 +45,7 @@ internal fun LoginFormComposable(
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
     Column(
         modifier = modifier.padding(top = 4.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -60,7 +63,9 @@ internal fun LoginFormComposable(
             keyboardActions = KeyboardActions(
                 onDone = {
                     focusManager.clearFocus()
-                    viewModel.handleLogin()
+                    scope.launch {
+                        viewModel.retry()
+                    }
                 }
             )
 
@@ -77,7 +82,9 @@ internal fun LoginFormComposable(
             keyboardActions = KeyboardActions(
                 onDone = {
                     focusManager.clearFocus()
-                    viewModel.handleLogin()
+                    scope.launch {
+                        viewModel.retry()
+                    }
                 }
             )
         )
@@ -104,11 +111,13 @@ internal fun LoginFormComposable(
             )
         }
 
-        Column{// login btn
+        Column {// login btn
             Button(
                 onClick = {
                     focusManager.clearFocus()
-                    viewModel.handleLogin()
+//                    scope.launch {
+                        viewModel.retry()
+//                    }
                 },
                 modifier = Modifier
                     .height(48.dp)

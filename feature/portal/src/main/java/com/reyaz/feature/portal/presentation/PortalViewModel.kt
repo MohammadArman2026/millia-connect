@@ -1,6 +1,7 @@
 package com.reyaz.feature.portal.presentation
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +12,8 @@ import com.reyaz.feature.portal.data.local.PortalDataStore
 import com.reyaz.feature.portal.data.repository.JmiWifiState
 import com.reyaz.feature.portal.domain.model.ConnectRequest
 import com.reyaz.feature.portal.domain.repository.PortalRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -26,6 +29,8 @@ class PortalViewModel(
     private val _uiState = MutableStateFlow(PortalUiState())
     val uiState: StateFlow<PortalUiState> = _uiState.asStateFlow()
 
+    private var mobileDataJob: Job? = null
+
     init {
         observeNetworkAndInitialize()
     }
@@ -36,23 +41,44 @@ class PortalViewModel(
 
     private fun observeNetworkAndInitialize() {
         viewModelScope.launch {
-            _uiState.update { it.copy(loadingMessage = "Loading...") }
-            fetchStoredCredentials()
+            networkObserver.observeWifiConnectivity().collect { isWifiConnected ->
+                _uiState.update { it.copy(loadingMessage = "Loading...") }
+                fetchStoredCredentials()
+                if (isWifiConnected) {
+                    log("wifi connected")
+                    initialize()
 
-            networkObserver.observeNetworkType().collect { networkPreference ->
-                when (networkPreference) {
-                    NetworkPreference.BOTH_CONNECTED, NetworkPreference.WIFI_ONLY -> {
-                        log("Wifi or both connected")
-                        initialize()
+                    if (!uiState.value.isWifiPrimary) {
+                        log("Observing mobile data since Wifi not primary")
+                        // Cancel any previous observer to avoid duplicates
+                        mobileDataJob?.cancel()
+
+                        mobileDataJob = launch {
+                            networkObserver.observeMobileDataConnectivity()
+                                .collect { isMobileData ->
+                                    if (!isMobileData) {
+                                        log("mobile data off, stopping observation and handling login")
+                                        handleLogin()
+                                        // Stop observing since mobile data is off
+                                        this.cancel()
+                                        log("Mobile observation stopped")
+                                    } else {
+                                        log("mobile on")
+                                    }
+                                }
+                        }
                     }
-                    else -> {
-                        log("No connection")
-                        updateState(
-                            isJamiaWifi = false,
-                            isLoggedIn = false,
-                            loadingMessage = null
-                        )
-                    }
+                } else {
+                    log("Wifi not connected")
+                    updateState(
+                        isJamiaWifi = false,
+                        isLoggedIn = false,
+                        loadingMessage = null
+                    )
+                    // Cancel mobile data observation if wifi is off
+                    mobileDataJob?.cancel()
+                    mobileDataJob = null
+                    log("Mobile observation stopped: end")
                 }
             }
         }
@@ -68,37 +94,42 @@ class PortalViewModel(
         }
     }
 
-    fun handleLogin() {
-        viewModelScope.launch {
-            val request = ConnectRequest(
-                _uiState.value.username,
-                _uiState.value.password,
-                _uiState.value.autoConnect
-            )
+    private suspend fun handleLogin() {
+//        viewModelScope.launch {
+        val request = ConnectRequest(
+            _uiState.value.username,
+            _uiState.value.password,
+            _uiState.value.autoConnect
+        )
 
-            repository.connect(request).collect { result ->
-                when (result) {
-                    is Resource.Loading -> updateState(errorMsg = null, loadingMessage = "Loading...")
-                    is Resource.Success -> {
-                        updateState(
-                            isLoggedIn = true,
-                            loadingMessage = null,
-                            errorMsg = result.message,
-                            isWifiPrimary = result.message.isNullOrBlank()
-                        )
-                        saveCredentials(isLoggedIn = true)
-                    }
-                    is Resource.Error -> {
-                        updateState(
-                            isLoggedIn = false,
-                            loadingMessage = null,
-                            errorMsg = result.message
-                        )
-                        saveCredentials(isLoggedIn = false)
-                    }
+        repository.connect(request).collect { result ->
+            when (result) {
+                is Resource.Loading -> updateState(
+                    errorMsg = null,
+                    loadingMessage = "Loading..."
+                )
+
+                is Resource.Success -> {
+                    updateState(
+                        isLoggedIn = true,
+                        loadingMessage = null,
+                        errorMsg = result.message,
+                        isWifiPrimary = result.message.isNullOrBlank()
+                    )
+                    saveCredentials(isLoggedIn = true)
+                }
+
+                is Resource.Error -> {
+                    updateState(
+                        isLoggedIn = false,
+                        loadingMessage = null,
+                        errorMsg = result.message
+                    )
+                    saveCredentials(isLoggedIn = false)
                 }
             }
         }
+//        }
     }
 
     fun logout() {
@@ -118,35 +149,47 @@ class PortalViewModel(
     }
 
     fun retry() {
-        updateState(loadingMessage = "Retrying...", errorMsg = null)
-        initialize()
+        viewModelScope.launch {
+            updateState(loadingMessage = "Retrying...", errorMsg = null)
+            initialize()
+        }
     }
 
-    private fun initialize() {
-        viewModelScope.launch {
-            when (repository.checkConnectionState()) {
-                JmiWifiState.NOT_CONNECTED -> {
-                    log("Not connected")
-                    updateState(isJamiaWifi = false, isLoggedIn = false, loadingMessage = null, errorMsg = null)
-                }
+    private suspend fun initialize() {
+//        viewModelScope.launch {
+        when (repository.checkConnectionState()) {
+            JmiWifiState.NOT_CONNECTED -> {
+                log("Not connected")
+                updateState(
+                    isJamiaWifi = false,
+                    isLoggedIn = false,
+                    loadingMessage = null,
+                    errorMsg = null
+                )
+            }
 
-                JmiWifiState.NOT_LOGGED_IN -> {
-                    log("Not logged in")
-                    updateState(
-                        isJamiaWifi = true,
-                        isLoggedIn = false,
-                        loadingMessage = null,
-                        errorMsg = if (uiState.value.loginEnabled) null else "One time credential needed to login automatically."
-                    )
-                    if (uiState.value.loginEnabled) handleLogin()
-                }
+            JmiWifiState.NOT_LOGGED_IN -> {
+                log("Not logged in")
+                updateState(
+                    isJamiaWifi = true,
+                    isLoggedIn = false,
+                    loadingMessage = null,
+                    errorMsg = if (uiState.value.loginEnabled) null else "One time credential needed to login automatically."
+                )
+                if (uiState.value.loginEnabled) handleLogin()
+            }
 
-                JmiWifiState.LOGGED_IN -> {
-                    log("Logged in")
-                    updateState(isJamiaWifi = true, isLoggedIn = true, loadingMessage = null, errorMsg = null)
-                }
+            JmiWifiState.LOGGED_IN -> {
+                log("Logged in")
+                updateState(
+                    isJamiaWifi = true,
+                    isLoggedIn = true,
+                    loadingMessage = null,
+                    errorMsg = null
+                )
             }
         }
+//        }
     }
 
     private fun handleError(exception: Throwable) {
@@ -227,4 +270,5 @@ class PortalViewModel(
             else "Turn Off Mobile Data to make wifi your primary connection."
         )
     }
+
 }

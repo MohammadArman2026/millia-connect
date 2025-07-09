@@ -101,7 +101,7 @@ class NetworkManager(private val context: Context) {
         observeConnectivity(NetworkCapabilities.TRANSPORT_WIFI)
 
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
-    private fun observeMobileDataConnectivity(): Flow<Boolean> =
+     fun observeMobileDataConnectivity(): Flow<Boolean> =
         observeConnectivity(NetworkCapabilities.TRANSPORT_CELLULAR)
 
     /**
@@ -119,13 +119,14 @@ class NetworkManager(private val context: Context) {
      * @return A [Flow] of [Boolean] indicating the connectivity status (true if connected, false otherwise).
      */
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
-    private fun observeConnectivity(transportType: Int): Flow<Boolean> = callbackFlow {
+    fun observeConnectivity(transportType: Int): Flow<Boolean> = callbackFlow {
         val callback = object : ConnectivityManager.NetworkCallback() {
             @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
             override fun onAvailable(network: Network) {
                 val capabilities = connectivityManager.getNetworkCapabilities(network)
                 val hasTransport = capabilities?.hasTransport(transportType) == true
-                trySend(hasTransport)
+//                trySend(hasTransport)
+                trySend(true)
                 log("onAvailable: $transportType = $hasTransport")
             }
 
@@ -133,14 +134,15 @@ class NetworkManager(private val context: Context) {
             override fun onLost(network: Network) {
                 // Only emit false if this was the last network of this type
                 val stillConnected = getAllNetworksConnected(transportType)
-                trySend(stillConnected)
+//                trySend(stillConnected)
+                trySend(false)
                 log("onLost: $transportType, still connected: $stillConnected")
             }
 
             override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) {
-                val hasTransport = capabilities.hasTransport(transportType)
-                trySend(hasTransport)
-                log("onCapabilitiesChanged: $transportType = $hasTransport")
+//                val hasTransport = capabilities.hasTransport(transportType)
+//                trySend(hasTransport)
+//                log("onCapabilitiesChanged: $transportType = $hasTransport")
             }
         }
 
@@ -162,7 +164,7 @@ class NetworkManager(private val context: Context) {
     }.distinctUntilChanged()
 
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
-    fun observeNetworkType(): Flow<NetworkPreference> = combine(
+    fun observeAllNetworkType(): Flow<NetworkPreference> = combine(
         observeWifiConnectivity(),
         observeMobileDataConnectivity()
     ) { isWifiConnected, isMobileDataConnected ->
@@ -185,6 +187,8 @@ class NetworkManager(private val context: Context) {
             }
         }
     }
+
+
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     private fun isCurrentlyConnected(transportType: Int): Boolean {
         val network = connectivityManager.activeNetwork ?: return false
