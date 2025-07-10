@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.reyaz.milliaconnect1"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.reyaz.milliaconnect1"

@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -48,7 +49,10 @@ fun ResultScreen(
     var isRefreshing by remember { mutableStateOf(false) }
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
-            snackbarHostState.showSnackbar(message = it, withDismissAction = true)
+            val result = snackbarHostState.showSnackbar(message = it, actionLabel = "Retry", withDismissAction = true)
+            if (result == SnackbarResult.ActionPerformed) {
+                onEvent(ResultEvent.Initialize)
+            }
         }
     }
 

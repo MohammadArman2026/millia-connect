@@ -4,27 +4,33 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.reyaz.core.common.utils.NetworkManager
 import com.reyaz.feature.result.domain.repository.ResultRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private const val TAG = "RESULT_VIEW_MODEL"
 
 class ResultViewModel(
     private val resultRepository: ResultRepository,
-    context: Context
+    private val networkManager: NetworkManager
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(
-        ResultUiState(
-            courseLoading = false,
-        )
-    )
+    private val _uiState = MutableStateFlow(ResultUiState())
     val uiState: StateFlow<ResultUiState> = _uiState.asStateFlow()
 
     init {
-        onEvent(ResultEvent.Initialize)
+        viewModelScope.launch {
+            networkManager.observeInternetConnectivity().collect{ isNetworkAvailable ->
+                if (isNetworkAvailable){
+                    onEvent(ResultEvent.Initialize)
+                } else {
+                    updateState { it.copy(error = "No Internet Connection") }
+                }
+            }
+        }
     }
 
     fun onEvent(event: ResultEvent) {
@@ -211,7 +217,7 @@ class ResultViewModel(
     }
 
     private fun updateState(update: (ResultUiState) -> ResultUiState) {
-        _uiState.value = update(_uiState.value)
+        _uiState.update(update)
     }
 
     private fun downloadPdf(url: String, listId: String, listTitle: String) {

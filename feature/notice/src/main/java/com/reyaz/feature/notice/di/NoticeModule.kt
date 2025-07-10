@@ -17,7 +17,7 @@ val noticeModule = module {
     single { NoticeScraper(webClient = get(), parser = get()) }
     single { NoticeRepository(get(), get(), get()) }
     single { GetNoticeFromNetworkUseCase(get(), get(), get()) }
-    viewModel { NoticeViewModel(get(), get()) }
+    viewModel { NoticeViewModel(get(), get(),get()) }
     //database
     single {
         Room.databaseBuilder(

@@ -8,11 +8,11 @@ data class ResultUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
 
-    val typeLoading: Boolean = true,
+    val typeLoading: Boolean = false,
     val courseTypeList: List<CourseType> = emptyList(),
     val selectedTypeIndex: Int? = null,
 
-    val courseLoading: Boolean = true,
+    val courseLoading: Boolean = false,
     val courseNameList: List<CourseName> = emptyList(),
     val selectedCourseIndex: Int? = null,
 

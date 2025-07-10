@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 private const val TAG = "PORTAL_VM"
-private const val LOGGING = true
+private const val LOGGING = false
 
 class PortalViewModel(
     private val repository: PortalRepository,

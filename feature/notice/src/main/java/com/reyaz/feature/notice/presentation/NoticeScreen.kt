@@ -1,6 +1,5 @@
 package com.reyaz.feature.notice.presentation
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +17,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -36,7 +37,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.reyaz.core.ui.components.ListItemWithTrailingIcon
 import com.reyaz.core.ui.components.textWithIndicator
 import com.reyaz.core.ui.helper.LinkHandler
@@ -54,6 +54,7 @@ fun NoticeScreen(
     uiState: NoticeUiState,
     onEvent: (NoticeEvent) -> Unit,
     openPdf: (String) -> Unit,
+    snackbarHostState: SnackbarHostState,
 ) {
     val context = LocalContext.current
     val linkHandler = remember { LinkHandler(context) }
@@ -74,12 +75,35 @@ fun NoticeScreen(
     }
 
     LaunchedEffect(uiState.errorMessage) {
-        showErrorBar = !uiState.errorMessage.isNullOrEmpty()
+        if (!uiState.errorMessage.isNullOrEmpty()) {
+            val result = snackbarHostState.showSnackbar(
+                message = uiState.errorMessage,
+                actionLabel = "Retry"
+            )
+            if (result == SnackbarResult.ActionPerformed) {
+                onEvent(
+                    NoticeEvent.RefreshNotice(
+                        type = TabConfig.entries[uiState.selectedTabIndex].type,
+                        forceRefresh = true
+                    )
+                )
+            }
+        }
     }
+
     PullToRefreshBox(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Red),
         isRefreshing = uiState.isRefreshing,
-        onRefresh = { onEvent(NoticeEvent.RefreshNotice(type = TabConfig.entries[uiState.selectedTabIndex].type, forceRefresh = true) )},
+        onRefresh = {
+            onEvent(
+                NoticeEvent.RefreshNotice(
+                    type = TabConfig.entries[uiState.selectedTabIndex].type,
+                    forceRefresh = true
+                )
+            )
+        },
     ) {
         Column(
             modifier = modifier.background(MaterialTheme.colorScheme.background)
@@ -104,42 +128,7 @@ fun NoticeScreen(
                                         MaterialTheme.colorScheme.onBackground
                                     }
                                 )
-                                /*if (uiState.unreadCount != 0)
-                                Box(
-                                    modifier = Modifier
-                                        .clip(CircleShape)
-                                        .size(16.dp)
-                                        .background(MaterialTheme.colorScheme.errorContainer),
-                                ) {
-                                    Text(
-                                        text = uiState.unreadCount.toString(),
-                                        modifier = Modifier.align(Alignment.Center),
-                                        textAlign = TextAlign.Center,
-                                        fontSize = 12.sp
-                                    )
-                                }*/
                             }
-
-                            /*Row(
-                        horizontalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        Text(
-                            text = it.title,
-                            color = if (uiState.selectedTabIndex == it.ordinal) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.onBackground
-                            }
-                        )
-                        Text(
-                            uiState.unreadCount.toString(),
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.errorContainer)
-                                .padding(8.dp)
-                        )
-                    }*/
-
                         },
                         selected = uiState.selectedTabIndex == it.ordinal,
                         onClick = { onEvent(NoticeEvent.OnTabClick(it)) }
@@ -173,64 +162,80 @@ fun NoticeScreen(
                 }
             }
             LazyColumn(modifier = Modifier) {
-                items(uiState.noticeList) { notice ->
-//                val notice = notice1.copy(progress = prog)
-                    var isDownloading by remember { mutableStateOf(false) }
-
-                    notice.title?.let { it ->
-                        val actionModel = getListItemModel(
-                            link = notice.link,
-                            path = notice.path,
-                            downloadPdf = {
-                                isDownloading = true
-                                notice.link?.let {
-                                    onEvent(
-                                        NoticeEvent.DownloadPdf(
-                                            url = it,
-                                            title = notice.title
-                                        )
-                                    )
-                                }
-                            },
-                            deletePdf = {
-                                isDownloading = false
-                                notice.path?.let {
-                                    onEvent(
-                                        NoticeEvent.DeleteFileByPath(
-                                            title = notice.title,
-                                            path = it
-                                        )
-                                    )
-                                }
-                            },
-                            openLink = { notice.link?.let { linkHandler.openInBrowser(it) } },
-                        )
-                        ListItemWithTrailingIcon(
-                            textWithIndicator = textWithIndicator(it, !notice.isRead),
-                            date = notice.fetchedOn,
-                            trailingIcon = {
-                                notice.link?.let {
-                                    CustomTrailingIcon(
-                                        downloadProgress = notice.progress,
-//                                    downloadProgress = prog,
-                                        onIconClick = { actionModel.onClick?.let { it() } },
-                                        icon = actionModel.icon,
-                                        isDownloading = isDownloading
-                                    )
-                                }
-                            },
-                            onClick = {
-                                when {
-                                    notice.path != null -> {
-                                        openPdf(notice.path)
-                                    }
-
-                                    else -> actionModel.onClick?.let { it() }
-                                }
-                            },
-                        )
+                if (uiState.noticeList.isEmpty() && !uiState.isLoading) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillParentMaxHeight() // ensures swipe gesture is captured
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No notices found.\nPull down to refresh.",
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
                     }
-                }
+                } else
+                    items(uiState.noticeList) { notice ->
+                        var isDownloading by remember { mutableStateOf(false) }
+
+                        notice.title?.let { it ->
+                            val actionModel = getListItemModel(
+                                link = notice.link,
+                                path = notice.path,
+                                downloadPdf = {
+                                    isDownloading = true
+                                    notice.link?.let {
+                                        onEvent(
+                                            NoticeEvent.DownloadPdf(
+                                                url = it,
+                                                title = notice.title
+                                            )
+                                        )
+                                    }
+                                },
+                                deletePdf = {
+                                    isDownloading = false
+                                    notice.path?.let {
+                                        onEvent(
+                                            NoticeEvent.DeleteFileByPath(
+                                                title = notice.title,
+                                                path = it
+                                            )
+                                        )
+                                    }
+                                },
+                                openLink = { notice.link?.let { linkHandler.openInBrowser(it) } },
+                            )
+                            ListItemWithTrailingIcon(
+                                textWithIndicator = textWithIndicator(it, !notice.isRead),
+                                date = notice.fetchedOn,
+                                trailingIcon = {
+                                    notice.link?.let {
+                                        CustomTrailingIcon(
+                                            downloadProgress = notice.progress,
+//                                    downloadProgress = prog,
+                                            onIconClick = { actionModel.onClick?.let { it() } },
+                                            icon = actionModel.icon,
+                                            isDownloading = isDownloading
+                                        )
+                                    }
+                                },
+                                onClick = {
+                                    when {
+                                        notice.path != null -> {
+                                            openPdf(notice.path)
+                                        }
+
+                                        else -> actionModel.onClick?.let { it() }
+                                    }
+                                },
+                            )
+                        }
+                    }
             }
         }
     }

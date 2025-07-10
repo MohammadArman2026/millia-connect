@@ -3,7 +3,6 @@ package com.reyaz.milliaconnect1.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import com.reyaz.core.navigation.NavigationRoute
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -23,7 +22,6 @@ import com.reyaz.feature.portal.presentation.PortalScreen
 import com.reyaz.feature.portal.presentation.PortalViewModel
 import com.reyaz.milliaconnect1.navigation.graph.attendanceNavGraph
 import com.reyaz.milliaconnect1.navigation.graph.resultNavGraph
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -41,10 +39,10 @@ fun MCNavHost(
     NavHost(
         navController = navController,
         startDestination =
-            NavigationRoute.AttendanceGraph.route,
+//            NavigationRoute.AttendanceGraph.route,
 //            NavigationRoute.Portal.route,
 //            NavigationRoute.ResultGraph.route,
-//        NavigationRoute.Notice.route,
+        NavigationRoute.Notice.route,
         modifier = modifier.fillMaxSize()
     ) {
         // Attendance Feature Graph
@@ -109,6 +107,7 @@ fun MCNavHost(
                     navController.navigate(NavigationRoute.PdfViewer.createRoute(it))
                 },
                 modifier = Modifier,
+                snackbarHostState = snackbarHostState
             )
         }
 

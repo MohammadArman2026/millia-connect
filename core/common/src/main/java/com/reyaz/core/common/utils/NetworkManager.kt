@@ -56,6 +56,7 @@ class NetworkManager(private val context: Context) {
      */
     fun bindToWifiNetwork() {
         log("Binding to Wi-Fi network...")
+
         val request = NetworkRequest.Builder()
             .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
@@ -119,7 +120,7 @@ class NetworkManager(private val context: Context) {
      * @return A [Flow] of [Boolean] indicating the connectivity status (true if connected, false otherwise).
      */
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
-    fun observeConnectivity(transportType: Int): Flow<Boolean> = callbackFlow {
+    private fun observeConnectivity(transportType: Int): Flow<Boolean> = callbackFlow {
         val callback = object : ConnectivityManager.NetworkCallback() {
             @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
             override fun onAvailable(network: Network) {
@@ -133,7 +134,7 @@ class NetworkManager(private val context: Context) {
             @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
             override fun onLost(network: Network) {
                 // Only emit false if this was the last network of this type
-                val stillConnected = getAllNetworksConnected(transportType)
+                val stillConnected = isAnyNetworkOfTypeAvailable(transportType)
 //                trySend(stillConnected)
                 trySend(false)
                 log("onLost: $transportType, still connected: $stillConnected")
@@ -153,7 +154,7 @@ class NetworkManager(private val context: Context) {
         connectivityManager.registerNetworkCallback(request, callback)
 
         // Get initial state more comprehensively
-        val connected = getAllNetworksConnected(transportType)
+        val connected = isAnyNetworkOfTypeAvailable(transportType)
         trySend(connected)
         log("Initial state: $transportType = $connected")
 
@@ -188,32 +189,56 @@ class NetworkManager(private val context: Context) {
         }
     }
 
-
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
-    private fun isCurrentlyConnected(transportType: Int): Boolean {
-        val network = connectivityManager.activeNetwork ?: return false
-        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-        return capabilities.hasTransport(transportType)
-    }
+    fun observeInternetConnectivity(): Flow<Boolean> = callbackFlow {
+        val request = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .build()
+
+        val callback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                trySend(true)
+                log("Internet connectivity available")
+            }
+
+            override fun onLost(network: Network) {
+                trySend(false)
+                log("Internet connectivity lost")
+            }
+        }
+
+        connectivityManager.registerNetworkCallback(request, callback)
+
+        // Emit initial connectivity state
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+        val hasInternet = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        trySend(hasInternet)
+
+        awaitClose {
+            connectivityManager.unregisterNetworkCallback(callback)
+            log("Internet NetworkCallback unregistered")
+        }
+    }.distinctUntilChanged()
+
+
+
 
     /**
      * Checks if any network of the specified transport type is available,
      * not just the active network.
      */
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
-    private fun getAllNetworksConnected(transportType: Int): Boolean {
-        return try {
-            val allNetworks = connectivityManager.allNetworks
-            allNetworks.any { network ->
-                val capabilities = connectivityManager.getNetworkCapabilities(network)
-                capabilities?.hasTransport(transportType) == true
-            }
-        } catch (e: Exception) {
-            log("Error checking all networks: ${e.message}")
-            // Fallback to active network check
-            isCurrentlyConnected(transportType)
+    private fun isAnyNetworkOfTypeAvailable(transportType: Int): Boolean {
+        val networks = connectivityManager.boundNetworkForProcess?.let { listOf(it) }
+            ?: listOfNotNull(connectivityManager.activeNetwork)
+
+        return networks.any { network ->
+            val capabilities = connectivityManager.getNetworkCapabilities(network)
+            capabilities?.hasTransport(transportType) == true
         }
     }
+
 }
 
 enum class NetworkPreference {

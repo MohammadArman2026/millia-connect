@@ -3,6 +3,8 @@ package com.reyaz.feature.notice.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.reyaz.core.common.utils.NetworkManager
+import com.reyaz.core.common.utils.NetworkPreference
 import com.reyaz.core.common.utils.Resource
 import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.feature.notice.data.NoticeRepository
@@ -14,6 +16,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private const val TAG = "NOTICE_VIEW_MODEL"
@@ -23,14 +29,27 @@ private const val TAG = "NOTICE_VIEW_MODEL"
 class NoticeViewModel(
     private val noticeRepository: NoticeRepository,
     private val getNoticeFromNetworkUseCase: GetNoticeFromNetworkUseCase,
+    private val networkManager: NetworkManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(NoticeUiState())
     val uiState = _uiState.asStateFlow()
 
     private var observeJob: Job? = null
-
     init {
-        onTabSelect(tab = TabConfig.entries[0])
+        viewModelScope.launch {
+
+            networkManager.observeInternetConnectivity().collect { isInternetAvailable ->
+                if (isInternetAvailable) {
+//                    Log.d(TAG, "Yes internet")
+                    onTabSelect(tab = TabConfig.entries[0])
+                } else {
+//                    Log.d(TAG, "No internet")
+                    _uiState.update { currentNoticeUiState ->
+                        currentNoticeUiState.copy(errorMessage = "No internet connection")
+                    }
+                }
+            }
+        }
     }
 
     fun event(event: NoticeEvent) {
@@ -39,6 +58,7 @@ class NoticeViewModel(
                 observeLocalNotices(event.type)
                 refreshRemoteNotice(event.type, forceRefresh = false)
             }
+
             is NoticeEvent.FetchLocalNotice -> observeLocalNotices(event.type)
             is NoticeEvent.RefreshNotice -> refreshRemoteNotice(event.type, event.forceRefresh)
             is NoticeEvent.DownloadPdf -> downloadPdf(url = event.url, title = event.title)
@@ -56,8 +76,8 @@ class NoticeViewModel(
 
     private fun onTabSelect(tab: TabConfig) {
         updateState { it.copy(selectedTabIndex = tab.ordinal, errorMessage = null) }
-        refreshRemoteNotice(type = tab.type, forceRefresh = false)
         observeLocalNotices(type = tab.type)
+        refreshRemoteNotice(type = tab.type, forceRefresh = false)
         markAsRead(tab.type.typeId)
     }
 
@@ -70,12 +90,30 @@ class NoticeViewModel(
 
     private fun refreshRemoteNotice(type: NoticeType, forceRefresh: Boolean) {
         viewModelScope.launch {
-           // updateState { it.copy(isLoading = true, errorMessage = null) }
-            getNoticeFromNetworkUseCase(type = type, forceRefresh = forceRefresh).collect{ resource ->
-                when(resource){
+            val isLocalNoticeEmpty = noticeRepository.observeNotice(type).first().isEmpty()
+            Log.d(TAG, "Is local notice empty: $isLocalNoticeEmpty for type: ${type.typeId}")
+            val shouldRefresh = isLocalNoticeEmpty || forceRefresh
+            getNoticeFromNetworkUseCase(
+                type = type,
+                forceRefresh = shouldRefresh
+            ).collect { resource ->
+                when (resource) {
                     is Resource.Error -> setResetError(error = resource.message)
-                    is Resource.Loading -> updateState { it.copy(isLoading = !forceRefresh, isRefreshing = forceRefresh, errorMessage = null) }
-                    is Resource.Success -> updateState { it.copy(isLoading = false, isRefreshing = false, errorMessage = null) }
+                    is Resource.Loading -> updateState {
+                        it.copy(
+                            isLoading = !forceRefresh,
+                            isRefreshing = forceRefresh,
+                            errorMessage = null
+                        )
+                    }
+
+                    is Resource.Success -> updateState {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            errorMessage = null
+                        )
+                    }
                 }
             }
         }
