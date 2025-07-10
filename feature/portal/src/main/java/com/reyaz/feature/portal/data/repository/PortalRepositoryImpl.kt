@@ -64,8 +64,8 @@ class PortalRepositoryImpl(
      *   - [JmiWifiState.NOT_CONNECTED] if not connected to JMI Wi-Fi.
      */
     override suspend fun checkConnectionState(): JmiWifiState {
-        val isJmiWifi = portalScraper.isJmiWifi(forceUseWifi = true)
-        val hasInternetAccess = portalScraper.isJmiWifi(forceUseWifi = false)
+        val isJmiWifi = portalScraper.isJmiWifi(forceWifi = true)
+        val hasInternetAccess = portalScraper.isInternetAvailable(isCheckingForWifi = true).getOrNull() ?: false
         Log.d(TAG, "HasInternet: $hasInternetAccess, IsJmiWifi: $isJmiWifi")
         return if (isJmiWifi && hasInternetAccess) {
             JmiWifiState.LOGGED_IN
@@ -74,13 +74,6 @@ class PortalRepositoryImpl(
         } else {
             JmiWifiState.NOT_CONNECTED
         }
-    }
-
-    @Deprecated("Already checking while logging in in portal scraper")
-    override suspend fun isCurrentConnectionIsJmiWifi(): Boolean {
-        val res = portalScraper.isJmiWifi(true)
-        // Log.d(TAG, "isWifiPrimary: $res")
-        return res
     }
 }
 

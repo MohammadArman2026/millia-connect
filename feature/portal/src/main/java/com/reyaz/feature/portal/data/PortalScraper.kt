@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import org.htmlunit.WebClient
 import org.htmlunit.html.*
+import org.htmlunit.xpath.operations.Bool
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -31,6 +32,7 @@ class PortalScraper(
 
         try {
             val page = webClient.getPage<HtmlPage>(LOGIN_URL)
+//            log("Page: ${page.asNormalizedText()}")
 
             val usernameField = page.getFirstByXPath<HtmlTextInput>(USERNAME_XPATH)
             val passwordField = page.getFirstByXPath<HtmlPasswordInput>(PASSWORD_XPATH)
@@ -48,14 +50,14 @@ class PortalScraper(
             networkManager.resetNetworkBinding()
             networkManager.reportCaptivePortalDismissed()
 
-            val isWifiPrimary = isJmiWifi(forceUseWifi = false)
+            val isWifiPrimary = isJmiWifi(forceWifi = false) && isInternetAvailable(isCheckingForWifi = false).getOrNull() ?: true
+            log("Is Wifi Primary: $isWifiPrimary")
             val message = if (isWifiPrimary) null else WIFI_NOT_PRIMARY_MSG
-
             emit(Resource.Success(data = "Successfully Logged in!", message = message))
 
         } catch (e: Exception) {
             log("Login error: ${e.message}")
-            emit(Resource.Error(e.message ?: "Unknown Error"))
+            //emit(Resource.Error(e.message ?: "Unknown Error"))
         }
     }.flowOn(Dispatchers.IO)
 
@@ -69,17 +71,17 @@ class PortalScraper(
         }
     }
 
-    suspend fun isJmiWifi(forceUseWifi: Boolean = true): Boolean = withContext(Dispatchers.IO) {
+    suspend fun isJmiWifi(forceWifi: Boolean): Boolean = withContext(Dispatchers.IO) {
         try {
-            if (forceUseWifi) networkManager.bindToWifiNetwork()
-            val connection = (URL(JMI_CHECK_URL).openConnection() as HttpURLConnection).apply {
+            if (forceWifi)
+                networkManager.bindToWifiNetwork()
+            val connection = (URL(LOGIN_URL).openConnection() as HttpURLConnection).apply {
                 connectTimeout = 2000
                 connect()
             }
-
-            log("JMI check response code: ${connection.responseCode}")
-            return@withContext connection.responseCode == 200 || connection.responseCode == 302
-
+            log("Response code: ${connection.responseCode}")
+            val responseCode = connection.responseCode
+            return@withContext responseCode == 200 || connection.responseCode == 302
         } catch (e: Exception) {
             log("isJmiWifi error: ${e.message}")
             return@withContext false
@@ -88,6 +90,24 @@ class PortalScraper(
         }
     }
 
+     suspend fun isInternetAvailable(isCheckingForWifi: Boolean) : Result<Boolean> = withContext(Dispatchers.IO) {
+        try {
+            if (isCheckingForWifi)
+                networkManager.bindToWifiNetwork()
+            val connection = (URL(URL_204).openConnection() as HttpURLConnection).apply {
+                connectTimeout = 2000
+                connect()
+            }
+            val responseCode = connection.responseCode
+            log("Response code: $responseCode, wifi: $isCheckingForWifi, Is internet available: ${responseCode == 204}")
+            return@withContext Result.success(responseCode == 204)
+        } catch (e: Exception){
+            log("Error: $e")
+            return@withContext Result.failure(Exception("Error Occur: ${e.message}"))
+        } finally {
+            networkManager.resetNetworkBinding()
+        }
+    }
     private fun isTestUser(username: String, password: String): Boolean {
         return username == "99999" && password == "sssss"
     }
@@ -110,7 +130,8 @@ private const val ENABLE_LOGGING = true
 
 private const val LOGIN_URL = "http://10.2.0.10:8090/login?dummy"
 private const val LOGOUT_URL = "http://10.2.0.10:8090/logout?dummy"
-private const val JMI_CHECK_URL = "http://10.92.0.3/cgi-bin/koha/opac-elogin.pl"
+//private const val URL_204 = "http://www.gstatic.com/generate_204"
+private const val URL_204 = "http://clients3.google.com/generate_204"
 
 private const val USERNAME_XPATH = "//input[@type='text']"
 private const val PASSWORD_XPATH = "//input[@type='password']"

@@ -1,12 +1,10 @@
 package com.reyaz.feature.portal.presentation
 
 import android.content.Context
-import android.net.ConnectivityManager
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.reyaz.core.common.utils.NetworkManager
-import com.reyaz.core.common.utils.NetworkPreference
 import com.reyaz.core.common.utils.Resource
 import com.reyaz.feature.portal.data.local.PortalDataStore
 import com.reyaz.feature.portal.data.repository.JmiWifiState
@@ -46,7 +44,7 @@ class PortalViewModel(
                 fetchStoredCredentials()
                 if (isWifiConnected) {
                     log("wifi connected")
-                    initialize()
+                    checkConnectionAndLogin()
 
                     if (!uiState.value.isWifiPrimary) {
                         log("Observing mobile data since Wifi not primary")
@@ -58,7 +56,12 @@ class PortalViewModel(
                                 .collect { isMobileData ->
                                     if (!isMobileData) {
                                         log("mobile data off, stopping observation and handling login")
-                                        handleLogin()
+                                        updateState(
+                                            loadingMessage = null,
+                                            isWifiPrimary = true,
+                                            errorMsg = null
+                                        )
+                                        performLogin()
                                         // Stop observing since mobile data is off
                                         this.cancel()
                                         log("Mobile observation stopped")
@@ -94,7 +97,7 @@ class PortalViewModel(
         }
     }
 
-    private suspend fun handleLogin() {
+    private suspend fun performLogin() {
 //        viewModelScope.launch {
         val request = ConnectRequest(
             _uiState.value.username,
@@ -151,11 +154,12 @@ class PortalViewModel(
     fun retry() {
         viewModelScope.launch {
             updateState(loadingMessage = "Retrying...", errorMsg = null)
-            initialize()
+            checkConnectionAndLogin()
         }
     }
 
-    private suspend fun initialize() {
+    private suspend fun checkConnectionAndLogin() {
+        log("checking connection and logging..")
 //        viewModelScope.launch {
         when (repository.checkConnectionState()) {
             JmiWifiState.NOT_CONNECTED -> {
@@ -176,11 +180,11 @@ class PortalViewModel(
                     loadingMessage = null,
                     errorMsg = if (uiState.value.loginEnabled) null else "One time credential needed to login automatically."
                 )
-                if (uiState.value.loginEnabled) handleLogin()
+                if (uiState.value.loginEnabled) performLogin()
             }
 
             JmiWifiState.LOGGED_IN -> {
-                log("Logged in")
+                log("Already Logged in")
                 updateState(
                     isJamiaWifi = true,
                     isLoggedIn = true,
@@ -261,14 +265,6 @@ class PortalViewModel(
                 isWifiPrimary = isWifiPrimary
             )
         }
-    }
-
-    // Optional, use if you want to notify user to disable mobile data
-    private suspend fun updatePrimaryConnectionError() {
-        updateState(
-            errorMsg = if (repository.isCurrentConnectionIsJmiWifi()) null
-            else "Turn Off Mobile Data to make wifi your primary connection."
-        )
     }
 
 }
