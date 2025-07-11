@@ -49,13 +49,12 @@ class ResultFetchWorker(
 
             val fetchResultWorkRequest = OneTimeWorkRequestBuilder<ResultFetchWorker>()
                 .setConstraints(constraints)
-                .setInitialDelay(24, TimeUnit.MINUTES)
-                /*.setBackoffCriteria(
-                                    BackoffPolicy.LINEAR,
-                                    OneTimeWorkRequest.Mi,
-                                    TimeUnit.MILLISECONDS
-                                )*/
-
+                .setInitialDelay(24, TimeUnit.HOURS)
+                .setBackoffCriteria(
+                    BackoffPolicy.EXPONENTIAL,
+                    10,
+                    TimeUnit.MILLISECONDS
+                )
                 .build()
 
             WorkManager.getInstance(context).enqueueUniqueWork(

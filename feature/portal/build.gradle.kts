@@ -37,6 +37,7 @@ android {
 dependencies {
 
     implementation(project(":core:ui"))
+    implementation(project(":core:notification"))
     implementation(project(":core:common"))
 
     implementation(libs.androidx.core.ktx)
@@ -88,7 +89,7 @@ dependencies {
 
 
     // worker
-//    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.work.runtime.ktx)
     // koin-Jetpack WorkManager
-//    implementation(libs.koin.androidx.workmanager)
+    implementation(libs.koin.androidx.workmanager)
 }

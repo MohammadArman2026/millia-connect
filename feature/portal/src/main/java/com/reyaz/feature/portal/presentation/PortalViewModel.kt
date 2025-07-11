@@ -90,22 +90,16 @@ class PortalViewModel(
     private suspend fun fetchStoredCredentials() {
         _uiState.update {
             it.copy(
-                username = userPreferences.username.first(),
-                password = userPreferences.password.first(),
+                username = userPreferences.username.first() ?: "",
+                password = userPreferences.password.first() ?: "",
                 autoConnect = userPreferences.autoConnect.first()
             )
         }
     }
 
     private suspend fun performLogin() {
-//        viewModelScope.launch {
-        val request = ConnectRequest(
-            _uiState.value.username,
-            _uiState.value.password,
-            _uiState.value.autoConnect
-        )
 
-        repository.connect(request).collect { result ->
+        repository.connect(shouldNotify = false).collect { result ->
             when (result) {
                 is Resource.Loading -> updateState(
                     errorMsg = null,
@@ -220,14 +214,10 @@ class PortalViewModel(
         saveCredentials(false)
     }
 
-    fun updateAutoConnect(autoConnect: Boolean, context: Context) {
+    fun updateAutoConnect(autoConnect: Boolean) {
         viewModelScope.launch {
             _uiState.update { it.copy(autoConnect = autoConnect) }
             userPreferences.setAutoConnect(autoConnect)
-
-            // Optional: handle AutoLoginWorker scheduling
-            // if (autoConnect && uiState.value.isLoggedIn && uiState.value.loginEnabled) { ... }
-
             saveCredentials(false)
         }
     }

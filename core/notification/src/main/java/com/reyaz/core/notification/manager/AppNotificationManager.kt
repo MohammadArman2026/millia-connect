@@ -17,11 +17,13 @@ class AppNotificationManager(
         createNotificationChannel(
             context,
             notificationData.channelId,
-            channelName = notificationData.channelName
+            channelName = notificationData.channelName,
+            importance = notificationData.importance
         )
         val notification = NotificationCompat.Builder(context, notificationData.channelId)
             .setContentTitle(notificationData.title)
             .setContentTitle(notificationData.title)
+            .setSilent(notificationData.importance != NotificationCompat.PRIORITY_MIN)
             .setContentText(notificationData.message)
             .setSmallIcon(notificationData.iconResId ?: com.reyaz.core.ui.R.drawable.app_logo)
             .setPriority(notificationData.priority)

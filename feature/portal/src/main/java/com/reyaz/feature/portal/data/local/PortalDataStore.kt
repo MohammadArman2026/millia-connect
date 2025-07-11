@@ -22,20 +22,15 @@ class PortalDataStore(private val context: Context) {
     }
 
     // Get saved username
-    val username: Flow<String> = context.dataStore.data
+    val username: Flow<String?> = context.dataStore.data
         .map { preferences ->
-            preferences[USERNAME] ?: "202207696"
+            preferences[USERNAME]
         }
 
     // Get saved password
-    val password: Flow<String> = context.dataStore.data
+    val password: Flow<String?> = context.dataStore.data
         .map { preferences ->
-            preferences[PASSWORD] ?: "ique@7696595"
-        }
-
-    val loginStatus: Flow<Boolean> = context.dataStore.data
-        .map { preferences ->
-            preferences[LOGIN_STATUS] ?: false
+            preferences[PASSWORD]
         }
 
     // Get Auto Connect Status
@@ -43,8 +38,6 @@ class PortalDataStore(private val context: Context) {
         .map { preferences ->
             preferences[AUTO_CONNECT] ?: true
         }
-
-
 
     // Save credentials
     suspend fun saveCredentials(
@@ -77,11 +70,6 @@ class PortalDataStore(private val context: Context) {
     suspend fun setAutoConnect(autoConnect: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[AUTO_CONNECT] = autoConnect
-        }
-    }
-    suspend fun setLoginStatus(isLoggedIn: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[LOGIN_STATUS] = isLoggedIn
         }
     }
 }

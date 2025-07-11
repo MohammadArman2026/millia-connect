@@ -1,4 +1,4 @@
-package com.reyaz.feature.portal.data
+package com.reyaz.feature.portal.data.remote
 
 import android.util.Log
 import com.reyaz.core.common.utils.NetworkManager

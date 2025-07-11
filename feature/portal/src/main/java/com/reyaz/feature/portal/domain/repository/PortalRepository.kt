@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface PortalRepository {
     suspend fun saveCredential(request: ConnectRequest): Result<Unit>
-    suspend fun connect(request: ConnectRequest): Flow<Resource<String>>
+    suspend fun connect(shouldNotify: Boolean): Flow<Resource<String>>
     suspend fun disconnect(): Result<String>
     suspend fun checkConnectionState(): JmiWifiState
 }

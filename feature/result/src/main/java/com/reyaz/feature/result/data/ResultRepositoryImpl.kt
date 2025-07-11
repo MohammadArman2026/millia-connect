@@ -1,7 +1,6 @@
 package com.reyaz.feature.result.data
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.annotation.RequiresPermission
@@ -21,7 +20,7 @@ import com.reyaz.feature.result.domain.model.CourseName
 import com.reyaz.feature.result.domain.model.CourseType
 import com.reyaz.feature.result.domain.model.ResultHistory
 import com.reyaz.feature.result.domain.repository.ResultRepository
-import com.reyaz.feature.result.util.NotificationConstant
+import com.reyaz.core.notification.utils.NotificationConstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -170,11 +169,11 @@ class ResultRepositoryImpl(
                     val newList: List<RemoteResultListDto> =
                         newListResponse.getOrDefault(emptyList())
                     if (newList.isNotEmpty() && newList.size != courseWithList.lists.size) {
-                        newList.forEach { it ->
-                            Log.d(TAG, "New result found: ${it.courseName}")
+                        newList.forEach { remoteResultListDto ->
+                            Log.d(TAG, "New result found: ${remoteResultListDto.courseName}")
                             withContext(Dispatchers.IO) {
                                 resultDao.insertResultList(
-                                    it.dtoListItemToEntity(
+                                    remoteResultListDto.dtoListItemToEntity(
                                         courseId = courseWithList.course.courseId,
                                         isViewed = false
                                     )
@@ -184,9 +183,9 @@ class ResultRepositoryImpl(
                                 if (shouldNotify)
                                     notificationManager.showNotification(
                                         NotificationData(
-                                            id = it.srNo.toInt(),
-                                            title = it.courseName,
-                                            message = it.remark,
+                                            id = remoteResultListDto.hashCode(),
+                                            title = remoteResultListDto.courseName,
+                                            message = remoteResultListDto.remark,
                                             channelId = NotificationConstant.RESULT_CHANNEL.channelId,
                                             channelName = NotificationConstant.RESULT_CHANNEL.channelName,
                                         )
@@ -222,6 +221,7 @@ class ResultRepositoryImpl(
             if (trackedCourse.isNotEmpty()) ResultFetchWorker.schedule(context = context)
         } catch (e: Exception) {
             Log.e(TAG, "Error refreshing results: ${e.message}")
+            throw e
         }
     }
 
