@@ -88,7 +88,7 @@ dependencies {
 
 
     // worker
-    implementation(libs.androidx.work.runtime.ktx)
+//    implementation(libs.androidx.work.runtime.ktx)
     // koin-Jetpack WorkManager
-    implementation(libs.koin.androidx.workmanager)
+//    implementation(libs.koin.androidx.workmanager)
 }

@@ -1,7 +1,10 @@
 package com.reyaz.feature.result.data
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
+import androidx.annotation.RequiresPermission
 import com.reyaz.core.common.utils.safeSuspendCall
 import com.reyaz.core.network.PdfManager
 import com.reyaz.core.network.model.DownloadResult
@@ -19,11 +22,10 @@ import com.reyaz.feature.result.domain.model.CourseType
 import com.reyaz.feature.result.domain.model.ResultHistory
 import com.reyaz.feature.result.domain.repository.ResultRepository
 import com.reyaz.feature.result.util.NotificationConstant
-import com.reyaz.feature.result.worker.WorkScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.Date
@@ -32,10 +34,10 @@ private const val TAG = "RESULT_REPO_IMPL"
 
 class ResultRepositoryImpl(
     private val resultApi: ResultApiService,
+    private val context: Context,
     private val resultDao: ResultDao,
     private val pdfDownloadResult: PdfManager,
     private val notificationManager: AppNotificationManager,
-    private val workScheduler: WorkScheduler
 ) : ResultRepository {
 
     override fun observeResults(): Flow<List<ResultHistory>> {
@@ -52,7 +54,7 @@ class ResultRepositoryImpl(
                     it.course.lastSync ?: 0L
                 }
             ).map { it.toResultHistory() }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     override suspend fun getCourseTypes(): Result<List<CourseType>> =
@@ -94,7 +96,7 @@ class ResultRepositoryImpl(
 
     override suspend fun deleteCourse(courseId: String) {
         resultDao.deleteCourse(courseId)
-        workScheduler.cancelWork(tag = courseId)
+//        workScheduler.cancelWork(tag = courseId)
     }
 
     override suspend fun getResult(
@@ -118,7 +120,7 @@ class ResultRepositoryImpl(
                             )
                         )
                     }
-                    workScheduler.schedulePeriodic(workName = course)
+//                    workScheduler.schedulePeriodic(workName = course)
                 } else {
                     Log.d(TAG, "Error fetching remote result list: ${remoteList.exceptionOrNull()}")
                     throw Exception("Unable to fetch from remote!")
@@ -145,18 +147,19 @@ class ResultRepositoryImpl(
                     phdDisciplineId = phdId
                 ).getOrThrow()
             // Log.d(TAG, "Scraped list size: ${scrapedList.size}")
+
             Result.success(scrapedList)
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching remote result list: ${e.message}")
             Result.failure(e)
         }
     }
-
-    @SuppressLint("MissingPermission")      // todo: remove it
-    override suspend fun refreshLocalResults() {
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    override suspend fun refreshLocalResults(shouldNotify: Boolean) {
         try {
             Log.d(TAG, "Refreshing local results")
-            resultDao.observeResults().first().forEach { courseWithList ->
+            val trackedCourse = resultDao.observeResults().first()
+            trackedCourse.forEach { courseWithList ->
                 Log.d(TAG, "Refreshing course: ${courseWithList.course.courseId}")
                 val newListResponse = fetchRemoteResultList(
                     typeId = courseWithList.course.courseTypeId,
@@ -178,15 +181,16 @@ class ResultRepositoryImpl(
                                 )
                             }
                             try {
-                                notificationManager.showNotification(
-                                    NotificationData(
-                                        id = it.srNo.toInt(),
-                                        title = it.courseName,
-                                        message = it.remark,
-                                        channelId = NotificationConstant.RESULT_CHANNEL.channelId,
-                                        channelName = NotificationConstant.RESULT_CHANNEL.channelName,
+                                if (shouldNotify)
+                                    notificationManager.showNotification(
+                                        NotificationData(
+                                            id = it.srNo.toInt(),
+                                            title = it.courseName,
+                                            message = it.remark,
+                                            channelId = NotificationConstant.RESULT_CHANNEL.channelId,
+                                            channelName = NotificationConstant.RESULT_CHANNEL.channelName,
+                                        )
                                     )
-                                )
                             } catch (e: Exception) {
                                 Log.d(TAG, "Permission not granted")
                             }
@@ -211,13 +215,11 @@ class ResultRepositoryImpl(
                         resultDao.updateLastFetchedDate(courseId = courseWithList.course.courseId)
                     }
                 } else {
-                    Log.e(
-                        TAG,
-                        "Error fetching remote result list: ${newListResponse.exceptionOrNull()}"
-                    )
-                    throw Exception("Unable to fetch from remote!")
+                    Log.e(TAG, "Error fetching remote result list: ${newListResponse.exceptionOrNull()}")
+                    //throw Exception("Unable to fetch from remote!")
                 }
             }
+            if (trackedCourse.isNotEmpty()) ResultFetchWorker.schedule(context = context)
         } catch (e: Exception) {
             Log.e(TAG, "Error refreshing results: ${e.message}")
         }
@@ -227,7 +229,7 @@ class ResultRepositoryImpl(
         url: String,
         listId: String,
         fileName: String
-    ): Flow<DownloadResult> = flow {
+    ) {
         // Log.d(TAG, "Download url: $url")
         pdfDownloadResult.downloadPdf(url = url, fileName = fileName).collect { downloadStatus ->
             // Log.d(TAG, "Download status: $downloadStatus")
@@ -239,7 +241,7 @@ class ResultRepositoryImpl(
                         listId = listId,
                         progress = null
                     )
-                    emit(DownloadResult.Error(downloadStatus.exception))
+                    //emit(DownloadResult.Error(downloadStatus.exception))
                 }
 
                 is DownloadResult.Progress -> {
@@ -248,7 +250,7 @@ class ResultRepositoryImpl(
                         progress = downloadStatus.percent,
                         listId = listId
                     )
-                    emit(DownloadResult.Progress(downloadStatus.percent))
+                    //emit(DownloadResult.Progress(downloadStatus.percent))
                 }
 
                 is DownloadResult.Success -> {
@@ -259,7 +261,7 @@ class ResultRepositoryImpl(
                         progress = 100
                     )
                     // Log.d(TAG, "Download path: ${downloadStatus.filePath}")
-                    emit(DownloadResult.Success(filePath = downloadStatus.filePath))
+                    //emit(DownloadResult.Success(filePath = downloadStatus.filePath))
                 }
             }
         }

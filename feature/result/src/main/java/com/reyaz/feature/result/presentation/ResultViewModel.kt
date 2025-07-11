@@ -1,6 +1,5 @@
 package com.reyaz.feature.result.presentation
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +8,7 @@ import com.reyaz.feature.result.domain.repository.ResultRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -23,7 +23,8 @@ class ResultViewModel(
 
     init {
         viewModelScope.launch {
-            networkManager.observeInternetConnectivity().collect{ isNetworkAvailable ->
+            onEvent(ResultEvent.LoadSavedResults)
+            networkManager.observeInternetConnectivity().collect { isNetworkAvailable ->
                 if (isNetworkAvailable){
                     onEvent(ResultEvent.Initialize)
                 } else {
@@ -35,7 +36,7 @@ class ResultViewModel(
 
     fun onEvent(event: ResultEvent) {
         when (event) {
-            ResultEvent.Initialize -> initializeResultScreen()
+            ResultEvent.Initialize -> initializeRemoteComponents()
             ResultEvent.LoadDegree -> getCourseTypes()
             is ResultEvent.LoadCourse -> {
                 getCourses()
@@ -88,8 +89,7 @@ class ResultViewModel(
         }
     }
 
-    private fun initializeResultScreen() {
-        onEvent(ResultEvent.LoadSavedResults)
+    private fun initializeRemoteComponents() {
         onEvent(ResultEvent.LoadDegree)
         onEvent(ResultEvent.RefreshResults)
     }
@@ -101,7 +101,7 @@ class ResultViewModel(
     }
 
     private fun refreshResultsFromRemote() {
-        viewModelScope.launch { resultRepository.refreshLocalResults() }
+        viewModelScope.launch { resultRepository.refreshLocalResults(shouldNotify = true) }
     }
 
     private fun saveCourse() {
@@ -221,22 +221,14 @@ class ResultViewModel(
     }
 
     private fun downloadPdf(url: String, listId: String, listTitle: String) {
-        Log.d(TAG, "Download url: $url")
+//        Log.d(TAG, "Download url: $url")
         viewModelScope.launch {
-            resultRepository.downloadPdf(url = url, listId = listId, fileName = listTitle)
-                .collect { downloadResult ->
-                    /* when(downloadResult){
-                         is DownloadResult.Error -> {
-                             updateState { it.copy(error = downloadResult.exception) }
-                         }
-                         is DownloadResult.Progress -> {
-                             updateState { it.copy(progress = it.progress) }
-                         }
-                         is DownloadResult.Success -> {
-                             updateState { it.copy(progress = null) }
-                         }
-                     }*/
-                }
+            if (networkManager.observeInternetConnectivity().first()) {
+                updateState { it.copy(error = null) }
+                resultRepository.downloadPdf(url = url, listId = listId, fileName = listTitle)
+            }
+            else
+                updateState { it.copy(error = "No Internet Connection") }
         }
     }
 

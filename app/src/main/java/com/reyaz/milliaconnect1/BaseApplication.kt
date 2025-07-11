@@ -32,7 +32,7 @@ class BaseApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@BaseApplication)
-            workManagerFactory()
+//            workManagerFactory()
             modules(appModule, scheduleModule, portalModule, resultModule, networkModule, notificationModule, noticeModule)
         }
 

@@ -1,3 +1,4 @@
+/*
 package com.reyaz.feature.result.worker
 
 import android.content.Context
@@ -32,7 +33,8 @@ class WorkScheduler(
         flexTimeUnit: TimeUnit = TimeUnit.HOURS,
         workName: String
     ) {
-        /**
+        */
+/**
          * flexTimeInterval defines a "flex window" that occurs at the end of your repeatInterval.
          * WorkManager will execute your periodic work somewhere within this flex window.
          *
@@ -44,7 +46,8 @@ class WorkScheduler(
          * The flexTimeInterval must be less than or equal to repeatInterval - 5 minutes.
          * The minimum repeatInterval when using flexTimeInterval is 15 minutes.
          * The minimum flexTimeInterval is 5 minutes.
-         * */
+         * *//*
+
         val request = PeriodicWorkRequestBuilder<ResultSyncWorker>(
             repeatInterval = repeatInterval.toLong(),
             repeatIntervalTimeUnit = repeatTimeUnit,
@@ -64,3 +67,4 @@ class WorkScheduler(
         WorkManager.getInstance(context).cancelUniqueWork(tag)
     }
 }
+*/

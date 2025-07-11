@@ -1,3 +1,4 @@
+/*
 package com.reyaz.feature.result.worker
 
 import android.content.Context
@@ -18,4 +19,4 @@ class ResultSyncWorker(
         Log.d(TAG, "Refreshing local results using work manager")
         return Result.success()
     }
-}
+}*/

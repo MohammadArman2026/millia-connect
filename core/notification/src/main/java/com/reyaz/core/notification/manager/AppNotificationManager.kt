@@ -21,10 +21,12 @@ class AppNotificationManager(
         )
         val notification = NotificationCompat.Builder(context, notificationData.channelId)
             .setContentTitle(notificationData.title)
+            .setContentTitle(notificationData.title)
             .setContentText(notificationData.message)
-            .setSmallIcon(notificationData.iconResId ?: R.drawable.ic_notification)
+            .setSmallIcon(notificationData.iconResId ?: com.reyaz.core.ui.R.drawable.app_logo)
             .setPriority(notificationData.priority)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(notificationData.message))
             .build()
         NotificationManagerCompat.from(context).notify(notificationData.id, notification)
     }

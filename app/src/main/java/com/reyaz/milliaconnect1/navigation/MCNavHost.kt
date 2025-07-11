@@ -41,8 +41,8 @@ fun MCNavHost(
         startDestination =
 //            NavigationRoute.AttendanceGraph.route,
 //            NavigationRoute.Portal.route,
-//            NavigationRoute.ResultGraph.route,
-        NavigationRoute.Notice.route,
+            NavigationRoute.ResultGraph.route,
+//        NavigationRoute.Notice.route,
         modifier = modifier.fillMaxSize()
     ) {
         // Attendance Feature Graph

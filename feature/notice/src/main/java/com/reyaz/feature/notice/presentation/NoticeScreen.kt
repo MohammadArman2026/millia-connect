@@ -93,8 +93,7 @@ fun NoticeScreen(
 
     PullToRefreshBox(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Red),
+            .fillMaxSize(),
         isRefreshing = uiState.isRefreshing,
         onRefresh = {
             onEvent(
