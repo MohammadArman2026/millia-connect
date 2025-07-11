@@ -43,7 +43,6 @@ internal fun LoginFormComposable(
     uiState: PortalUiState,
     viewModel: PortalViewModel
 ) {
-    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
     Column(
@@ -106,7 +105,7 @@ internal fun LoginFormComposable(
             Switch(
                 modifier = Modifier,
                 checked = uiState.autoConnect,
-                onCheckedChange = { viewModel.updateAutoConnect(it, context) },
+                onCheckedChange = { viewModel.updateAutoConnect(it) },
                 colors = SwitchDefaults.colors()
             )
         }
