@@ -43,7 +43,7 @@ fun MilliaConnectApp() {
     val currentRoute: String? = navBackStackEntry?.destination?.route
     val currentDestination = TopLevelDestinations.ALL.find { it.route.route == currentRoute }
     // Determine if current destination is a top-level destination
-    val isTopLevelDestination = TopLevelDestinations.ALL.any { it.route.route == currentRoute }
+    val isTopLevelDestination = TopLevelDestinations.ALL.any { it.route.route == currentRoute || currentRoute == NavigationRoute.Portal.route }
 
     val bottomNavItems = TopLevelDestinations.ALL.map {
         BottomNavItem(
@@ -74,7 +74,7 @@ fun MilliaConnectApp() {
                     title = when (currentRoute) {
                         NavigationRoute.Result.route -> "Entrance Result"
                         NavigationRoute.Schedule.route -> "Class Schedule"
-                        NavigationRoute.Notice.route -> "Millia Connect"
+//                        NavigationRoute.Notice.route -> "Millia Connect"
                         NavigationRoute.AttendanceHistory.route -> "Attendance Summary"
                         else -> /*currentDestination?.titleTextId ?:*/ stringResource(R.string.app_name)
                     },

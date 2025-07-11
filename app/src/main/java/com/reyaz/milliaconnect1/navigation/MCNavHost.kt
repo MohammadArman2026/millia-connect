@@ -35,7 +35,6 @@ fun MCNavHost(
     snackbarHostState: SnackbarHostState,
     portalViewModel: PortalViewModel,
 ) {
-    val scope = rememberCoroutineScope()
     NavHost(
         navController = navController,
         startDestination =
@@ -58,22 +57,7 @@ fun MCNavHost(
                 viewModel = portalViewModel,
                 dismissDialog = {
                     navController.navigateUp()
-                },
-                /*showSnackBar = { error: String, action: (()->Unit)? ->
-                    scope.launch {
-                        val result = snackbarHostState.showSnackbar(
-                            message = error,
-                            actionLabel = "Retry",
-                        )
-                        when(result){
-                            SnackbarResult.Dismissed -> {}
-                            SnackbarResult.ActionPerformed -> if (action != null) {
-                                action()
-                            }
-                        }
-
-                    }
-                }*/
+                }
             )
         }
         // pdf screen
