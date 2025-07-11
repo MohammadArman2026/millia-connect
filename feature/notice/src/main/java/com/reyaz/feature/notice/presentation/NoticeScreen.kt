@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.reyaz.core.ui.components.ListItemWithTrailingIcon
 import com.reyaz.core.ui.components.textWithIndicator
@@ -73,7 +74,7 @@ fun NoticeScreen(
 
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 if (uiState.noticeList.isEmpty() && !uiState.isLoading) {
-                    item { EmptyState() }
+                    item { EmptyState(modifier = Modifier.fillParentMaxHeight()) }
                 } else {
                     items(uiState.noticeList) { notice ->
                         var isDownloading by remember { mutableStateOf(false) }
