@@ -1,15 +1,9 @@
 package com.reyaz.milliaconnect1.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.CalendarToday
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.School
-import com.reyaz.core.navigation.NavigationRoute
+import constants.NavigationRoute
 
 /**
  * Represents a top-level destination in the app with bottom navigation support
@@ -39,7 +33,7 @@ object AppDestinations {
 //            titleResourceId = "Home"
 //        ),
         AppTopLevelDestination(
-            route = NavigationRoute.Notice,
+            route = constants.NavigationRoute.Notice,
             selectedIcon = Icons.Filled.CalendarToday,
             unselectedIcon = Icons.Outlined.CalendarToday,
             titleResourceId = "Attendance"
@@ -115,14 +109,14 @@ object AppDestinations {
 /**
  * Extension function to check if a route is a top-level destination
  */
-fun NavigationRoute.isTopLevelDestination(): Boolean {
+fun constants.NavigationRoute.isTopLevelDestination(): Boolean {
     return AppDestinations.topLevelDestinations.any { it.route == this }
 }
 
 /**
  * Extension function to get the top-level destination for a route
  */
-fun NavigationRoute.getTopLevelDestination(): AppTopLevelDestination? {
+fun constants.NavigationRoute.getTopLevelDestination(): AppTopLevelDestination? {
     return AppDestinations.topLevelDestinations.find { it.route == this }
 }
 
@@ -171,11 +165,11 @@ fun NavigationRoute.getTopLevelDestination(): AppTopLevelDestination? {
 /**
  * Extension function to get the appropriate app bar title for a route
  */
-fun NavigationRoute.getAppBarTitle(): String {
+fun constants.NavigationRoute.getAppBarTitle(): String {
     return when (this) {
-        NavigationRoute.Notice -> "Attendance"
-        NavigationRoute.Schedule -> "Schedule"
-        NavigationRoute.AttendanceHistory -> "Attendance History"
+        constants.NavigationRoute.Notice -> "Attendance"
+        constants.NavigationRoute.Schedule -> "Schedule"
+        constants.NavigationRoute.AttendanceHistory -> "Attendance History"
 //        NavigationRoute.AttendanceDetails -> "Attendance Details"
 //        NavigationRoute.MarkAttendance -> "Mark Attendance"
 //        NavigationRoute.Academics -> "Academics"

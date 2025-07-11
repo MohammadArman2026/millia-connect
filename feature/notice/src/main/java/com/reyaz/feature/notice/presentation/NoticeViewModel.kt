@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.reyaz.core.common.utils.NetworkManager
-import com.reyaz.core.common.utils.NetworkPreference
 import com.reyaz.core.common.utils.Resource
 import com.reyaz.core.network.model.DownloadResult
 import com.reyaz.feature.notice.data.NoticeRepository
@@ -16,8 +15,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -35,6 +32,7 @@ class NoticeViewModel(
     val uiState = _uiState.asStateFlow()
 
     private var observeJob: Job? = null
+
     init {
         viewModelScope.launch {
 
@@ -163,6 +161,6 @@ class NoticeViewModel(
     }
 
     private fun updateState(update: (NoticeUiState) -> NoticeUiState) {
-        _uiState.value = update(_uiState.value)
+        _uiState.update { update(it) }
     }
 }

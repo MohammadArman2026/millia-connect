@@ -27,8 +27,9 @@ class ResultFetchWorker(
 
     override suspend fun doWork(): Result {
         return try {
+            Log.d(TAG, "Starting work for Fetching result")
             resultRepository.refreshLocalResults(shouldNotify = true)
-            Log.d(TAG, "Result fetched successfully")
+            Log.d(TAG, "Work completed for Fetching result")
             Result.success()
         } catch (e: Exception) {
             if (runAttemptCount < 3) {
@@ -43,13 +44,14 @@ class ResultFetchWorker(
         private const val UNIQUE_WORK_NAME = "result_fetch_work"
 
         fun schedule(context: Context) {
+            Log.d(TAG, "Scheduling result fetch work")
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
 
             val fetchResultWorkRequest = OneTimeWorkRequestBuilder<ResultFetchWorker>()
                 .setConstraints(constraints)
-                .setInitialDelay(24, TimeUnit.HOURS)
+                .setInitialDelay(30, TimeUnit.MINUTES)
                 .setBackoffCriteria(
                     BackoffPolicy.EXPONENTIAL,
                     10,

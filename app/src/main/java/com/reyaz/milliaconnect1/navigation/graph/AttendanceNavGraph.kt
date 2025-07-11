@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.reyaz.core.navigation.NavigationRoute
+import constants.NavigationRoute
 import com.reyaz.feature.attendance.schedule.presentation.ScheduleScreen
 
 /**
@@ -22,7 +22,7 @@ internal fun NavGraphBuilder.
 ) {
 
     // Schedule Screen
-    composable(route = NavigationRoute.Schedule.route){
+    composable(route = constants.NavigationRoute.Schedule.route){
         ScheduleScreen()
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
             Text("Coming Soon...")

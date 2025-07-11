@@ -6,6 +6,8 @@ import android.content.Context
 import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
+import androidx.core.net.toUri
+import com.reyaz.core.common.utils.NetworkManager
 import com.reyaz.core.common.utils.Resource
 import com.reyaz.core.notification.manager.AppNotificationManager
 import com.reyaz.core.notification.model.NotificationData
@@ -15,6 +17,7 @@ import com.reyaz.feature.portal.data.remote.PortalScraper
 import com.reyaz.feature.portal.data.worker.AutoLoginWorker
 import com.reyaz.feature.portal.domain.model.ConnectRequest
 import com.reyaz.feature.portal.domain.repository.PortalRepository
+import constants.NavigationRoute
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -26,6 +29,7 @@ class PortalRepositoryImpl(
     private val context: Context,
     private val portalScraper: PortalScraper,
     private val notificationManager: AppNotificationManager,
+    private val networkManager: NetworkManager
 ) : PortalRepository {
 
     override suspend fun saveCredential(request: ConnectRequest): Result<Unit> {
@@ -63,6 +67,7 @@ class PortalRepositoryImpl(
                         if (shouldNotify) {
                             showPortalNotification(title = "Automatically Logged In", message = "You're Successfully Logged in!")
                         }
+                        networkManager.reportCaptivePortalDismissed()
                         if(dataStore.autoConnect.first())
                             AutoLoginWorker.scheduleOneTime(context)
                     }
@@ -87,7 +92,8 @@ class PortalRepositoryImpl(
                 channelId = NotificationConstant.PORTAL_CHANNEL.channelId,
                 channelName = NotificationConstant.PORTAL_CHANNEL.channelName,
                 priority = NotificationCompat.PRIORITY_LOW,
-                importance = NotificationManager.IMPORTANCE_LOW
+                importance = NotificationManager.IMPORTANCE_LOW,
+                destinationUri = NavigationRoute.Portal.getDeepLink().toUri()
             )
         )
     }

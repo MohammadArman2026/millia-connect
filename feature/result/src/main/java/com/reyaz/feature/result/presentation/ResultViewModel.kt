@@ -101,7 +101,7 @@ class ResultViewModel(
     }
 
     private fun refreshResultsFromRemote() {
-        viewModelScope.launch { resultRepository.refreshLocalResults(shouldNotify = true) }
+        viewModelScope.launch { resultRepository.refreshLocalResults(shouldNotify = false) }
     }
 
     private fun saveCourse() {

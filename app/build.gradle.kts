@@ -12,8 +12,8 @@ android {
         applicationId = "com.reyaz.milliaconnect1"
         minSdk = 26
         targetSdk = 35
-        versionCode = 7
-        versionName = "1.3.0"
+        versionCode = 8
+        versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -49,6 +49,7 @@ dependencies {
 
     implementation(project(":core:navigation"))
     implementation(project(":core:ui"))
+    implementation(project(":core:common"))
     implementation(project(":core:network"))
     implementation(project(":core:notification"))
     implementation(project(":feature:attendance"))

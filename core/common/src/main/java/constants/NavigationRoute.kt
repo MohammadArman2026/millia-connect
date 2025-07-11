@@ -1,4 +1,4 @@
-package com.reyaz.core.navigation
+package constants
 
 /**
  * Sealed class defining all navigation routes in the application.
@@ -9,7 +9,7 @@ sealed class NavigationRoute(val route: String) {
 
     // Nested Graph Routes
     data object AttendanceGraph : NavigationRoute("attendance_graph")
-    data object ResultGraph: NavigationRoute("result_graph")
+    data object ResultGraph : NavigationRoute("result_graph")
     data object Notice : NavigationRoute("notice_graph")
 
 
@@ -18,11 +18,16 @@ sealed class NavigationRoute(val route: String) {
     data object AttendanceHistory : NavigationRoute("attendance/history")
 
     // miscellaneous
-    data object PdfViewer : NavigationRoute("pdf_viewer?path={path}"){
+    data object PdfViewer : NavigationRoute("pdf_viewer?path={path}") {
         fun createRoute(path: String) = "pdf_viewer?path=$path"
     }
-    data object Result: NavigationRoute("result")
-    data object Portal : NavigationRoute("portal")
+
+    data object Result : NavigationRoute("result"){
+        fun getDeepLink() = "$DEEPLINK_BASE/$route"
+    }
+    data object Portal : NavigationRoute("portal"){
+        fun getDeepLink() = "$DEEPLINK_BASE/$route"
+    }
 
 
 //    data object AttendanceDetails : NavigationRoute("attendance/details/{attendanceId}") {
@@ -55,8 +60,9 @@ sealed class NavigationRoute(val route: String) {
 //    data object About : NavigationRoute("profile/about")
 
 
-
     companion object {
+
+        const val DEEPLINK_BASE = "reyaz://milliaconnect"
         /**
          * Returns all main bottom navigation routes
          */

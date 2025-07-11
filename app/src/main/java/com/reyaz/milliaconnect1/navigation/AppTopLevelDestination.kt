@@ -1,6 +1,6 @@
 package com.reyaz.milliaconnect1.navigation
 
-import com.reyaz.core.navigation.NavigationRoute
+import constants.NavigationRoute
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.filled.School
@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * Used for bottom navigation bar items and main navigation structure.
  */
 data class AppTopLevelDestination(
-    val route: NavigationRoute,
+    val route: constants.NavigationRoute,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
     val titleResourceId: String,
@@ -30,7 +30,7 @@ data class AppTopLevelDestination(
 object TopLevelDestinations {
 
     val SCHEDULE = AppTopLevelDestination(
-        route = NavigationRoute.Schedule,
+        route = constants.NavigationRoute.Schedule,
         selectedIcon = Icons.Filled.Timer,
         unselectedIcon = Icons.Outlined.Timer,
         titleResourceId = "Schedule",
@@ -38,7 +38,7 @@ object TopLevelDestinations {
     )
 
     val NOTICE = AppTopLevelDestination(
-        route = NavigationRoute.Notice,
+        route = constants.NavigationRoute.Notice,
         selectedIcon = Icons.Filled.Newspaper,
         unselectedIcon = Icons.Outlined.Newspaper,
         titleResourceId = "Notice",
@@ -46,7 +46,7 @@ object TopLevelDestinations {
     )
 
     val RESULT = AppTopLevelDestination(
-        route = NavigationRoute.Result,
+        route = constants.NavigationRoute.Result,
         selectedIcon = Icons.Filled.School,
         unselectedIcon = Icons.Outlined.School,
         titleResourceId = "Result",
@@ -97,7 +97,7 @@ fun AppTopLevelDestination.getBadgeText(): String? {
 /**
  * Extension function to find a top-level destination by route
  */
-fun List<AppTopLevelDestination>.findByRoute(route: NavigationRoute): AppTopLevelDestination? {
+fun List<AppTopLevelDestination>.findByRoute(route: constants.NavigationRoute): AppTopLevelDestination? {
     return find { it.route == route }
 }
 
@@ -111,7 +111,7 @@ fun List<AppTopLevelDestination>.findByRoute(route: NavigationRoute): AppTopLeve
 /**
  * Extension function to get the top-level destination for a route
  */
-fun NavigationRoute.toTopLevelDestination(): AppTopLevelDestination? {
+fun constants.NavigationRoute.toTopLevelDestination(): AppTopLevelDestination? {
     return TopLevelDestinations.ALL.find { it.route == this }
 }
 
@@ -119,7 +119,7 @@ fun NavigationRoute.toTopLevelDestination(): AppTopLevelDestination? {
  * Builder class for creating custom top-level destinations
  */
 class TopLevelDestinationBuilder {
-    private var route: NavigationRoute? = null
+    private var route: constants.NavigationRoute? = null
     private var selectedIcon: ImageVector? = null
     private var unselectedIcon: ImageVector? = null
     private var titleResourceId: String? = null
@@ -127,7 +127,7 @@ class TopLevelDestinationBuilder {
     private var hasNews: Boolean = false
     private var badgeCount: Int? = null
 
-    fun route(route: NavigationRoute) = apply { this.route = route }
+    fun route(route: constants.NavigationRoute) = apply { this.route = route }
     fun selectedIcon(icon: ImageVector) = apply { this.selectedIcon = icon }
     fun unselectedIcon(icon: ImageVector) = apply { this.unselectedIcon = icon }
     fun title(title: String) = apply { this.titleResourceId = title }

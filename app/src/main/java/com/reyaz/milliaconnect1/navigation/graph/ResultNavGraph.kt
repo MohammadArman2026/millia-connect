@@ -6,7 +6,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.reyaz.core.navigation.NavigationRoute
+import androidx.navigation.navDeepLink
+import constants.NavigationRoute
 import com.reyaz.feature.result.presentation.ResultScreen
 import com.reyaz.feature.result.presentation.ResultViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -15,7 +16,12 @@ fun NavGraphBuilder.resultNavGraph(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
 ) {
-    composable(route = NavigationRoute.Result.route) {
+    composable(
+        route = constants.NavigationRoute.Result.route,
+        deepLinks = listOf(
+            navDeepLink { uriPattern = constants.NavigationRoute.Result.getDeepLink() }
+        )
+    ) {
         val viewModel: ResultViewModel = koinViewModel()
         val uiState = viewModel.uiState.collectAsStateWithLifecycle()
         ResultScreen(
@@ -23,7 +29,7 @@ fun NavGraphBuilder.resultNavGraph(
             uiState = uiState.value,
             onEvent = viewModel::onEvent,
             openPdf = {
-                navController.navigate(NavigationRoute.PdfViewer.createRoute(it))
+                navController.navigate(constants.NavigationRoute.PdfViewer.createRoute(it))
             },
             onNavigateBack = {
                 navController.popBackStack()

@@ -26,7 +26,7 @@ fun NavController.navigateSafely(
  * Extension function to navigate to a NavigationRoute
  */
 fun NavController.navigateTo(
-    navigationRoute: NavigationRoute,
+    navigationRoute: constants.NavigationRoute,
     navOptions: NavOptions? = null
 ) {
     navigateSafely(navigationRoute.route, navOptions)
@@ -36,7 +36,7 @@ fun NavController.navigateTo(
  * Extension function to navigate with single top and pop up to behavior
  * Common pattern for bottom navigation
  */
-fun NavController.navigateToBottomNavRoute(route: NavigationRoute) {
+fun NavController.navigateToBottomNavRoute(route: constants.NavigationRoute) {
     navigate(route.route) {
         // Pop up to the start destination of the graph to avoid building up a large stack
         popUpTo(graph.startDestinationId) {
@@ -52,7 +52,7 @@ fun NavController.navigateToBottomNavRoute(route: NavigationRoute) {
 /**
  * Extension function to check if current destination matches the route
  */
-fun NavController.isCurrentRoute(route: NavigationRoute): Boolean {
+fun NavController.isCurrentRoute(route: constants.NavigationRoute): Boolean {
     return currentDestination?.route == route.route
 }
 
@@ -61,8 +61,8 @@ fun NavController.isCurrentRoute(route: NavigationRoute): Boolean {
  * Extension function to add nested navigation graph
  */
 fun NavGraphBuilder.nestedGraph(
-    startDestination: NavigationRoute,
-    route: NavigationRoute,
+    startDestination: constants.NavigationRoute,
+    route: constants.NavigationRoute,
     builder: NavGraphBuilder.() -> Unit
 ) {
     navigation(
@@ -76,7 +76,7 @@ fun NavGraphBuilder.nestedGraph(
  * Extension function to add composable with NavigationRoute
  */
 fun NavGraphBuilder.composableRoute(
-    navigationRoute: NavigationRoute,
+    navigationRoute: constants.NavigationRoute,
     content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
 ) {
     composable(
@@ -104,7 +104,7 @@ fun NavBackStackEntry.getRequiredRouteArgument(key: String): String {
 /**
  * Extension function to check if back stack has specific route
  */
-fun NavController.hasRoute(route: NavigationRoute): Boolean {
+fun NavController.hasRoute(route: constants.NavigationRoute): Boolean {
     return try {
         getBackStackEntry(route.route)
         true
@@ -116,7 +116,7 @@ fun NavController.hasRoute(route: NavigationRoute): Boolean {
 /**
  * Extension function to clear back stack and navigate
  */
-fun NavController.clearBackStackAndNavigate(route: NavigationRoute) {
+fun NavController.clearBackStackAndNavigate(route: constants.NavigationRoute) {
     navigate(route.route) {
         popUpTo(0) { inclusive = true }
         launchSingleTop = true
@@ -129,8 +129,8 @@ fun NavController.clearBackStackAndNavigate(route: NavigationRoute) {
  */
 fun NavController.navigateConditionally(
     condition: Boolean,
-    trueRoute: NavigationRoute,
-    falseRoute: NavigationRoute
+    trueRoute: constants.NavigationRoute,
+    falseRoute: constants.NavigationRoute
 ) {
     val targetRoute = if (condition) trueRoute else falseRoute
     clearBackStackAndNavigate(targetRoute)
@@ -140,7 +140,7 @@ fun NavController.navigateConditionally(
  * Extension function to pop back stack to specific route
  */
 fun NavController.popBackToRoute(
-    route: NavigationRoute,
+    route: constants.NavigationRoute,
     inclusive: Boolean = false
 ): Boolean {
     return popBackStack(route.route, inclusive)

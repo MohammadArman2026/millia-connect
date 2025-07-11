@@ -37,10 +37,14 @@ class NetworkManager(private val context: Context) {
     }
 
     fun reportCaptivePortalDismissed() {
-        captivePortal?.let {
-            log("Reporting captive portal dismissed")
-            it.reportCaptivePortalDismissed()
-            captivePortal = null
+        try{
+            captivePortal?.let {
+                log("Reporting captive portal dismissed")
+                it.reportCaptivePortalDismissed()
+                captivePortal = null
+            }
+        } catch (e: Exception){
+            log("Error while dismissing Captive Portal: ${e.message}")
         }
     }
 

@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.util.Log
 import androidx.annotation.RequiresPermission
+import androidx.core.net.toUri
 import com.reyaz.core.common.utils.safeSuspendCall
 import com.reyaz.core.network.PdfManager
 import com.reyaz.core.network.model.DownloadResult
@@ -21,6 +22,7 @@ import com.reyaz.feature.result.domain.model.CourseType
 import com.reyaz.feature.result.domain.model.ResultHistory
 import com.reyaz.feature.result.domain.repository.ResultRepository
 import com.reyaz.core.notification.utils.NotificationConstant
+import constants.NavigationRoute
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -184,10 +186,11 @@ class ResultRepositoryImpl(
                                     notificationManager.showNotification(
                                         NotificationData(
                                             id = remoteResultListDto.hashCode(),
-                                            title = remoteResultListDto.courseName,
+                                            title = "Result released for ${remoteResultListDto.courseName/*.take(15)*/}...",
                                             message = remoteResultListDto.remark,
                                             channelId = NotificationConstant.RESULT_CHANNEL.channelId,
                                             channelName = NotificationConstant.RESULT_CHANNEL.channelName,
+                                            destinationUri = NavigationRoute.Result.getDeepLink().toUri()
                                         )
                                     )
                             } catch (e: Exception) {
@@ -196,19 +199,21 @@ class ResultRepositoryImpl(
                         }
                     } else {
                         Log.d(TAG, "No new results found")
-                        /*try {
-                            notificationManager.showNotification(
-                                NotificationData(
-                                    id = 0,
-                                    title = "No new results found",
-                                    message = "No new results found for ${courseWithList.course.courseName}",
-                                    channelName = NotificationConstant.RESULT_CHANNEL.channelName,
-                                    channelId = NotificationConstant.RESULT_CHANNEL.channelId
+                        try {
+                            if (/*shouldNotify*/true)
+                                notificationManager.showNotification(
+                                    NotificationData(
+                                        id = courseWithList.course.hashCode(),
+                                        title = "No new results found",
+                                        message = "No new results found for ${courseWithList.course.courseName}",
+                                        channelName = NotificationConstant.RESULT_CHANNEL.channelName,
+                                        channelId = NotificationConstant.RESULT_CHANNEL.channelId,
+                                        destinationUri = NavigationRoute.Result.getDeepLink().toUri()
+                                    )
                                 )
-                            )
                         } catch (e: Exception) {
                             Log.d(TAG, "Permission not granted")
-                        }*/
+                        }
                     }
                     withContext(Dispatchers.IO) {
                         resultDao.updateLastFetchedDate(courseId = courseWithList.course.courseId)

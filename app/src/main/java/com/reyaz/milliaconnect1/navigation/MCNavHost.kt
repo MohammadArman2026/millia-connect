@@ -1,11 +1,10 @@
 package com.reyaz.milliaconnect1.navigation
 
 import androidx.compose.foundation.layout.fillMaxSize
-import com.reyaz.core.navigation.NavigationRoute
+import constants.NavigationRoute
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -40,19 +39,19 @@ fun MCNavHost(
         startDestination =
 //            NavigationRoute.AttendanceGraph.route,
 //            NavigationRoute.Portal.route,
-            NavigationRoute.ResultGraph.route,
+            constants.NavigationRoute.ResultGraph.route,
 //        NavigationRoute.Notice.route,
         modifier = modifier.fillMaxSize()
     ) {
         // Attendance Feature Graph
         navigation(
-            route = NavigationRoute.AttendanceGraph.route,
-            startDestination = NavigationRoute.Schedule.route
+            route = constants.NavigationRoute.AttendanceGraph.route,
+            startDestination = constants.NavigationRoute.Schedule.route
         ) {
             attendanceNavGraph(navController, snackbarHostState)
         }
 
-        dialog(route = NavigationRoute.Portal.route) {
+        dialog(route = constants.NavigationRoute.Portal.route) {
             PortalScreen(
                 viewModel = portalViewModel,
                 dismissDialog = {
@@ -62,7 +61,7 @@ fun MCNavHost(
         }
         // pdf screen
         composable(
-            route = NavigationRoute.PdfViewer.route,
+            route = constants.NavigationRoute.PdfViewer.route,
             arguments = listOf(navArgument("path") { type = NavType.StringType })
         ) { backStackEntry ->
             val path = backStackEntry.arguments?.getString("path") ?: ""
@@ -72,15 +71,15 @@ fun MCNavHost(
 
         // Result Graph
         navigation(
-            route = NavigationRoute.ResultGraph.route,
-            startDestination = NavigationRoute.Result.route
+            route = constants.NavigationRoute.ResultGraph.route,
+            startDestination = constants.NavigationRoute.Result.route
         ) {
             resultNavGraph(navController, snackbarHostState)
         }
 
         // Notice
         composable(
-            route = NavigationRoute.Notice.route
+            route = constants.NavigationRoute.Notice.route
         ) {
             val noticeViewModel: NoticeViewModel = koinViewModel()
             val uiState by noticeViewModel.uiState.collectAsStateWithLifecycle()
@@ -88,7 +87,7 @@ fun MCNavHost(
                 uiState = uiState,
                 onEvent = noticeViewModel::event,
                 openPdf = {
-                    navController.navigate(NavigationRoute.PdfViewer.createRoute(it))
+                    navController.navigate(constants.NavigationRoute.PdfViewer.createRoute(it))
                 },
                 modifier = Modifier,
                 snackbarHostState = snackbarHostState

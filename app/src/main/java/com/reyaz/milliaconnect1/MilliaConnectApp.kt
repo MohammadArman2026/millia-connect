@@ -6,7 +6,6 @@ import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -21,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.reyaz.core.navigation.NavigationRoute
 import com.reyaz.core.navigation.isCurrentRoute
 import com.reyaz.core.ui.components.BottomNavItem
 import com.reyaz.core.ui.components.CustomBottomNavigationBar
@@ -31,7 +29,8 @@ import com.reyaz.feature.portal.presentation.PortalViewModel
 import com.reyaz.milliaconnect1.navigation.MCNavHost
 import com.reyaz.milliaconnect1.navigation.TopLevelDestinations
 import com.reyaz.milliaconnect1.navigation.getIcon
-import com.reyaz.milliaconnect1.ui.screen.components.WifiIconComposable
+import com.reyaz.milliaconnect1.ui.components.WifiIconComposable
+import constants.NavigationRoute
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
