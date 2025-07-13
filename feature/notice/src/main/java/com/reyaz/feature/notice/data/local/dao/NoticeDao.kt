@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface NoticeDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertNotice(notice: NoticeEntity)
+    suspend fun insertAll(notice: List<NoticeEntity>)
 
     @Query("SELECT * FROM NoticeEntity WHERE typeId = :noticeType ORDER BY createdOn DESC")
     fun observeNotices(noticeType: String): Flow<List<NoticeEntity>>

@@ -30,9 +30,12 @@ class NoticeRepository(
             val noticeResult = scraper.scrapNotices(noticeType)
             if (noticeResult.isSuccess) {
                 Log.d(TAG, "Fetching notice from network successfully")
-                noticeResult.getOrThrow().map {
-                    noticeDao.insertNotice(it.toNoticeEntity())
-                }
+
+                val entities = noticeResult.getOrThrow().map { it.toNoticeEntity() }
+
+                // atomic insertion of all
+                noticeDao.insertAll(entities)
+
                 Result.success(Unit)
             } else {
                 throw noticeResult.exceptionOrNull() ?: Exception("Error while refreshing notice")

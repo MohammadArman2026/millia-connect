@@ -50,7 +50,8 @@ class NoticeScraper(
                                 noticeType = NoticeType.AcademicCalendar,
                                 limit = 2
                             )
-                            Result.success((enggCal.getOrNull() ?: emptyList()) + (dentistryCal.getOrNull() ?: emptyList()) + (uniCal.getOrNull() ?: emptyList())+ (disCal.getOrNull() ?: emptyList()))
+                            val allAcademicCalendar = (enggCal.getOrThrow() ) + (dentistryCal.getOrThrow() ) + (uniCal.getOrThrow() )+ (disCal.getOrThrow() )
+                            Result.success(allAcademicCalendar)
                         }
                         NoticeType.Holiday -> parser.parseHoliday(page)
                         NoticeType.Admission -> {
@@ -58,8 +59,8 @@ class NoticeScraper(
 
                             val oldPage = fetchPage("https://jmicoe.in/")
                             val oldSiteNotices = parser.parseAnchorsByPath(oldPage, noticeType, "//*[@id='leftPanel']")
-
-                            Result.success((newSiteNotices.getOrNull() ?: emptyList()) + (oldSiteNotices.getOrNull() ?: emptyList()))
+                            val allAdmissionNotices = (newSiteNotices.getOrThrow() ) + (oldSiteNotices.getOrThrow() )
+                            Result.success(allAdmissionNotices)
                         }
                         NoticeType.Examination,
                         NoticeType.General,
@@ -73,9 +74,10 @@ class NoticeScraper(
                                 page = fetchPage("https://jmi.ac.in/ACADEMICS/Hostels/University-Girls-Hostels/Notices"),
                                 noticeType = noticeType,
                                 noticeType.selector,
-                                limit = 4
+                                limit = 5
                             )
-                            Result.success((boysHostelNotices.getOrNull() ?: emptyList()) + (girlsHostelNotices.getOrNull() ?: emptyList()))
+                            val allHostelNotices = (boysHostelNotices.getOrThrow() ) + (girlsHostelNotices.getOrThrow() )
+                            Result.success(allHostelNotices)
                         }
                     }
                 parseResult
@@ -85,7 +87,7 @@ class NoticeScraper(
             }
         }
 
-    private suspend fun fetchPage(url: String): HtmlPage {
+    private fun fetchPage(url: String): HtmlPage {
         return webClient.getPage<HtmlPage>(url).apply {
             webClient.waitForBackgroundJavaScript(3000)
 //            Log.d(TAG, "Fetched page: $url")

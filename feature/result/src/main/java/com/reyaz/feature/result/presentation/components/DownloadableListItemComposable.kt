@@ -51,11 +51,9 @@ fun DownloadableListItemComposable(
                         item.localPath?.let {
                             openPdf()
                         } ?: run {
-                            // todo: check if the given link is ending at .pdf else open the link
                             toggleDownload(item.link, null)
                         }
                     } else {
-                        // todo: open the link in browser
                     }
                 }
                 .padding(start = 8.dp),

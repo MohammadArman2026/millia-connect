@@ -69,7 +69,7 @@ class NoticeParser {
             if (div != null) {
                 val anchors = div.getByXPath<HtmlAnchor>(".//a")
 
-                anchors.take(5).forEach { anchor ->
+                anchors.take(9).forEach { anchor ->
                     val title = anchor.textContent.trim()
                     val href = anchor.hrefAttribute.trim()
                     val fullUrl = URL(page.baseURL, href).toString()
@@ -84,6 +84,7 @@ class NoticeParser {
                     )
                     Log.d(TAG, "$title — $fullUrl")
                 }
+                notices.reverse()
                 return Result.success(notices)
             } else {
                 throw Exception("Error while parsing")
