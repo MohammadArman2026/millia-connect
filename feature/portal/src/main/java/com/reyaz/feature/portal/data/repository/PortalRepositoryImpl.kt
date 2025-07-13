@@ -96,9 +96,9 @@ class PortalRepositoryImpl(
                 message = message,
                 channelId = NotificationConstant.PORTAL_CHANNEL.channelId,
                 channelName = NotificationConstant.PORTAL_CHANNEL.channelName,
-                priority = NotificationCompat.PRIORITY_DEFAULT,
                 importance = NotificationConstant.PORTAL_CHANNEL.importance,
-                destinationUri = NavigationRoute.Portal.getDeepLink().toUri()
+                destinationUri = NavigationRoute.Portal.getDeepLink().toUri(),
+                playSound = false,
             )
         )
     }

@@ -11,9 +11,9 @@ data class NotificationData(
     val channelId: String = "default_channel",
     val channelName: String = "General Notifications",
     val iconResId: Int? = null,
-    val priority: Int = NotificationCompat.PRIORITY_DEFAULT,
-    val importance: Int = NotificationManager.IMPORTANCE_DEFAULT,
+    val importance: Int,
     val destinationUri: Uri,
+    val playSound: Boolean
 )
 
 /**

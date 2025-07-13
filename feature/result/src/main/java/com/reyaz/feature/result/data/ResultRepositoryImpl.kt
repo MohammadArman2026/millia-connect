@@ -1,9 +1,11 @@
 package com.reyaz.feature.result.data
 
 import android.Manifest
+import android.app.NotificationManager
 import android.content.Context
 import android.util.Log
 import androidx.annotation.RequiresPermission
+import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import com.reyaz.core.common.utils.safeSuspendCall
 import com.reyaz.core.network.PdfManager
@@ -22,6 +24,7 @@ import com.reyaz.feature.result.domain.model.CourseType
 import com.reyaz.feature.result.domain.model.ResultHistory
 import com.reyaz.feature.result.domain.repository.ResultRepository
 import com.reyaz.core.notification.utils.NotificationConstant
+import com.reyaz.feature.result.data.ResultFetchWorker.Companion.schedulePeriodicWork
 import constants.NavigationRoute
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -121,7 +124,6 @@ class ResultRepositoryImpl(
                             )
                         )
                     }
-                    ResultFetchWorker.schedulePeriodicWork(context)
                 } else {
                     Log.d(TAG, "Error fetching remote result list: ${remoteList.exceptionOrNull()}")
                     throw Exception("Unable to fetch from remote!")
@@ -130,6 +132,7 @@ class ResultRepositoryImpl(
             } else {
                 Log.d(TAG, "Course already being tracked!!")
             }
+            ResultFetchWorker.schedulePeriodicWork(context)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -149,30 +152,33 @@ class ResultRepositoryImpl(
                     phdDisciplineId = phdId
                 ).getOrThrow()
             // Log.d(TAG, "Scraped list size: ${scrapedList.size}")
-
             Result.success(scrapedList)
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching remote result list: ${e.message}")
             Result.failure(e)
         }
     }
+
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override suspend fun refreshLocalResults(shouldNotify: Boolean) {
         try {
-            notificationManager.showNotification(
-                NotificationData(
-                    id = "refreshing".hashCode(),
-                    title = "Refreshing results",
-                    message = "Refreshing...",
-                    channelName = NotificationConstant.RESULT_CHANNEL.channelName,
-                    channelId = NotificationConstant.RESULT_CHANNEL.channelId,
-                    destinationUri = NavigationRoute.Result.getDeepLink().toUri()
-                )
-            )
+             /*notificationManager.showNotification(
+                 NotificationData(
+                     id = "refreshing".hashCode(),
+                     title = "Refreshing results",
+                     message = "Refreshing...",
+                     channelName = NotificationConstant.RESULT_CHANNEL.channelName,
+                     channelId = NotificationConstant.RESULT_CHANNEL.channelId,
+                     destinationUri = NavigationRoute.Result.getDeepLink().toUri(),
+                     importance = NotificationConstant.RESULT_CHANNEL.importance,
+                     playSound = true
+                 )
+             )*/
             Log.d(TAG, "Refreshing local results")
             val trackedCourse = resultDao.observeResults().first()
+            Log.d(TAG, "Tracked courses: ${trackedCourse}")
             trackedCourse.forEach { courseWithList ->
-                Log.d(TAG, "Refreshing course: ${courseWithList.course.courseId}")
+                Log.d(TAG, "Refreshing course: ${courseWithList.course.courseName}")
                 val newListResponse = fetchRemoteResultList(
                     typeId = courseWithList.course.courseTypeId,
                     courseId = courseWithList.course.courseId,
@@ -192,24 +198,24 @@ class ResultRepositoryImpl(
                                     )
                                 )
                             }
-                            try {
-                                if (shouldNotify)
-                                    notificationManager.showNotification(
-                                        NotificationData(
-                                            id = remoteResultListDto.hashCode(),
-                                            title = "Result released for ${remoteResultListDto.courseName/*.take(15)*/}...",
-                                            message = remoteResultListDto.remark,
-                                            channelId = NotificationConstant.RESULT_CHANNEL.channelId,
-                                            channelName = NotificationConstant.RESULT_CHANNEL.channelName,
-                                            destinationUri = NavigationRoute.Result.getDeepLink().toUri()
-                                        )
+                            if (shouldNotify)
+                                notificationManager.showNotification(
+                                    NotificationData(
+                                        id = remoteResultListDto.remark.hashCode(),
+                                        title = "Result released for ${remoteResultListDto.courseName/*.take(15)*/}...",
+                                        message = remoteResultListDto.remark,
+                                        channelId = NotificationConstant.RESULT_CHANNEL.channelId,
+                                        channelName = NotificationConstant.RESULT_CHANNEL.channelName,
+                                        destinationUri = NavigationRoute.Result.getDeepLink()
+                                            .toUri(),
+                                        importance = NotificationConstant.RESULT_CHANNEL.importance,
+                                        playSound = true
                                     )
-                            } catch (e: Exception) {
-                                Log.d(TAG, "Permission not granted")
-                            }
+                                )
                         }
                     } else {
                         Log.d(TAG, "No new results found")
+                        // todo
                         try {
                             if (shouldNotify)
                                 notificationManager.showNotification(
@@ -219,7 +225,10 @@ class ResultRepositoryImpl(
                                         message = "No new results found for ${courseWithList.course.courseName}",
                                         channelName = NotificationConstant.RESULT_CHANNEL.channelName,
                                         channelId = NotificationConstant.RESULT_CHANNEL.channelId,
-                                        destinationUri = NavigationRoute.Result.getDeepLink().toUri()
+                                        destinationUri = NavigationRoute.Result.getDeepLink()
+                                            .toUri(),
+                                        playSound = true,
+                                        importance = NotificationConstant.RESULT_CHANNEL.importance
                                     )
                                 )
                         } catch (e: Exception) {
@@ -230,11 +239,14 @@ class ResultRepositoryImpl(
                         resultDao.updateLastFetchedDate(courseId = courseWithList.course.courseId)
                     }
                 } else {
-                    Log.e(TAG, "Error fetching remote result list: ${newListResponse.exceptionOrNull()}")
+                    Log.e(
+                        TAG,
+                        "Error fetching remote result list: ${newListResponse.exceptionOrNull()}"
+                    )
                     //throw Exception("Unable to fetch from remote!")
                 }
             }
-            if (trackedCourse.isNotEmpty()) ResultFetchWorker.cancel(context = context)
+            if (trackedCourse.isEmpty()) ResultFetchWorker.cancel(context = context)
         } catch (e: Exception) {
             Log.e(TAG, "Error refreshing results: ${e.message}")
             throw e

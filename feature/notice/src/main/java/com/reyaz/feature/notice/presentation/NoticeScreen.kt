@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
@@ -12,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.reyaz.core.common.utils.shareNoticeExternally
+import com.reyaz.core.common.utils.shareTextList
 import com.reyaz.core.ui.components.CustomListDivider
 import com.reyaz.core.ui.components.ListItemWithTrailingIcon
 import com.reyaz.core.ui.components.textWithIndicator
@@ -34,6 +35,10 @@ fun NoticeScreen(
 ) {
     val context = LocalContext.current
     val linkHandler = remember { LinkHandler(context) }
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = 1,
+        initialFirstVisibleItemScrollOffset = 0
+    )
 
     var isRefreshing by remember { mutableStateOf(false) }
 
@@ -83,7 +88,7 @@ fun NoticeScreen(
                 LoadingBar()
             }
 
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {
                 if (uiState.noticeList.isNotEmpty())
                     item {
                         Text(
@@ -142,7 +147,7 @@ fun NoticeScreen(
                                 }
                             },
                             onLongClick = {
-                                context.shareNoticeExternally(title, notice.link ?: "No link found")
+                                context.shareTextList(listOf("\uD83D\uDCE2 Notice: $title", "\uD83D\uDD17 Link: ${notice.link  ?: "No link found"}"))
                             }
                         )
                     }

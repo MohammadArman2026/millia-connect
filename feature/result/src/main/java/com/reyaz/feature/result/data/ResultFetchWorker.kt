@@ -71,7 +71,7 @@ class ResultFetchWorker(
         }*/
 
         fun schedulePeriodicWork(context: Context) {
-            val (duration, unit) = 24L to TimeUnit.MINUTES      // todo
+            val (duration, unit) = 12L to TimeUnit.HOURS
             Log.d(TAG, "Scheduling result fetch work")
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -89,13 +89,21 @@ class ResultFetchWorker(
                         10,
                         TimeUnit.MINUTES
                     )
-                .build()
+                    .build()
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 UNIQUE_WORK_NAME,
                 ExistingPeriodicWorkPolicy.KEEP,
                 fetchResultWorkRequest
             )
+            /*WorkManager.getInstance(context).enqueueUniqueWork(
+                UNIQUE_WORK_NAME,
+                ExistingWorkPolicy.REPLACE,
+                OneTimeWorkRequestBuilder<ResultFetchWorker>()
+                    .setConstraints(constraints)
+                    .setInitialDelay(duration, unit)
+                    .build()
+            )*/
         }
 
         fun cancel(context: Context) {

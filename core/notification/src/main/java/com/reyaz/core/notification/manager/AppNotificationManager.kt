@@ -1,6 +1,7 @@
 package com.reyaz.core.notification.manager
 
 import android.Manifest
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -25,20 +26,21 @@ class AppNotificationManager(
             context,
             notificationData.channelId,
             channelName = notificationData.channelName,
-            importance = notificationData.importance
+            channelImportance = notificationData.importance
         )
         val notification = NotificationCompat.Builder(context, notificationData.channelId)
             .setContentTitle(notificationData.title)
-            .setContentTitle(notificationData.title)
-            .setSilent(notificationData.importance != NotificationCompat.PRIORITY_MIN)
+
+            .setSilent(!notificationData.playSound)
+
             .setContentText(notificationData.message)
             .setSmallIcon(
                 notificationData.iconResId ?: com.reyaz.core.ui.R.drawable.notification_icon
             )
-            .setPriority(notificationData.priority)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setStyle(NotificationCompat.BigTextStyle().bigText(notificationData.message))
             .setContentIntent(getIntent(uri = notificationData.destinationUri))
+            .setAutoCancel(true)
             .build()
         NotificationManagerCompat.from(context).notify(notificationData.id, notification)
     }

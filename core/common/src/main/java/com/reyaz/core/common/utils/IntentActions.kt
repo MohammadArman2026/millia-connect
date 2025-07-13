@@ -49,20 +49,17 @@ fun Context.sendWhatsAppMessage(phoneNumber: String = "919518812358", message: S
     }
 }
 
-fun Context.shareNoticeExternally(title: String, link: String) {
+fun Context.shareTextList(shareList: List<String>) {
     val shareText = buildString {
-        append("📢 Notice: ")
-        append(title)
-        append("\n\n")
-        append("🔗 Link: ")
-        append(link)
-        append("\n\n")
-        append("Shared from *Millia Connect*.\n Download Now: https://play.google.com/store/apps/details?id=com.reyaz.milliaconnect1")
+        shareList.forEach{
+            append(it)
+            append("\n\n")
+        }
+        append("\uD83D\uDC7E Shared using *Millia Connect* app.\nDownload Now: https://play.google.com/store/apps/details?id=com.reyaz.milliaconnect1")
     }
 
     val intent = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
-        putExtra(Intent.EXTRA_SUBJECT, "Notice: $title")
         putExtra(Intent.EXTRA_TEXT, shareText)
     }
 

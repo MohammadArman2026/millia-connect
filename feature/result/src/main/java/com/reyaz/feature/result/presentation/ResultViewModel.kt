@@ -91,7 +91,7 @@ class ResultViewModel(
 
     private fun initializeRemoteComponents() {
         onEvent(ResultEvent.LoadDegree)
-        //onEvent(ResultEvent.RefreshResults)   // todo: remove this
+        onEvent(ResultEvent.RefreshResults)
     }
 
     private fun markAsRead(courseId: String) {
