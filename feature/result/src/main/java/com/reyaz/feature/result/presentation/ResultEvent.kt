@@ -21,7 +21,6 @@ sealed class ResultEvent {
         val title: String
     ) : ResultEvent()
 
-    data class DeleteFileByPath(val path: String) : ResultEvent()
     data object RefreshResults : ResultEvent()
     data object Initialize : ResultEvent()
 

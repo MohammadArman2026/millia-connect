@@ -7,6 +7,7 @@ import com.reyaz.feature.result.data.mapper.ResultHtmlParser
 import com.reyaz.feature.result.domain.model.CourseName
 import com.reyaz.feature.result.domain.model.CourseType
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.htmlunit.WebClient
 import org.htmlunit.html.HtmlPage

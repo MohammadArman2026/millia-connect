@@ -1,6 +1,5 @@
 package com.reyaz.feature.portal.presentation
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,15 +7,18 @@ import com.reyaz.core.common.utils.NetworkManager
 import com.reyaz.core.common.utils.Resource
 import com.reyaz.feature.portal.data.local.PortalDataStore
 import com.reyaz.feature.portal.data.repository.JmiWifiState
-import com.reyaz.feature.portal.domain.model.ConnectRequest
 import com.reyaz.feature.portal.domain.repository.PortalRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private const val TAG = "PORTAL_VM"
-private const val LOGGING = false
+private const val LOGGING = true
 
 class PortalViewModel(
     private val repository: PortalRepository,
@@ -153,7 +155,8 @@ class PortalViewModel(
     }
 
     private suspend fun checkConnectionAndLogin() {
-        log("checking connection and logging..")
+
+        log("checking connection state")
 //        viewModelScope.launch {
         when (repository.checkConnectionState()) {
             JmiWifiState.NOT_CONNECTED -> {

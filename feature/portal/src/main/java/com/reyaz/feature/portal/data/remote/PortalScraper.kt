@@ -44,7 +44,7 @@ class PortalScraper(
             val pageText = responsePage.asNormalizedText()
 
             if (pageText.contains(INVALID_CREDENTIALS_TEXT)) {
-                throw Exception("Wrong Username or Password")
+                emit(Resource.Error("Wrong Username or Password"))
             }
 
             networkManager.resetNetworkBinding()
@@ -57,7 +57,7 @@ class PortalScraper(
 
         } catch (e: Exception) {
             log("Login error: ${e.message}")
-            //emit(Resource.Error(e.message ?: "Unknown Error"))
+            emit(Resource.Error("You were not connected to JMI-WiFi"))
         }
     }.flowOn(Dispatchers.IO)
 

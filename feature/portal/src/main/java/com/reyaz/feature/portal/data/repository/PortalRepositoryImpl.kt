@@ -62,10 +62,15 @@ class PortalRepositoryImpl(
             ).collect {
                 emit(it)
                 when(it){
-                    is Resource.Error -> {}
+                    is Resource.Error -> {
+                        Log.d(TAG, "Error while login: ${it.message}")
+                        if (shouldNotify)
+                            showPortalNotification(title = "Failed to restore session", message = it.message ?: "You were not connected to JMI-WiFi [;_;]")
+                    }
                     is Resource.Success -> {
+                        Log.d(TAG, "Successfully logged in")
                         if (shouldNotify) {
-                            showPortalNotification(title = "Automatically Logged In", message = "You're Successfully Logged in!")
+                            showPortalNotification(title = "Wifi session restored", message = it.data ?: "Successfully wifi session restored!")
                         }
                         networkManager.reportCaptivePortalDismissed()
                         if(dataStore.autoConnect.first())
@@ -91,8 +96,8 @@ class PortalRepositoryImpl(
                 message = message,
                 channelId = NotificationConstant.PORTAL_CHANNEL.channelId,
                 channelName = NotificationConstant.PORTAL_CHANNEL.channelName,
-                priority = NotificationCompat.PRIORITY_LOW,
-                importance = NotificationManager.IMPORTANCE_LOW,
+                priority = NotificationCompat.PRIORITY_DEFAULT,
+                importance = NotificationConstant.PORTAL_CHANNEL.importance,
                 destinationUri = NavigationRoute.Portal.getDeepLink().toUri()
             )
         )
@@ -103,6 +108,7 @@ class PortalRepositoryImpl(
             val result =
                 portalScraper.performLogout()
             if (result.isSuccess) {
+                AutoLoginWorker.cancelOneTime(context)
                 result
             } else {
                 // return Result.failure(result.exceptionOrNull() ?: Exception("Unknown Error"))
@@ -127,10 +133,10 @@ class PortalRepositoryImpl(
      */
     override suspend fun checkConnectionState(): JmiWifiState {
         val isJmiWifi = portalScraper.isJmiWifi(forceWifi = true)
-        val hasInternetAccess =
+        val isWifiHasInternet =
             portalScraper.isInternetAvailable(isCheckingForWifi = true).getOrNull() ?: false
-        Log.d(TAG, "HasInternet: $hasInternetAccess, IsJmiWifi: $isJmiWifi")
-        return if (isJmiWifi && hasInternetAccess) {
+        Log.d(TAG, "HasInternet: $isWifiHasInternet, IsJmiWifi: $isJmiWifi")
+        return if (isJmiWifi && isWifiHasInternet) {
             JmiWifiState.LOGGED_IN
         } else if (isJmiWifi) {
             JmiWifiState.NOT_LOGGED_IN

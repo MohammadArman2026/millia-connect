@@ -48,3 +48,32 @@ fun Context.sendWhatsAppMessage(phoneNumber: String = "919518812358", message: S
         Toast.makeText(this, "WhatsApp is not installed.", Toast.LENGTH_SHORT).show()
     }
 }
+
+fun Context.shareNoticeExternally(title: String, link: String) {
+    val shareText = buildString {
+        append("📢 Notice: ")
+        append(title)
+        append("\n\n")
+        append("🔗 Link: ")
+        append(link)
+        append("\n\n")
+        append("Shared from *Millia Connect*.\n Download Now: https://play.google.com/store/apps/details?id=com.reyaz.milliaconnect1")
+    }
+
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_SUBJECT, "Notice: $title")
+        putExtra(Intent.EXTRA_TEXT, shareText)
+    }
+
+    try {
+        val chooser = Intent.createChooser(intent, "Share Notice via")
+        startActivity(chooser)
+    } catch (e: ActivityNotFoundException) {
+        Toast.makeText(this, "No app found to share notice", Toast.LENGTH_SHORT).show()
+        Log.e("SHARE_NOTICE", "No app found to handle share intent", e)
+    } catch (e: Exception) {
+        Toast.makeText(this, "Failed to share the notice.", Toast.LENGTH_SHORT).show()
+        Log.e("SHARE_NOTICE", "Unexpected error while sharing", e)
+    }
+}

@@ -59,7 +59,7 @@ class ResultRepositoryImpl(
     }
 
     override suspend fun getCourseTypes(): Result<List<CourseType>> =
-        safeSuspendCall { resultApi.fetchProgramTypes().getOrDefault(emptyList()) }
+        safeSuspendCall { resultApi.fetchProgramTypes().getOrThrow() }
 
     override suspend fun getCourses(type: String): Result<List<CourseName>> {
         return try {
@@ -67,7 +67,7 @@ class ResultRepositoryImpl(
             if (request.isSuccess) {
                 Result.success(request.getOrDefault(emptyList()))
             } else {
-                throw request.exceptionOrNull()!!
+                throw request.exceptionOrNull() ?: Exception("Unknown error")
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -121,11 +121,12 @@ class ResultRepositoryImpl(
                             )
                         )
                     }
-//                    workScheduler.schedulePeriodic(workName = course)
+                    ResultFetchWorker.schedulePeriodicWork(context)
                 } else {
                     Log.d(TAG, "Error fetching remote result list: ${remoteList.exceptionOrNull()}")
                     throw Exception("Unable to fetch from remote!")
                 }
+
             } else {
                 Log.d(TAG, "Course already being tracked!!")
             }
@@ -158,6 +159,16 @@ class ResultRepositoryImpl(
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override suspend fun refreshLocalResults(shouldNotify: Boolean) {
         try {
+            notificationManager.showNotification(
+                NotificationData(
+                    id = "refreshing".hashCode(),
+                    title = "Refreshing results",
+                    message = "Refreshing...",
+                    channelName = NotificationConstant.RESULT_CHANNEL.channelName,
+                    channelId = NotificationConstant.RESULT_CHANNEL.channelId,
+                    destinationUri = NavigationRoute.Result.getDeepLink().toUri()
+                )
+            )
             Log.d(TAG, "Refreshing local results")
             val trackedCourse = resultDao.observeResults().first()
             trackedCourse.forEach { courseWithList ->
@@ -200,7 +211,7 @@ class ResultRepositoryImpl(
                     } else {
                         Log.d(TAG, "No new results found")
                         try {
-                            if (/*shouldNotify*/true)
+                            if (shouldNotify)
                                 notificationManager.showNotification(
                                     NotificationData(
                                         id = courseWithList.course.hashCode(),
@@ -223,7 +234,7 @@ class ResultRepositoryImpl(
                     //throw Exception("Unable to fetch from remote!")
                 }
             }
-            if (trackedCourse.isNotEmpty()) ResultFetchWorker.schedule(context = context)
+            if (trackedCourse.isNotEmpty()) ResultFetchWorker.cancel(context = context)
         } catch (e: Exception) {
             Log.e(TAG, "Error refreshing results: ${e.message}")
             throw e

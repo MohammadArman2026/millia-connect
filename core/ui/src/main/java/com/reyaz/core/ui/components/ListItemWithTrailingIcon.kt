@@ -1,6 +1,7 @@
 package com.reyaz.core.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,7 @@ fun ListItemWithTrailingIcon(
     date: String?,
     trailingIcon: @Composable() (() -> Unit)?,
     onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null, // Add this parameter
 ) {
 //    val textWithIndicator = textWithIndicator(listTitle, isNewItem)
 
@@ -39,9 +41,10 @@ fun ListItemWithTrailingIcon(
                 .fillMaxHeight()
                 .weight(1f)
                 .clip(RoundedCornerShape(8.dp))
-                .clickable {
-                    onClick()
-                }
+                .combinedClickable(
+                    onClick = onClick,
+                    onLongClick = onLongClick // Add long press support
+                )
                 .padding( 12.dp, 12.dp, 0.dp, 12.dp),
         ) {
             // result list title

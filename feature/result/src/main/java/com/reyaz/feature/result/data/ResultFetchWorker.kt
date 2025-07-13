@@ -5,10 +5,13 @@ import android.util.Log
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.reyaz.feature.result.domain.repository.ResultRepository
@@ -32,6 +35,7 @@ class ResultFetchWorker(
             Log.d(TAG, "Work completed for Fetching result")
             Result.success()
         } catch (e: Exception) {
+            Log.d(TAG, "Work failed for Fetching result: ${e.message}")
             if (runAttemptCount < 3) {
                 Result.retry()
             } else {
@@ -43,7 +47,7 @@ class ResultFetchWorker(
     companion object {
         private const val UNIQUE_WORK_NAME = "result_fetch_work"
 
-        fun schedule(context: Context) {
+        /*fun schedule(context: Context) {
             Log.d(TAG, "Scheduling result fetch work")
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -64,6 +68,39 @@ class ResultFetchWorker(
                 ExistingWorkPolicy.REPLACE,
                 fetchResultWorkRequest
             )
+        }*/
+
+        fun schedulePeriodicWork(context: Context) {
+            val (duration, unit) = 24L to TimeUnit.MINUTES      // todo
+            Log.d(TAG, "Scheduling result fetch work")
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+
+            val fetchResultWorkRequest =
+                PeriodicWorkRequestBuilder<ResultFetchWorker>(
+                    repeatInterval = duration, unit,
+                    flexTimeInterval = duration / 2, unit
+                )
+                    .setConstraints(constraints)
+                    .setInitialDelay(duration, unit)
+                    .setBackoffCriteria(
+                        BackoffPolicy.EXPONENTIAL,
+                        10,
+                        TimeUnit.MINUTES
+                    )
+                .build()
+
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+                UNIQUE_WORK_NAME,
+                ExistingPeriodicWorkPolicy.KEEP,
+                fetchResultWorkRequest
+            )
+        }
+
+        fun cancel(context: Context) {
+            Log.d(TAG, "Cancelling result fetch work")
+            WorkManager.getInstance(context).cancelUniqueWork(UNIQUE_WORK_NAME)
         }
     }
 }

@@ -37,4 +37,10 @@ class RequestTimeStore(
         val currentTime = System.currentTimeMillis()
         return lastTime == null || currentTime - lastTime > thresholdMillis
     }
+
+    suspend fun clearAll() {
+        context.requestTimeDataStore.edit { preferences ->
+            preferences.clear()
+        }
+    }
 }

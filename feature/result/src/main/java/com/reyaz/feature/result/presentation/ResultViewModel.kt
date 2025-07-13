@@ -91,7 +91,7 @@ class ResultViewModel(
 
     private fun initializeRemoteComponents() {
         onEvent(ResultEvent.LoadDegree)
-        onEvent(ResultEvent.RefreshResults)
+        //onEvent(ResultEvent.RefreshResults)   // todo: remove this
     }
 
     private fun markAsRead(courseId: String) {
@@ -134,10 +134,11 @@ class ResultViewModel(
 
     private fun getCourseTypes() {
         viewModelScope.launch {
-            updateState { it.copy(typeLoading = true) }
+            updateState { it.copy(typeLoading = true, error = null) }
             val typeList = resultRepository.getCourseTypes()
             // Log.d(TAG, "List: $typeList")
             if (typeList.isSuccess) {
+                 Log.d(TAG, "type loading SUCCESS & List: $typeList")
                 updateState {
                     it.copy(
                         courseTypeList = typeList.getOrDefault(emptyList()),
@@ -146,11 +147,12 @@ class ResultViewModel(
                 }
                 // Log.d(TAG, "Course Types: ${typeList.getOrDefault(emptyList())}")
             } else {
+                Log.d(TAG, "type loading FAILED")
                 updateState {
                     it.copy(
-                        courseTypeList = typeList.getOrDefault(emptyList()),
+                        courseTypeList = emptyList(),
                         error = typeList.exceptionOrNull()?.message,
-                        isLoading = false
+                        typeLoading = false
                     )
                 }
             }
@@ -173,7 +175,7 @@ class ResultViewModel(
             } else {
                 updateState {
                     it.copy(
-                        courseNameList = typeList.getOrDefault(emptyList()),
+                        courseNameList = emptyList(),
                         error = typeList.exceptionOrNull()?.message,
                         courseLoading = false
                     )

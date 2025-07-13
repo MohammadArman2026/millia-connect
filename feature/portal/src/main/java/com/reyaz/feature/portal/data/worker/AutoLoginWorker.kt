@@ -15,7 +15,7 @@ import com.reyaz.feature.portal.domain.repository.PortalRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.TimeUnit
-
+private const val TAG = "AUTO_LOGIN_WORKER"
 class AutoLoginWorker(
     context: Context,
     params: WorkerParameters
@@ -25,11 +25,15 @@ class AutoLoginWorker(
 
     override suspend fun doWork(): Result {
         return try {
+            Log.d(TAG, "Performing auto login by worker")
             var result: Result = Result.success()
             portalRepository.connect(shouldNotify = true).collect {
                 when(it){
                     is Resource.Error -> {
-                       result =  Result.retry()
+//                        result = if(runAttemptCount<3)
+//                            Result.retry()
+//                        else Result.failure()
+                        result = Result.failure()
                     }
                     is Resource.Success -> {
                         result = Result.success()
@@ -37,9 +41,10 @@ class AutoLoginWorker(
                     is Resource.Loading -> {}
                 }
             }
+            Log.d(TAG, "Auto login result: $result")
             result
         } catch (e: Exception) {
-            Log.e("AutoLoginWorker", "Error during auto login", e)
+            Log.e(TAG, "Error during auto login", e)
             Result.failure()
         }
     }
@@ -48,20 +53,14 @@ class AutoLoginWorker(
         private const val UNIQUE_WORK_NAME = "portal_login_work"
 
         fun scheduleOneTime(context: Context) {
-            Log.d("AutoLoginWorker", "Scheduling auto login work")
+            Log.d(TAG, "Scheduling auto login work")
 
             val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.UNMETERED)  // wifi
                 .build()
 
             val autoLoginTask = OneTimeWorkRequestBuilder<AutoLoginWorker>()
                 .setConstraints(constraints)
                 .setInitialDelay(100, TimeUnit.MINUTES)
-                .setBackoffCriteria(
-                    BackoffPolicy.EXPONENTIAL,
-                    10,
-                    TimeUnit.SECONDS
-                )
                 .build()
 
             WorkManager.getInstance(context).enqueueUniqueWork(
@@ -69,6 +68,11 @@ class AutoLoginWorker(
                 ExistingWorkPolicy.REPLACE,
                 autoLoginTask
             )
+        }
+
+        fun cancelOneTime(context: Context) {
+            Log.d(TAG, "Cancelling auto login work")
+            WorkManager.getInstance(context).cancelUniqueWork(UNIQUE_WORK_NAME)
         }
     }
 }

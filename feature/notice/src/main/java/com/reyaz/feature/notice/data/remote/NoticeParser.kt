@@ -21,7 +21,7 @@ class NoticeParser {
         return currentTime
     }
 
-    fun parseAcademicCalendar(page: HtmlPage): Result<List<NoticeDto>> {
+    /*fun parseAcademicCalendar(page: HtmlPage): Result<List<NoticeDto>> {
         try {
             Log.d(TAG, "Parsing academic calendar..")
             val ul = page.getFirstByXPath<HtmlUnorderedList>(
@@ -30,7 +30,7 @@ class NoticeParser {
 
             if (ul != null) {
                 val listItems = ul.getByXPath<HtmlListItem>(".//li")
-                val acadList: List<NoticeDto> = listItems/*.take(3)*/.mapNotNull { item ->
+                val acadList: List<NoticeDto> = listItems.take(3).mapNotNull { item ->
                     val anchor = item.getFirstByXPath<HtmlAnchor>(".//a")
                     if (anchor != null) {
                         val title = anchor.textContent.trim()
@@ -55,7 +55,7 @@ class NoticeParser {
             Log.d(TAG, "Error while parsing notice")
             return Result.failure(e)
         }
-    }
+    }*/
 
     fun parseHoliday(page: HtmlPage): Result<List<NoticeDto>> {
         try {
@@ -69,7 +69,7 @@ class NoticeParser {
             if (div != null) {
                 val anchors = div.getByXPath<HtmlAnchor>(".//a")
 
-                anchors/*.take(5)*/.forEach { anchor ->
+                anchors.take(5).forEach { anchor ->
                     val title = anchor.textContent.trim()
                     val href = anchor.hrefAttribute.trim()
                     val fullUrl = URL(page.baseURL, href).toString()

@@ -29,6 +29,7 @@ class GetNoticeFromNetworkUseCase(
             )
         ) {
             emit(Resource.Loading())
+//            requestTimeStore.clearAll()
             Log.d(TAG, "Refreshing new data")
             if (networkManager.observeAllNetworkType().first() != NetworkPreference.NONE) {
                 val result = noticeRepository.refreshNotice(type)

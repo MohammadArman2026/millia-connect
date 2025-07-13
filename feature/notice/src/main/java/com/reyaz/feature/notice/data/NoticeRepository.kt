@@ -1,15 +1,14 @@
 package com.reyaz.feature.notice.data
 
 import android.util.Log
-import com.reyaz.core.common.utils.toTimeAgoString
 import com.reyaz.core.network.PdfManager
 import com.reyaz.core.network.model.DownloadResult
-import com.reyaz.feature.notice.data.local.NoticeEntity
 import com.reyaz.feature.notice.data.local.dao.NoticeDao
-import com.reyaz.feature.notice.data.model.NoticeDto
 import com.reyaz.feature.notice.data.model.NoticeType
 import com.reyaz.feature.notice.data.remote.NoticeScraper
 import com.reyaz.feature.notice.domain.model.Notice
+import com.reyaz.feature.notice.util.entityToDomain
+import com.reyaz.feature.notice.util.toNoticeEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -96,21 +95,3 @@ class NoticeRepository(
     }
 }
 
-fun NoticeEntity.entityToDomain() = Notice(
-    title = title,
-    link = link,
-    path = path,
-    progress = progress,
-    isRead = isViewed,
-    fetchedOn = createdOn.toTimeAgoString()
-)
-
-fun NoticeDto.toNoticeEntity(): NoticeEntity {
-    return NoticeEntity(
-        typeId = type.typeId,
-        title = title,
-        link = url,
-        createdOn = createdOn,
-        isViewed = false
-    )
-}
