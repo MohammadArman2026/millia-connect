@@ -2,7 +2,7 @@
 <resources>
     <style name="Theme.WifiAutoConnect" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <style name="Theme.WifiAutoConnect.SplashScreen" parent="Theme.SplashScreen">
+    <style name="Theme.SplashScreen.Splash" parent="Theme.SplashScreen">
         <!-- Splash screen background -->
         <item name="android:windowSplashScreenBackground">@color/white</item>
 

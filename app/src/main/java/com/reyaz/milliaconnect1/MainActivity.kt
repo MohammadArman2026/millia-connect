@@ -3,12 +3,14 @@ package com.reyaz.milliaconnect1
 import android.Manifest
 import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,10 +35,10 @@ class MainActivity : ComponentActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Show the splash screen
-        installSplashScreen()
-
         super.onCreate(savedInstanceState)
+        val splashScreen  = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition{false}
+
         checkAndRequestNotificationPermission()
         // Check if this activity was launched from a captive portal notification
         if (intent?.action == ConnectivityManager.ACTION_CAPTIVE_PORTAL_SIGN_IN) {
@@ -48,7 +50,10 @@ class MainActivity : ComponentActivity() {
         } else
             Log.d("MAIN_ACTIVITY", "No Captive Portal Intent Received!")
 
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+        )
         setContent {
             MilliaConnectTheme {
                 Surface {

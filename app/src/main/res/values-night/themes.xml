@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Dark theme for splash screen -->
-    <style name="Theme.YourApp.SplashScreen" parent="Theme.SplashScreen">
+    <style name="Theme.SplashScreen.Splash" parent="Theme.SplashScreen.IconBackground">
         <item name="windowSplashScreenBackground">@color/splash_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_foreground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
 <!--        <item name="windowSplashScreenAnimationDuration">1000</item>-->
         <item name="postSplashScreenTheme">@style/Theme.WifiAutoConnect</item>
     </style>
