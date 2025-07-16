@@ -1,6 +1,7 @@
 package com.reyaz.milliaconnect1
 
 import android.Manifest
+import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.os.Build
@@ -13,6 +14,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Surface
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.work.WorkManager
 import com.reyaz.core.ui.theme.MilliaConnectTheme
 import com.reyaz.milliaconnect1.util.NetworkConnectivityObserver
 
@@ -28,7 +31,11 @@ class MainActivity : ComponentActivity() {
                 showToast("Notification permission denied!")
             }
         }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Show the splash screen
+        installSplashScreen()
+
         super.onCreate(savedInstanceState)
         checkAndRequestNotificationPermission()
         // Check if this activity was launched from a captive portal notification
@@ -44,7 +51,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MilliaConnectTheme {
-                Surface{
+                Surface {
                     MilliaConnectApp()
                 }
             }

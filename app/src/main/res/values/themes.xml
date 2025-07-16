@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="Theme.WifiAutoConnect" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.WifiAutoConnect.SplashScreen" parent="Theme.SplashScreen">
+        <!-- Splash screen background -->
+        <item name="android:windowSplashScreenBackground">@color/white</item>
+
+        <!-- Splash screen icon -->
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash_foreground</item>
+
+        <!-- Duration (optional) -->
+        <!-- <item name="android:windowSplashScreenAnimationDuration">500</item> -->
+
+        <!-- Post splash theme -->
+        <item name="postSplashScreenTheme">@style/Theme.WifiAutoConnect</item>
+    </style>
+
 </resources>

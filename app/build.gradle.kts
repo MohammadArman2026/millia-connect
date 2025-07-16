@@ -110,4 +110,7 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     // koin-Jetpack WorkManager
     implementation(libs.koin.androidx.workmanager)
+
+    // splash
+    implementation(libs.androidx.core.splashscreen)
 }

@@ -47,7 +47,7 @@ class ResultApiService(
             Result.success(result)
         } catch (e: Exception) {
             Log.e(TAG, "Error loading course types", e)
-            Result.failure(e)
+            Result.failure(Exception("Unable to load program"))
         }
     }
 
@@ -82,7 +82,7 @@ class ResultApiService(
                 Result.success(result)
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching program names", e)
-                Result.failure(e)
+                Result.failure(Exception("Unable to load course"))
             }
         }
 
@@ -125,7 +125,7 @@ class ResultApiService(
             }
         } catch (e: Exception) {
             Log.d(TAG, "Error fetching results", e)
-            Result.failure(e)
+            Result.failure(Exception("Unable to load result"))
         }
     }
 

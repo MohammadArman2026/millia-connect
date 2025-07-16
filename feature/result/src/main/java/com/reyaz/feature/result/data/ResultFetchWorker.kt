@@ -30,12 +30,12 @@ class ResultFetchWorker(
 
     override suspend fun doWork(): Result {
         return try {
-            Log.d(TAG, "Starting work for Fetching result")
+            // Log.d(TAG, "Starting work for Fetching result")
             resultRepository.refreshLocalResults(shouldNotify = true)
-            Log.d(TAG, "Work completed for Fetching result")
+            // Log.d(TAG, "Work completed for Fetching result")
             Result.success()
         } catch (e: Exception) {
-            Log.d(TAG, "Work failed for Fetching result: ${e.message}")
+             Log.e(TAG, "Work failed for Fetching result: ", e)
             if (runAttemptCount < 3) {
                 Result.retry()
             } else {
@@ -47,32 +47,9 @@ class ResultFetchWorker(
     companion object {
         private const val UNIQUE_WORK_NAME = "result_fetch_work"
 
-        /*fun schedule(context: Context) {
-            Log.d(TAG, "Scheduling result fetch work")
-            val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build()
-
-            val fetchResultWorkRequest = OneTimeWorkRequestBuilder<ResultFetchWorker>()
-                .setConstraints(constraints)
-                .setInitialDelay(30, TimeUnit.MINUTES)
-                .setBackoffCriteria(
-                    BackoffPolicy.EXPONENTIAL,
-                    10,
-                    TimeUnit.MILLISECONDS
-                )
-                .build()
-
-            WorkManager.getInstance(context).enqueueUniqueWork(
-                UNIQUE_WORK_NAME,
-                ExistingWorkPolicy.REPLACE,
-                fetchResultWorkRequest
-            )
-        }*/
-
         fun schedulePeriodicWork(context: Context) {
-            val (duration, unit) = 12L to TimeUnit.HOURS
-            Log.d(TAG, "Scheduling result fetch work")
+            val (duration, unit) = 12L to TimeUnit.HOURS  
+            // Log.d(TAG, "Scheduling result fetch work")
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
@@ -80,10 +57,11 @@ class ResultFetchWorker(
             val fetchResultWorkRequest =
                 PeriodicWorkRequestBuilder<ResultFetchWorker>(
                     repeatInterval = duration, unit,
-                    flexTimeInterval = duration / 2, unit
+                    flexTimeInterval = duration / 2, unit     
                 )
                     .setConstraints(constraints)
-                    .setInitialDelay(duration, unit)
+                    .setInitialDelay(duration, unit)   
+//                    .setInitialDelay(10, TimeUnit.SECONDS)
                     .setBackoffCriteria(
                         BackoffPolicy.EXPONENTIAL,
                         10,
@@ -101,13 +79,13 @@ class ResultFetchWorker(
                 ExistingWorkPolicy.REPLACE,
                 OneTimeWorkRequestBuilder<ResultFetchWorker>()
                     .setConstraints(constraints)
-                    .setInitialDelay(duration, unit)
+                    .setInitialDelay(10, TimeUnit.SECONDS)
                     .build()
             )*/
         }
 
         fun cancel(context: Context) {
-            Log.d(TAG, "Cancelling result fetch work")
+            // Log.d(TAG, "Cancelling result fetch work")
             WorkManager.getInstance(context).cancelUniqueWork(UNIQUE_WORK_NAME)
         }
     }

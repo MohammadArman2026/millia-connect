@@ -24,7 +24,6 @@ import com.reyaz.feature.result.domain.model.CourseType
 import com.reyaz.feature.result.domain.model.ResultHistory
 import com.reyaz.feature.result.domain.repository.ResultRepository
 import com.reyaz.core.notification.utils.NotificationConstant
-import com.reyaz.feature.result.data.ResultFetchWorker.Companion.schedulePeriodicWork
 import constants.NavigationRoute
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -100,7 +99,6 @@ class ResultRepositoryImpl(
 
     override suspend fun deleteCourse(courseId: String) {
         resultDao.deleteCourse(courseId)
-//        workScheduler.cancelWork(tag = courseId)
     }
 
     override suspend fun getResult(
@@ -135,6 +133,7 @@ class ResultRepositoryImpl(
             ResultFetchWorker.schedulePeriodicWork(context)
             Result.success(Unit)
         } catch (e: Exception) {
+            Log.e(TAG, "Error fetching result: ${e.message}")
             Result.failure(e)
         }
     }
@@ -215,9 +214,7 @@ class ResultRepositoryImpl(
                         }
                     } else {
                         Log.d(TAG, "No new results found")
-                        // todo
-                        try {
-                            if (shouldNotify)
+                            /*if (shouldNotify)
                                 notificationManager.showNotification(
                                     NotificationData(
                                         id = courseWithList.course.hashCode(),
@@ -230,10 +227,7 @@ class ResultRepositoryImpl(
                                         playSound = true,
                                         importance = NotificationConstant.RESULT_CHANNEL.importance
                                     )
-                                )
-                        } catch (e: Exception) {
-                            Log.d(TAG, "Permission not granted")
-                        }
+                                )*/
                     }
                     withContext(Dispatchers.IO) {
                         resultDao.updateLastFetchedDate(courseId = courseWithList.course.courseId)
