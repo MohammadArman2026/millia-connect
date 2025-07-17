@@ -163,7 +163,7 @@ fun NavigationDrawerContent(
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 SocialButton(
-                                    onClick = { context.openUrl("https://github.com/mdsadique47") },
+                                    onClick = { context.openUrl("https://www.linkedin.com/in/sadiquereyaz/") },
                                     text = "linkedin"
                                 )
                                 SocialButton(

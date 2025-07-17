@@ -115,7 +115,7 @@ class PortalScraper(
     private suspend fun dummyLoginSuccess(): Resource.Success<String> {
         delay(2000)
         networkManager.reportCaptivePortalDismissed()
-        return Resource.Success("Successfully Logged in!")
+        return Resource.Success("Successfully Logged in!", "")
     }
 
     private fun log(message: String) {

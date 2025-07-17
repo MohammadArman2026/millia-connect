@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NoticeDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(notice: List<NoticeEntity>)
 
     @Query("SELECT * FROM NoticeEntity WHERE typeId = :noticeType ORDER BY createdOn DESC")
