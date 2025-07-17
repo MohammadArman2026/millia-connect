@@ -39,18 +39,20 @@ class PortalDataStore(private val context: Context) {
             preferences[AUTO_CONNECT] ?: true
         }
 
+    val isLoggedIn: Flow<Boolean> = context.dataStore.data.map {
+        it[LOGIN_STATUS] ?: false
+    }
+
     // Save credentials
     suspend fun saveCredentials(
         username: String,
         password: String,
-        isLoggedIn: Boolean = false,
         autoConnect: Boolean
     ) : Result<Unit>{
         return try {
             context.dataStore.edit { preferences ->
                 preferences[USERNAME] = username
                 preferences[PASSWORD] = password
-                preferences[LOGIN_STATUS] = isLoggedIn
                 preferences[AUTO_CONNECT] = autoConnect
             }
             Result.success(Unit)
@@ -70,6 +72,12 @@ class PortalDataStore(private val context: Context) {
     suspend fun setAutoConnect(autoConnect: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[AUTO_CONNECT] = autoConnect
+        }
+    }
+
+    suspend fun setLoggedIn(isLoggedIn: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[LOGIN_STATUS] = isLoggedIn
         }
     }
 }

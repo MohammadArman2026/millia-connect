@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,6 +25,7 @@ fun CaptivePortalDialogContent(
             .padding(24.dp)
             .verticalScroll(rememberScrollState())
     ){
+//        Text(text = "${uiState.isLoggedIn}")
         if (!uiState.isJamiaWifi) {  // not JMI-WiFi
             NotJmiWifiComposable(
                 onRetry = { viewModel.retry() },

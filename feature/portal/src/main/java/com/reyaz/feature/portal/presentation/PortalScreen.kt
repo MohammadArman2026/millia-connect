@@ -67,6 +67,7 @@ fun PortalScreen(
                 )
                 CaptivePortalDialogContent(viewModel = viewModel)
             }
+            // close icon
             Icon(
                 modifier = Modifier
                     .clip(CircleShape)
@@ -78,6 +79,7 @@ fun PortalScreen(
                 imageVector = Icons.Default.Clear, contentDescription = "Close",
                 tint = MaterialTheme.colorScheme.onError
             )
+            // dialog headline
             Text(
                 text = "Wifi Login",
                 modifier = Modifier

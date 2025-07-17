@@ -63,11 +63,13 @@ class PortalRepositoryImpl(
                 emit(it)
                 when(it){
                     is Resource.Error -> {
+                        dataStore.setLoggedIn(false)
                         Log.d(TAG, "Error while login: ${it.message}")
                         if (shouldNotify)
                             showPortalNotification(title = "Failed to restore session", message = it.message ?: "You were not connected to JMI-WiFi [;_;]")
                     }
                     is Resource.Success -> {
+                        dataStore.setLoggedIn(true)
                         Log.d(TAG, "Successfully logged in")
                         if (shouldNotify) {
                             showPortalNotification(title = "Wifi session restored", message = it.data ?: "Successfully wifi session restored!")
@@ -80,6 +82,7 @@ class PortalRepositoryImpl(
                 }
             }
         } else {
+            dataStore.setLoggedIn(false)
             Log.d(TAG, "Invalid Credentials")
             if (shouldNotify)
                 showPortalNotification(title = "Invalid Credentials", message = "Please open the app again and enter the valid credentials.")
@@ -108,6 +111,7 @@ class PortalRepositoryImpl(
             val result =
                 portalScraper.performLogout()
             if (result.isSuccess) {
+                dataStore.setLoggedIn(false)
                 AutoLoginWorker.cancelOneTime(context)
                 result
             } else {
@@ -135,10 +139,12 @@ class PortalRepositoryImpl(
         val isJmiWifi = portalScraper.isJmiWifi(forceWifi = true)
         val isWifiHasInternet =
             portalScraper.isInternetAvailable(isCheckingForWifi = true).getOrNull() ?: false
-        Log.d(TAG, "HasInternet: $isWifiHasInternet, IsJmiWifi: $isJmiWifi")
+        Log.d(TAG, "wifi State: HasInternet: $isWifiHasInternet, IsJmiWifi: $isJmiWifi")
         return if (isJmiWifi && isWifiHasInternet) {
+            dataStore.setLoggedIn(true)
             JmiWifiState.LOGGED_IN
         } else if (isJmiWifi) {
+            dataStore.setLoggedIn(false)
             JmiWifiState.NOT_LOGGED_IN
         } else {
             JmiWifiState.NOT_CONNECTED

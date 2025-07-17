@@ -3,9 +3,6 @@ package com.reyaz.feature.portal.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
-import androidx.work.WorkQuery
 import com.reyaz.core.common.utils.NetworkManager
 import com.reyaz.core.common.utils.Resource
 import com.reyaz.feature.portal.data.local.PortalDataStore
@@ -13,6 +10,7 @@ import com.reyaz.feature.portal.data.repository.JmiWifiState
 import com.reyaz.feature.portal.domain.repository.PortalRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,52 +41,70 @@ class PortalViewModel(
     }
 
     private fun observeNetworkAndInitialize() {
-        viewModelScope.launch {
-            networkObserver.observeWifiConnectivity().collect { isWifiConnected ->
-                _uiState.update { it.copy(loadingMessage = "Loading...") }
-                fetchStoredCredentials()
-                if (isWifiConnected) {
-                    log("wifi connected")
-                    checkConnectionAndLogin()
-
-                    if (!uiState.value.isWifiPrimary) {
-                        log("Observing mobile data since Wifi not primary")
-                        // Cancel any previous observer to avoid duplicates
-                        mobileDataJob?.cancel()
-
-                        mobileDataJob = launch {
-                            networkObserver.observeMobileDataConnectivity()
-                                .collect { isMobileData ->
-                                    if (!isMobileData) {
-                                        log("mobile data off, stopping observation and handling login")
-                                        updateState(
-                                            loadingMessage = null,
-                                            isWifiPrimary = true,
-                                            errorMsg = null
-                                        )
-                                        performLogin()
-                                        // Stop observing since mobile data is off
-                                        this.cancel()
-                                        log("Mobile observation stopped")
-                                    } else {
-                                        log("mobile on")
-                                    }
-                                }
+        try {
+            /*viewModelScope.launch {
+                userPreferences.isLoggedIn.collect {isLoggedIn->
+//                    if (!it)
+                        _uiState.update {
+                            it.copy(
+                                isLoggedIn = isLoggedIn,
+                                loadingMessage = null,
+                                errorMsg = null
+                            )
                         }
+                }
+            }*/
+            viewModelScope.launch {
+                Log.d(TAG, "observeNetworkAndInitialize: $uiState")
+                networkObserver.observeWifiConnectivity().collect { isWifiConnected ->
+                    _uiState.update { it.copy(loadingMessage = "Loading...") }
+                    fetchStoredCredentials()
+                    if (isWifiConnected) {
+                        log("wifi connected")
+                        checkConnectionAndLogin()
+
+                        if (!uiState.value.isWifiPrimary) {
+                            log("Observing mobile data since Wifi not primary")
+                            // Cancel any previous observer to avoid duplicates
+                            mobileDataJob?.cancel()
+
+                            mobileDataJob = launch {
+                                networkObserver.observeMobileDataConnectivity()
+                                    .collect { isMobileData ->
+                                        if (!isMobileData) {
+                                            log("mobile data off, stopping observation and handling login")
+                                            updateState(
+                                                loadingMessage = null,
+                                                isWifiPrimary = true,
+                                                errorMsg = null
+                                            )
+                                            delay(3000)
+                                            performLogin()
+                                            // Stop observing since mobile data is off
+                                            this.cancel()
+                                            log("Mobile observation stopped")
+                                        } else {
+                                            log("mobile on")
+                                        }
+                                    }
+                            }
+                        }
+                    } else {
+                        log("Wifi not connected")
+                        updateState(
+                            isJamiaWifi = false,
+                            isLoggedIn = false,
+                            loadingMessage = null
+                        )
+                        // Cancel mobile data observation if wifi is off
+                        mobileDataJob?.cancel()
+                        mobileDataJob = null
+                        log("Mobile observation stopped: end")
                     }
-                } else {
-                    log("Wifi not connected")
-                    updateState(
-                        isJamiaWifi = false,
-                        isLoggedIn = false,
-                        loadingMessage = null
-                    )
-                    // Cancel mobile data observation if wifi is off
-                    mobileDataJob?.cancel()
-                    mobileDataJob = null
-                    log("Mobile observation stopped: end")
                 }
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in observeNetworkAndInitialize", e)
         }
     }
 
@@ -105,6 +121,7 @@ class PortalViewModel(
     private suspend fun performLogin() {
 
         repository.connect(shouldNotify = false).collect { result ->
+            Log.d(TAG, "performLogin Result: $result")
             when (result) {
                 is Resource.Loading -> updateState(
                     errorMsg = null,
@@ -118,16 +135,19 @@ class PortalViewModel(
                         errorMsg = result.message,
                         isWifiPrimary = result.message.isNullOrBlank()
                     )
-                    saveCredentials(isLoggedIn = true)
+//                    saveCredentials()
                 }
 
                 is Resource.Error -> {
-                    updateState(
-                        isLoggedIn = false,
-                        loadingMessage = null,
-                        errorMsg = result.message
-                    )
-                    saveCredentials(isLoggedIn = false)
+                    _uiState.update {
+                        it.copy(
+                            isLoggedIn = false,
+                            loadingMessage = null,
+                            errorMsg = result.message
+                        )
+                    }
+                    Log.e(TAG, "Error in performLogin(): ${result.message}")
+//                    saveCredentials()
                 }
             }
         }
@@ -141,7 +161,7 @@ class PortalViewModel(
                 .onSuccess {
                     log("Logout successful")
                     updateState(isLoggedIn = false, loadingMessage = null, errorMsg = it)
-                    saveCredentials(isLoggedIn = false)
+//                    saveCredentials()
                 }
                 .onFailure {
                     Log.e(TAG, "Logout failed", it)
@@ -158,39 +178,41 @@ class PortalViewModel(
     }
 
     private suspend fun checkConnectionAndLogin() {
+        if (!uiState.value.loginBtnEnabled) {
+            _uiState.update { it.copy(isLoggedIn = false, loadingMessage = null, errorMsg = "One time credential needed to login automatically.") }
+        } else {
+            log("checking connection state")
+            when (repository.checkConnectionState()) {
+                JmiWifiState.NOT_CONNECTED -> {
+                    log("Not connected")
+                    updateState(
+                        isJamiaWifi = false,
+                        isLoggedIn = false,
+                        loadingMessage = null,
+                        errorMsg = null
+                    )
+                }
 
-        log("checking connection state")
-//        viewModelScope.launch {
-        when (repository.checkConnectionState()) {
-            JmiWifiState.NOT_CONNECTED -> {
-                log("Not connected")
-                updateState(
-                    isJamiaWifi = false,
-                    isLoggedIn = false,
-                    loadingMessage = null,
-                    errorMsg = null
-                )
-            }
+                JmiWifiState.NOT_LOGGED_IN -> {
+                    log("Not logged in")
+                    updateState(
+                        isJamiaWifi = true,
+                        isLoggedIn = false,
+                        loadingMessage = null,
+                        errorMsg = null
+                    )
+                   performLogin()
+                }
 
-            JmiWifiState.NOT_LOGGED_IN -> {
-                log("Not logged in")
-                updateState(
-                    isJamiaWifi = true,
-                    isLoggedIn = false,
-                    loadingMessage = null,
-                    errorMsg = if (uiState.value.loginEnabled) null else "One time credential needed to login automatically."
-                )
-                if (uiState.value.loginEnabled) performLogin()
-            }
-
-            JmiWifiState.LOGGED_IN -> {
-                log("Already Logged in")
-                updateState(
-                    isJamiaWifi = true,
-                    isLoggedIn = true,
-                    loadingMessage = null,
-                    errorMsg = null
-                )
+                JmiWifiState.LOGGED_IN -> {
+                    log("Already Logged in")
+                    updateState(
+                        isJamiaWifi = true,
+                        isLoggedIn = true,
+                        loadingMessage = null,
+                        errorMsg = null
+                    )
+                }
             }
         }
 //        }
@@ -212,28 +234,27 @@ class PortalViewModel(
 
     fun updateUsername(username: String) {
         _uiState.update { it.copy(username = username) }
-        saveCredentials(false)
+        saveCredentials()
     }
 
     fun updatePassword(password: String) {
         _uiState.update { it.copy(password = password) }
-        saveCredentials(false)
+        saveCredentials()
     }
 
     fun updateAutoConnect(autoConnect: Boolean) {
         viewModelScope.launch {
             _uiState.update { it.copy(autoConnect = autoConnect) }
             userPreferences.setAutoConnect(autoConnect)
-            saveCredentials(false)
+            saveCredentials()
         }
     }
 
-    private fun saveCredentials(isLoggedIn: Boolean) {
+    private fun saveCredentials() {
         viewModelScope.launch {
             userPreferences.saveCredentials(
                 username = _uiState.value.username,
                 password = _uiState.value.password,
-                isLoggedIn = isLoggedIn,
                 autoConnect = _uiState.value.autoConnect
             )
         }

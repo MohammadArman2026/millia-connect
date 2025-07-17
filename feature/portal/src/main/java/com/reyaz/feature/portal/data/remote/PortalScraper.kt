@@ -45,6 +45,7 @@ class PortalScraper(
 
             if (pageText.contains(INVALID_CREDENTIALS_TEXT)) {
                 emit(Resource.Error("Wrong Username or Password"))
+                return@flow
             }
 
             networkManager.resetNetworkBinding()
@@ -76,7 +77,7 @@ class PortalScraper(
             if (forceWifi)
                 networkManager.bindToWifiNetwork()
             val connection = (URL(LOGIN_URL).openConnection() as HttpURLConnection).apply {
-                connectTimeout = 2000
+                connectTimeout = 20000
                 connect()
             }
             log("Response code: ${connection.responseCode}")
@@ -92,14 +93,16 @@ class PortalScraper(
 
      suspend fun isInternetAvailable(isCheckingForWifi: Boolean) : Result<Boolean> = withContext(Dispatchers.IO) {
         try {
+            Log.d(TAG, "Checking Internet Availability (for wifi: $isCheckingForWifi)")
             if (isCheckingForWifi)
                 networkManager.bindToWifiNetwork()
             val connection = (URL(URL_204).openConnection() as HttpURLConnection).apply {
-                connectTimeout = 2000
+                connectTimeout = 20000
                 connect()
             }
             val responseCode = connection.responseCode
-            log("Response code: $responseCode, wifi: $isCheckingForWifi, Is internet available: ${responseCode == 204}")
+//            log("Response code: $responseCode, Is internet available: ${responseCode == 204}")
+            log("Result:  Is internet available: ${responseCode == 204}")
             return@withContext Result.success(responseCode == 204)
         } catch (e: Exception){
             log("Error: $e")

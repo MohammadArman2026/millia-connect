@@ -13,7 +13,7 @@ data class PortalUiState(
     val loadingMessage: String? = "Loading...",
     val errorMsg: String? = null,
 ){
-    val loginEnabled: Boolean = username.isNotEmpty() && password.isNotEmpty()
+    val loginBtnEnabled: Boolean = username.isNotEmpty() && password.isNotEmpty()
     val isLoading: Boolean  = !loadingMessage.isNullOrBlank()
 }
 

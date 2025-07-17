@@ -26,7 +26,7 @@ class NetworkManager(private val context: Context) {
     private var captivePortal: CaptivePortal? = null
     private var wifiForceCallback: ConnectivityManager.NetworkCallback? = null
 
-    private val enableLogging = false
+    private val enableLogging = true
     private fun log(message: String) {
         if (enableLogging) Log.d(TAG, message)
     }
