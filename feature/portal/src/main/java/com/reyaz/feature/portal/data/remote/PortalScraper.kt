@@ -74,10 +74,13 @@ class PortalScraper(
 
     suspend fun isJmiWifi(forceWifi: Boolean): Boolean = withContext(Dispatchers.IO) {
         try {
-            if (forceWifi)
+            Log.d(TAG, "Checking JMI-WiFi (for wifi: $forceWifi)")
+            if (forceWifi) {
                 networkManager.bindToWifiNetwork()
+                delay(500)
+            }
             val connection = (URL(LOGIN_URL).openConnection() as HttpURLConnection).apply {
-                connectTimeout = 20000
+                connectTimeout = 5000
                 connect()
             }
             log("Response code: ${connection.responseCode}")
@@ -97,7 +100,7 @@ class PortalScraper(
             if (isCheckingForWifi)
                 networkManager.bindToWifiNetwork()
             val connection = (URL(URL_204).openConnection() as HttpURLConnection).apply {
-                connectTimeout = 20000
+                connectTimeout = 5000
                 connect()
             }
             val responseCode = connection.responseCode
@@ -118,7 +121,7 @@ class PortalScraper(
     private suspend fun dummyLoginSuccess(): Resource.Success<String> {
         delay(2000)
         networkManager.reportCaptivePortalDismissed()
-        return Resource.Success("Successfully Logged in!", "")
+        return Resource.Success("Successfully Logged in!", null)
     }
 
     private fun log(message: String) {

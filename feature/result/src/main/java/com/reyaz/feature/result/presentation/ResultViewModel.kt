@@ -24,13 +24,13 @@ class ResultViewModel(
     init {
         viewModelScope.launch {
             onEvent(ResultEvent.LoadSavedResults)
-            networkManager.observeInternetConnectivity().collect { isNetworkAvailable ->
-                if (isNetworkAvailable){
+//            networkManager.observeInternetConnectivity().collect { isNetworkAvailable ->
+//                if (isNetworkAvailable){
                     onEvent(ResultEvent.Initialize)
-                } else {
-                    updateState { it.copy(error = "No Internet Connection") }
-                }
-            }
+//                } else {
+//                    updateState { it.copy(error = "No Internet Connection") }
+//                }
+//            }
         }
     }
 
@@ -63,7 +63,7 @@ class ResultViewModel(
             is ResultEvent.DeleteCourse -> onDeleteCourse(event.courseId)
 
             is ResultEvent.ToggleDownload -> {
-                Log.d(TAG, "Toggle download invoked with event: $event")
+//                Log.d(TAG, "Toggle download invoked with event: $event")
                 event.url?.let {
                     downloadPdf(
                         url = it,
@@ -90,8 +90,14 @@ class ResultViewModel(
     }
 
     private fun initializeRemoteComponents() {
-        onEvent(ResultEvent.LoadDegree)
-        onEvent(ResultEvent.RefreshResults)
+        viewModelScope.launch {
+            if (networkManager.observeInternetConnectivity().first()) {
+                onEvent(ResultEvent.LoadDegree)
+                onEvent(ResultEvent.RefreshResults)
+            } else {
+                updateState { it.copy(error = "No Internet Connection") }
+            }
+        }
     }
 
     private fun markAsRead(courseId: String) {
@@ -138,7 +144,7 @@ class ResultViewModel(
             val typeList = resultRepository.getCourseTypes()
             // Log.d(TAG, "List: $typeList")
             if (typeList.isSuccess) {
-                 Log.d(TAG, "type loading SUCCESS & List: $typeList")
+//                 Log.d(TAG, "type loading SUCCESS & List: $typeList")
                 updateState {
                     it.copy(
                         courseTypeList = typeList.getOrDefault(emptyList()),
@@ -186,13 +192,13 @@ class ResultViewModel(
 
     private fun getResult() {
         viewModelScope.launch {
-             Log.d(TAG, "Loading Course")
+//             Log.d(TAG, "Loading Course")
             updateState { it.copy(isLoading = true) }
             val result = resultRepository.getResult(
                 type = uiState.value.selectedTypeId,
                 course = uiState.value.selectedCourseId
             )
-            Log.d(TAG, "course id: ${ uiState.value.selectedTypeId}")
+//            Log.d(TAG, "course id: ${ uiState.value.selectedTypeId}")
             if (result.isSuccess) {
                 updateState { it.copy(isLoading = false) }
             } else {

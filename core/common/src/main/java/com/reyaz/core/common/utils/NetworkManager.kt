@@ -63,7 +63,7 @@ class NetworkManager(private val context: Context) {
 
         val request = NetworkRequest.Builder()
             .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+//            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
 
         val callback = object : ConnectivityManager.NetworkCallback() {

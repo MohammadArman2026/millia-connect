@@ -179,7 +179,7 @@ class PortalViewModel(
 
     private suspend fun checkConnectionAndLogin() {
         if (!uiState.value.loginBtnEnabled) {
-            _uiState.update { it.copy(isLoggedIn = false, loadingMessage = null, errorMsg = "One time credential needed to login automatically.") }
+            _uiState.update { it.copy(isJamiaWifi = true, isLoggedIn = false, loadingMessage = null, errorMsg = "One time credential needed to login automatically.") }
         } else {
             log("checking connection state")
             when (repository.checkConnectionState()) {
