@@ -1,5 +1,6 @@
 [versions]
 
+credentials = "1.5.0"
 pdfViewer = "2.3.7"
 room = "2.7.1"
 ksp = "2.0.0-1.0.24"        # kotlin version of this project - kotlin compatible ksp version
@@ -124,6 +125,12 @@ coreSplashscreen = "1.0.1"
 
 
 [libraries]
+
+# CREDENTIALS & GOOGLE ID
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
+androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
+googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "credentials" }
+
 # splash
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 
