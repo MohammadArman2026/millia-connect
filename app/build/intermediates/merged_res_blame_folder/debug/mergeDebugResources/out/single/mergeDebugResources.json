@@ -1,0 +1,146 @@
+[
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-xhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-xhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-xxxhdpi_ic_splash_round.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-xxxhdpi/ic_splash_round.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-hdpi_ic_splash.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-hdpi/ic_splash.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-xhdpi_ic_splash_round.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-xhdpi/ic_splash_round.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/drawable_wifi_on.xml.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/drawable/wifi_on.xml"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/drawable_visibility_on_24.xml.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/drawable/visibility_on_24.xml"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-hdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-hdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/xml_backup_rules.xml.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-mdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-mdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/drawable_wifi_off.xml.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/drawable/wifi_off.xml"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/drawable_millia_connect_logo.xml.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/drawable/millia_connect_logo.xml"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-xxxhdpi_ic_splash.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-xxxhdpi/ic_splash.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-mdpi_ic_splash.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-mdpi/ic_splash.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-anydpi-v26_ic_splash_round.xml.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-anydpi-v26/ic_splash_round.xml"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/drawable_visibility_off_24.xml.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/drawable/visibility_off_24.xml"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-hdpi_ic_splash_round.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-hdpi/ic_splash_round.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-anydpi-v26_ic_splash.xml.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-anydpi-v26/ic_splash.xml"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-xxhdpi_ic_splash.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-xxhdpi/ic_splash.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/xml_data_extraction_rules.xml.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/drawable_ic_splash_foreground.xml.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/drawable/ic_splash_foreground.xml"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-xhdpi_ic_splash.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-xhdpi/ic_splash.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-mdpi_ic_splash_round.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-mdpi/ic_splash_round.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-xxhdpi_ic_splash_round.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-xxhdpi/ic_splash_round.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.reyaz.milliaconnect1.app-debug-79:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.reyaz.milliaconnect1.app-main-81:/mipmap-xhdpi/ic_launcher.webp"
+    }
+]
