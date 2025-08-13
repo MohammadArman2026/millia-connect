@@ -33,7 +33,7 @@ class BaseApplication : Application() {
             androidLogger()
             androidContext(this@BaseApplication)
 //            workManagerFactory()
-            modules(appModule, scheduleModule, portalModule, resultModule, networkModule, notificationModule, noticeModule)
+            modules(appModule, scheduleModule, portalModule, resultModule, networkModule, notificationModule, noticeModule, rentModule)
         }
 
     }

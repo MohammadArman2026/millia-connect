@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1014462698931",
+    "project_id": "milliaconnect",
+    "storage_bucket": "milliaconnect.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1014462698931:android:55c4fb9db5f9f7e0f827c6",
+        "android_client_info": {
+          "package_name": "com.reyaz.milliaconnect1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdaKkqorHb8zU5xSw4AD9E6OnfRTRKLJw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

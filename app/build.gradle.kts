@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    //google services plugins
+  alias(libs.plugins.google.services)
 }
 
 android {
@@ -10,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.reyaz.milliaconnect1"
-        minSdk = 26
+        minSdk = 26 
         targetSdk = 35
         versionCode = 12
         versionName = "2.0.3"
@@ -56,7 +58,6 @@ dependencies {
     implementation(project(":feature:portal"))
     implementation(project(":feature:result"))
     implementation(project(":feature:notice"))
-    implementation(project(":core:auth"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

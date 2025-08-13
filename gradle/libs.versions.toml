@@ -1,7 +1,9 @@
 [versions]
 
 credentials = "1.5.0"
+navigationComposeAndroid = "2.9.3"
 pdfViewer = "2.3.7"
+playServicesAuth = "21.2.0"
 room = "2.7.1"
 ksp = "2.0.0-1.0.24"        # kotlin version of this project - kotlin compatible ksp version
 swiperefreshlayout = "1.2.0-beta01"
@@ -123,14 +125,13 @@ annotationJvm = "1.9.1"
 
 coreSplashscreen = "1.0.1"
 
+firebaseBom = "33.5.1"
+googleid = "1.1.1"
+#activityComposeVersion = "1.10.1"
+lifecycleViewmodelKtx = "2.8.6"
+
 
 [libraries]
-
-# CREDENTIALS & GOOGLE ID
-androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
-androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
-googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "credentials" }
-
 # splash
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 
@@ -305,12 +306,28 @@ material = { group = "com.google.android.material", name = "material", version.r
 # swipe refresh
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 
+
+#firebase auth
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
+androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
+googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore-ktx" }
+lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+
+
+
+
 #Kotlin Extensions and Coroutines support for Room
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 pdf-viewer = { module = "io.github.afreakyelf:Pdf-Viewer", version.ref = "pdfViewer" }
 androidx-annotation-jvm = { group = "androidx.annotation", name = "annotation-jvm", version.ref = "annotationJvm" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+#activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityComposeVersion" }
+
 
 
 [plugins]
@@ -340,3 +357,5 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinJvm" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization" }
 
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+google-services = {id = "com.google.gms.google-services", version= "4.4.2"}
