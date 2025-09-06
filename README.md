@@ -72,6 +72,10 @@ milia-connect/
 │   │   │   └── ui/       # App-level UI components
 │
 ├── core/                 # Shared modules
+│   ├── auth/             # Authentication system
+│   │   ├── data/         # Repositories, data sources (Firebase/Auth APIs)
+│   │   └── domain/       # Auth models, use cases
+│   │
 │   ├── common/           # Utilities, extensions, constants
 │   ├── data/             # Base data models
 │   ├── network/          # Retrofit, API clients
@@ -94,10 +98,19 @@ milia-connect/
 │   │   ├── domain/      # Login logic
 │   │   └── presentation/ # Connection UI
 │   │
-│   └── result/          # Entrance results
-│       ├── data/        # Scrapers, DB
-│       ├── domain/      # Result models
-│       └── presentation/ # Result screens
+│   ├── result/           # Entrance results
+│   │   ├── data/        # Scrapers, DB
+│   │   ├── domain/      # Result models
+│   │   └── presentation/ # Result screens
+│   │
+│   └── rent/             # Rent feature
+│       ├── data/        # Room entities, repositories
+│       ├── domain/      # Use cases, domain models
+│       └── presentation/ # Rent feature UI screens
+│
+├── gradle/              # Version catalog
+└── build-logic/         # Custom Gradle conventions
+
 │
 ├── gradle/              # Version catalog
 └── build-logic/         # Custom Gradle conventions
