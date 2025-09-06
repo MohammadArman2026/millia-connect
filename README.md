@@ -135,8 +135,8 @@ milia-connect/
 * **WorkManager** (Background tasks)
 * **Retrofit** (Network operations)
 * **Material 3** (Design system)
-* firebase storage
-* google signin with credential manager 
+* **firebase storage**
+* **google signin with credential manager** 
 
 ---
 
@@ -561,6 +561,11 @@ millia-connect/
             └── gradle-wrapper.properties
 
 ```
+## My Role
+#Integrated Firebase (Firestore, Storage) for backend services and real-time data sync.
+#integrated google signin with credential manager
+#implemented koin dependency injection
+#integrated rent listing
 
 
 ## ✉️ Contact
