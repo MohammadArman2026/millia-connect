@@ -135,6 +135,8 @@ milia-connect/
 * **WorkManager** (Background tasks)
 * **Retrofit** (Network operations)
 * **Material 3** (Design system)
+* firebase storage
+* google signin with credential manager 
 
 ---
 
