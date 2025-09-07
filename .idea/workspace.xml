@@ -4,30 +4,23 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d56a03c7-d19d-402d-aa08-e4cdb73e7a88" name="Changes" comment="initial rent">
-      <change afterPath="$PROJECT_DIR$/core/auth/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/auth/build.gradle.kts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/auth/consumer-rules.pro" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/auth/proguard-rules.pro" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/auth/src/androidTest/java/com/reyaz/core/auth/ExampleInstrumentedTest.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/auth/src/main/AndroidManifest.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/auth/src/test/java/com/reyaz/core/auth/ExampleUnitTest.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feature/rent/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feature/rent/build.gradle.kts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feature/rent/consumer-rules.pro" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feature/rent/proguard-rules.pro" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feature/rent/src/androidTest/java/com/reyaz/feature/rent/ExampleInstrumentedTest.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feature/rent/src/main/AndroidManifest.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/feature/rent/src/test/java/com/reyaz/feature/rent/ExampleUnitTest.kt" afterDir="false" />
+    <list default="true" id="d56a03c7-d19d-402d-aa08-e4cdb73e7a88" name="Changes" comment="Feat: Initialize `core:auth` and `feature:rent` modules&#10;&#10;This commit introduces the initial setup for two new Gradle modules: `core:auth` and `feature:rent`.&#10;&#10;**Key Changes:**&#10;&#10;-   **Module Creation**:&#10;    -   Added `core:auth` module for authentication-related functionalities.&#10;    -   Added `feature:rent` module for rent-specific features.&#10;-   **Gradle Configuration**:&#10;    -   Created `build.gradle.kts` files for both new modules, configuring them as Android libraries with Kotlin support.&#10;    -   Set `compileSdk = 36` and `minSdk = 24`.&#10;    -   Configured basic build types (release with `isMinifyEnabled = false`).&#10;    -   Set Java and Kotlin compatibility to version 11.&#10;    -   Included common dependencies like `androidx.core.ktx`, `androidx.appcompat`, `material`, and testing libraries.&#10;-   **Manifest Files**:&#10;    -   Added basic `AndroidManifest.xml` files for both modules.&#10;-   **`.gitignore` Files**:&#10;    -   Added `.gitignore` files to exclude the `build` directory in both new modules.&#10;-   **Placeholder Test Files**:&#10;    -   Added `ExampleUnitTest.kt` and `ExampleInstrumentedTest.kt` to both modules as placeholders for future tests.&#10;-   **Proguard Rules**:&#10;    -   Added empty `consumer-rules.pro` and default `proguard-rules.pro` files to both modules.&#10;-   **Project Integration**:&#10;    -   Updated `settings.gradle.kts` to include the new `:core:auth` and `:feature:rent` modules.&#10;    -   Updated `.idea/gradle.xml` to reflect the new module structure.&#10;    -   Updated `.idea/workspace.xml` with changes related to the new modules and Git history.&#10;-   **App Module**:&#10;    -   No direct code changes in `app/build.gradle.kts` to depend on these new modules yet, but the file was part of the overall structural change.">
+      <change afterPath="$PROJECT_DIR$/core/auth/src/main/java/com/reyaz/core/auth/data/repository/GoogleSignInImpl.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/auth/src/main/java/com/reyaz/core/auth/domain/repository/GoogleSignIn.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/auth/src/main/java/com/reyaz/core/auth/domain/repository/WebClientId.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/checksums/md5-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/checksums/sha1-checksums.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/auth/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/core/auth/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/auth/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/core/auth/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,7 +30,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=JF8PC6AU4D75BAKV)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\arman\.android\avd\Medium_Phone.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -47,7 +40,9 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Kotlin File" />
+        <option value="Kotlin Interface" />
         <option value="Kotlin Object" />
+        <option value="Kotlin Class" />
       </list>
     </option>
   </component>
@@ -79,25 +74,23 @@
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">
-    <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Android App.app.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "rent",
-    "settings.editor.selected.configurable": "com.android.studio.ml.bot.mainConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;rent&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.android.studio.ml.bot.mainConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="K2MoveDeclarationsDialog.RECENT_PACKAGE_KEY">
       <recent name="com.reyaz.feature.result.data.local" />
@@ -201,12 +194,37 @@
       <option name="project" value="LOCAL" />
       <updated>1757246314023</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Feat: Initialize `core:auth` and `feature:rent` modules&#10;&#10;This commit introduces the initial setup for two new Gradle modules: `core:auth` and `feature:rent`.&#10;&#10;**Key Changes:**&#10;&#10;-   **Module Creation**:&#10;    -   Added `core:auth` module for authentication-related functionalities.&#10;    -   Added `feature:rent` module for rent-specific features.&#10;-   **Gradle Configuration**:&#10;    -   Created `build.gradle.kts` files for both new modules, configuring them as Android libraries with Kotlin support.&#10;    -   Set `compileSdk = 36` and `minSdk = 24`.&#10;    -   Configured basic build types (release with `isMinifyEnabled = false`).&#10;    -   Set Java and Kotlin compatibility to version 11.&#10;    -   Included common dependencies like `androidx.core.ktx`, `androidx.appcompat`, `material`, and testing libraries.&#10;-   **Manifest Files**:&#10;    -   Added basic `AndroidManifest.xml` files for both modules.&#10;-   **`.gitignore` Files**:&#10;    -   Added `.gitignore` files to exclude the `build` directory in both new modules.&#10;-   **Placeholder Test Files**:&#10;    -   Added `ExampleUnitTest.kt` and `ExampleInstrumentedTest.kt` to both modules as placeholders for future tests.&#10;-   **Proguard Rules**:&#10;    -   Added empty `consumer-rules.pro` and default `proguard-rules.pro` files to both modules.&#10;-   **Project Integration**:&#10;    -   Updated `settings.gradle.kts` to include the new `:core:auth` and `:feature:rent` modules.&#10;    -   Updated `.idea/gradle.xml` to reflect the new module structure.&#10;    -   Updated `.idea/workspace.xml` with changes related to the new modules and Git history.&#10;-   **App Module**:&#10;    -   No direct code changes in `app/build.gradle.kts` to depend on these new modules yet, but the file was part of the overall structural change.">
+      <option name="closed" value="true" />
+      <created>1757246791465</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1757246791465</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="arman commit" />
     <MESSAGE value="initial rent" />
-    <option name="LAST_COMMIT_MESSAGE" value="initial rent" />
+    <MESSAGE value="Feat: Initialize `core:auth` and `feature:rent` modules&#10;&#10;This commit introduces the initial setup for two new Gradle modules: `core:auth` and `feature:rent`.&#10;&#10;**Key Changes:**&#10;&#10;-   **Module Creation**:&#10;    -   Added `core:auth` module for authentication-related functionalities.&#10;    -   Added `feature:rent` module for rent-specific features.&#10;-   **Gradle Configuration**:&#10;    -   Created `build.gradle.kts` files for both new modules, configuring them as Android libraries with Kotlin support.&#10;    -   Set `compileSdk = 36` and `minSdk = 24`.&#10;    -   Configured basic build types (release with `isMinifyEnabled = false`).&#10;    -   Set Java and Kotlin compatibility to version 11.&#10;    -   Included common dependencies like `androidx.core.ktx`, `androidx.appcompat`, `material`, and testing libraries.&#10;-   **Manifest Files**:&#10;    -   Added basic `AndroidManifest.xml` files for both modules.&#10;-   **`.gitignore` Files**:&#10;    -   Added `.gitignore` files to exclude the `build` directory in both new modules.&#10;-   **Placeholder Test Files**:&#10;    -   Added `ExampleUnitTest.kt` and `ExampleInstrumentedTest.kt` to both modules as placeholders for future tests.&#10;-   **Proguard Rules**:&#10;    -   Added empty `consumer-rules.pro` and default `proguard-rules.pro` files to both modules.&#10;-   **Project Integration**:&#10;    -   Updated `settings.gradle.kts` to include the new `:core:auth` and `:feature:rent` modules.&#10;    -   Updated `.idea/gradle.xml` to reflect the new module structure.&#10;    -   Updated `.idea/workspace.xml` with changes related to the new modules and Git history.&#10;-   **App Module**:&#10;    -   No direct code changes in `app/build.gradle.kts` to depend on these new modules yet, but the file was part of the overall structural change." />
+    <option name="LAST_COMMIT_MESSAGE" value="Feat: Initialize `core:auth` and `feature:rent` modules&#10;&#10;This commit introduces the initial setup for two new Gradle modules: `core:auth` and `feature:rent`.&#10;&#10;**Key Changes:**&#10;&#10;-   **Module Creation**:&#10;    -   Added `core:auth` module for authentication-related functionalities.&#10;    -   Added `feature:rent` module for rent-specific features.&#10;-   **Gradle Configuration**:&#10;    -   Created `build.gradle.kts` files for both new modules, configuring them as Android libraries with Kotlin support.&#10;    -   Set `compileSdk = 36` and `minSdk = 24`.&#10;    -   Configured basic build types (release with `isMinifyEnabled = false`).&#10;    -   Set Java and Kotlin compatibility to version 11.&#10;    -   Included common dependencies like `androidx.core.ktx`, `androidx.appcompat`, `material`, and testing libraries.&#10;-   **Manifest Files**:&#10;    -   Added basic `AndroidManifest.xml` files for both modules.&#10;-   **`.gitignore` Files**:&#10;    -   Added `.gitignore` files to exclude the `build` directory in both new modules.&#10;-   **Placeholder Test Files**:&#10;    -   Added `ExampleUnitTest.kt` and `ExampleInstrumentedTest.kt` to both modules as placeholders for future tests.&#10;-   **Proguard Rules**:&#10;    -   Added empty `consumer-rules.pro` and default `proguard-rules.pro` files to both modules.&#10;-   **Project Integration**:&#10;    -   Updated `settings.gradle.kts` to include the new `:core:auth` and `:feature:rent` modules.&#10;    -   Updated `.idea/gradle.xml` to reflect the new module structure.&#10;    -   Updated `.idea/workspace.xml` with changes related to the new modules and Git history.&#10;-   **App Module**:&#10;    -   No direct code changes in `app/build.gradle.kts` to depend on these new modules yet, but the file was part of the overall structural change." />
+  </component>
+  <component name="play_dynamic_filters_status">
+    <option name="appIdToCheckInfo">
+      <map>
+        <entry key="com.reyaz.core.auth.test">
+          <value>
+            <CheckInfo lastCheckTimestamp="1757246788493" />
+          </value>
+        </entry>
+        <entry key="com.reyaz.feature.rent.test">
+          <value>
+            <CheckInfo lastCheckTimestamp="1757246788517" />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

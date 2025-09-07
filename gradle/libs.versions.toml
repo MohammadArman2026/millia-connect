@@ -122,6 +122,12 @@ annotationJvm = "1.9.1"
 
 coreSplashscreen = "1.0.1"
 
+#firebase related all versions
+firebase-bom = "34.2.0"
+google-services = "4.4.3"
+credentials = "1.5.0-beta01"
+googleid = "1.1.1"
+
 
 [libraries]
 # splash
@@ -306,6 +312,14 @@ pdf-viewer = { module = "io.github.afreakyelf:Pdf-Viewer", version.ref = "pdfVie
 androidx-annotation-jvm = { group = "androidx.annotation", name = "annotation-jvm", version.ref = "annotationJvm" }
 
 
+#firebase authorisation
+firebase-bom={group="com.google.firebase",name ="firebase-bom",version.ref= "firebase-bom"}
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth"}
+googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
+androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+
 [plugins]
 # Android application plugin for building APK/AAB files
 # Applied to the `:app` module to enable it to be built as a deployable Android application.
@@ -333,3 +347,6 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinJvm" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization" }
 
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+#google services plugin---
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
