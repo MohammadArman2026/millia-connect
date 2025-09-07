@@ -1,0 +1,18 @@
+Index: local.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/local.properties b/local.properties
+new file mode 100644
+--- /dev/null	(date 1757245861003)
++++ b/local.properties	(date 1757245861003)
+@@ -0,0 +1,8 @@
++## This file must *NOT* be checked into Version Control Systems,
++# as it contains information specific to your local configuration.
++#
++# Location of the SDK. This is only used by Gradle.
++# For customization when using a Version Control System, please read the
++# header note.
++#Sun Sep 07 17:21:01 IST 2025
++sdk.dir=C\:\\Users\\arman\\AppData\\Local\\Android\\Sdk
