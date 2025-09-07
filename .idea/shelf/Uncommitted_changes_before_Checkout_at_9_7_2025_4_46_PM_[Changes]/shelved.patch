@@ -1,0 +1,63 @@
+Index: build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// Top-level build file where you can add configuration options common to all sub-projects/modules.\r\nplugins {\r\n    alias(libs.plugins.android.application) apply false\r\n    alias(libs.plugins.kotlin.android) apply false\r\n    alias(libs.plugins.kotlin.compose) apply false\r\n    alias(libs.plugins.android.library) apply false\r\n    alias(libs.plugins.kotlin.jvm) apply false\r\n    alias(libs.plugins.ksp) apply false\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build.gradle.kts b/build.gradle.kts
+--- a/build.gradle.kts	(revision f262f06a20328ed1b28a23330e9ba915aa1f7566)
++++ b/build.gradle.kts	(date 1757243104711)
+@@ -6,5 +6,4 @@
+     alias(libs.plugins.android.library) apply false
+     alias(libs.plugins.kotlin.jvm) apply false
+     alias(libs.plugins.ksp) apply false
+-
+ }
+\ No newline at end of file
+Index: local.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/local.properties b/local.properties
+new file mode 100644
+--- /dev/null	(date 1757241188223)
++++ b/local.properties	(date 1757241188223)
+@@ -0,0 +1,8 @@
++## This file must *NOT* be checked into Version Control Systems,
++# as it contains information specific to your local configuration.
++#
++# Location of the SDK. This is only used by Gradle.
++# For customization when using a Version Control System, please read the
++# header note.
++#Sun Sep 07 16:03:08 IST 2025
++sdk.dir=C\:\\Users\\arman\\AppData\\Local\\Android\\Sdk
+Index: .idea/deploymentTargetSelector.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"deploymentTargetSelector\">\r\n    <selectionStates>\r\n      <SelectionState runConfigName=\"app\">\r\n        <option name=\"selectionMode\" value=\"DROPDOWN\" />\r\n        <DropdownSelection timestamp=\"2025-06-18T10:19:03.214138Z\">\r\n          <Target type=\"DEFAULT_BOOT\">\r\n            <handle>\r\n              <DeviceId pluginId=\"PhysicalDevice\" identifier=\"serial=P122B5000554\" />\r\n            </handle>\r\n          </Target>\r\n        </DropdownSelection>\r\n        <DialogSelection />\r\n      </SelectionState>\r\n    </selectionStates>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/deploymentTargetSelector.xml b/.idea/deploymentTargetSelector.xml
+--- a/.idea/deploymentTargetSelector.xml	(revision f262f06a20328ed1b28a23330e9ba915aa1f7566)
++++ b/.idea/deploymentTargetSelector.xml	(date 1757243105130)
+@@ -2,16 +2,8 @@
+ <project version="4">
+   <component name="deploymentTargetSelector">
+     <selectionStates>
+-      <SelectionState runConfigName="app">
++      <SelectionState runConfigName="Millia_Connect.app">
+         <option name="selectionMode" value="DROPDOWN" />
+-        <DropdownSelection timestamp="2025-06-18T10:19:03.214138Z">
+-          <Target type="DEFAULT_BOOT">
+-            <handle>
+-              <DeviceId pluginId="PhysicalDevice" identifier="serial=P122B5000554" />
+-            </handle>
+-          </Target>
+-        </DropdownSelection>
+-        <DialogSelection />
+       </SelectionState>
+     </selectionStates>
+   </component>
