@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.reyaz.core.auth.domain.repository.GoogleSignIn
+import com.reyaz.core.auth.domain.repository.GoogleService
 import com.reyaz.feature.rent.domain.model.Property
 import com.reyaz.feature.rent.domain.repository.PropertyRepository
 import kotlinx.coroutines.CoroutineScope
@@ -20,25 +20,22 @@ import kotlinx.coroutines.launch
 
 class PropertyPostViewModel(
     private val propertyRepository: PropertyRepository,
-    private val googleSign: GoogleSignIn
+    private val googleSign: GoogleService
 ): ViewModel() {
 //this variable is for keeping the track whether use is logged in or not
     private val _user = MutableStateFlow(Firebase.auth.currentUser)
     val user = _user.asStateFlow()
 
-
     //this viewmodel will be responsible for only posting the property
     fun postProperty(property: Property) {
         viewModelScope.launch {
-            propertyRepository.postProperty(property)
-                .catch { e ->
-                    Log.d("MyTag", "${e.message}")
+            propertyRepository
+                .postProperty(property)
+                .onSuccess {
+                    Log.d("success", "success")
                 }
-                .collect { result ->
-                    result.fold(
-                        onSuccess = { Log.d("MyTag", "uploaded") },
-                        onFailure = { Log.d("MyTag", "failed") }
-                    )
+                .onFailure {
+                    Log.d("error", it.message.toString())
                 }
         }
     }

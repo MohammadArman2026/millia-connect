@@ -1,6 +1,7 @@
 package com.reyaz.milliaconnect1
 
 import android.app.Application
+import com.reyaz.core.auth.di.authModule
 import com.reyaz.core.network.networkModule
 import com.reyaz.core.notification.notificationModule
 import com.reyaz.feature.attendance.schedule.di.scheduleModule
@@ -35,8 +36,7 @@ class BaseApplication : Application() {
             androidLogger()
             androidContext(this@BaseApplication)
 //            workManagerFactory()
-            modules(appModule, scheduleModule, portalModule, resultModule, networkModule, notificationModule, noticeModule,rentModule
-            )
+            modules(appModule, scheduleModule, portalModule, resultModule, networkModule, notificationModule, noticeModule,rentModule,authModule)
         }
     }
 }

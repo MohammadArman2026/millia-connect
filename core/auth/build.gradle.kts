@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -50,4 +51,11 @@ dependencies {
     implementation (libs.androidx.credentials)
     implementation( libs.androidx.credentials.play.services.auth)
     implementation (libs.googleid)
+
+    //dependency injection
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.core.coroutines)
+
 }

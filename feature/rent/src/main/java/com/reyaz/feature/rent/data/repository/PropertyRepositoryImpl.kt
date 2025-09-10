@@ -1,6 +1,7 @@
 package com.reyaz.feature.rent.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
 import com.reyaz.feature.rent.domain.model.Property
 import com.reyaz.feature.rent.domain.repository.PropertyRepository
@@ -14,11 +15,11 @@ class PropertyRepositoryImpl(
 ): PropertyRepository {
 
 
-    private val Property="PROPERTY"//this is the name of collection at firebase
+    private val Property = "PROPERTY"//this is the name of collection at firebase
 
     //here basically creating a collection at firebase and this property collection is
     //pointing at the collection name "property"
-    private val propertyCollection by lazy{
+    private val propertyCollection by lazy {
         firebaseFirestore.collection(Property)
     }
 
@@ -28,24 +29,42 @@ class PropertyRepositoryImpl(
             propertyCollection.addSnapshotListener { snapshot, error ->
 
                 if (error != null) {
+                    close(error)
                     return@addSnapshotListener
                 }
-                val list = snapshot?.toObjects<Property>().orEmpty()//it is converting data from firebase to our property class
+                val list = snapshot?.toObjects<Property>()
+                    .orEmpty()//it is converting data from firebase to our property class
                 trySend(list)//this line is basically sending the list
             }
             awaitClose {}
         }
     }
 
-    override suspend fun postProperty(property: Property): Flow<Result<Unit>> {
+    //this function will post the property in firebase,and will save the id field same as firebase generated id
+    override suspend fun postProperty(property: Property): Result<Unit> {
+        return try {
+            val docRef = propertyCollection.document()
+            val propertyWithId = property.copy(id = docRef.id)
+            docRef.set(propertyWithId).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+    override suspend fun getPropertyById(id: String): Flow<Property?> {
         return callbackFlow {
-            try {
-                propertyCollection.add(property).await()//wait for some time and then continue
-                trySend(Result.success(Unit))//send success message
-            }catch(e:Exception){
-                trySend(Result.failure(e))//send failure message
+           val registration = propertyCollection.document(id)
+                .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                val property = snapshot?.toObject<Property>()
+                trySend(property)
             }
-            awaitClose {}//Runs a cleanup block when the flow collector stops collecting or is cancelled
+            awaitClose { registration.remove() }//cleanup listeners properly
         }
     }
 }

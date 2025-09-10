@@ -1,6 +1,7 @@
 package com.reyaz.feature.rent.domain.model
 
 data class Property(
+    var id: String="",
     val name:String="",
     val age: String="",
 )
