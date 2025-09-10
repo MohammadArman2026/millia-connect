@@ -1,4 +1,4 @@
-#Sun Sep 07 17:26:06 IST 2025
+#Tue Sep 09 10:04:43 IST 2025
 base.0=C\:\\Users\\arman\\AndroidStudioProjects\\millia-connect\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
 base.1=C\:\\Users\\arman\\AndroidStudioProjects\\millia-connect\\app\\build\\intermediates\\dex\\debug\\mergeLibDexDebug\\10\\classes.dex
 base.10=C\:\\Users\\arman\\AndroidStudioProjects\\millia-connect\\app\\build\\intermediates\\dex\\debug\\mergeLibDexDebug\\4\\classes.dex
@@ -17,6 +17,8 @@ base.21=C\:\\Users\\arman\\AndroidStudioProjects\\millia-connect\\app\\build\\in
 base.22=C\:\\Users\\arman\\AndroidStudioProjects\\millia-connect\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
 base.23=C\:\\Users\\arman\\AndroidStudioProjects\\millia-connect\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes3.dex
 base.24=C\:\\Users\\arman\\AndroidStudioProjects\\millia-connect\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes4.dex
+base.25=C\:\\Users\\arman\\AndroidStudioProjects\\millia-connect\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes5.dex
+base.26=C\:\\Users\\arman\\AndroidStudioProjects\\millia-connect\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes6.dex
 base.3=C\:\\Users\\arman\\AndroidStudioProjects\\millia-connect\\app\\build\\intermediates\\dex\\debug\\mergeLibDexDebug\\12\\classes.dex
 base.4=C\:\\Users\\arman\\AndroidStudioProjects\\millia-connect\\app\\build\\intermediates\\dex\\debug\\mergeLibDexDebug\\13\\classes.dex
 base.5=C\:\\Users\\arman\\AndroidStudioProjects\\millia-connect\\app\\build\\intermediates\\dex\\debug\\mergeLibDexDebug\\14\\classes.dex
@@ -42,6 +44,8 @@ path.21=8/classes.dex
 path.22=classes2.dex
 path.23=classes3.dex
 path.24=classes4.dex
+path.25=classes5.dex
+path.26=classes6.dex
 path.3=12/classes.dex
 path.4=13/classes.dex
 path.5=14/classes.dex
@@ -67,6 +71,8 @@ renamed.21=classes22.dex
 renamed.22=classes23.dex
 renamed.23=classes24.dex
 renamed.24=classes25.dex
+renamed.25=classes26.dex
+renamed.26=classes27.dex
 renamed.3=classes4.dex
 renamed.4=classes5.dex
 renamed.5=classes6.dex

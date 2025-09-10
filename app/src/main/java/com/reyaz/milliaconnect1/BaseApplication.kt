@@ -6,6 +6,7 @@ import com.reyaz.core.notification.notificationModule
 import com.reyaz.feature.attendance.schedule.di.scheduleModule
 import com.reyaz.feature.notice.di.noticeModule
 import com.reyaz.feature.portal.di.portalModule
+import com.reyaz.feature.rent.di.rentModule
 import com.reyaz.feature.result.di.resultModule
 import com.reyaz.milliaconnect1.di.appModule
 import org.koin.android.ext.koin.androidContext
@@ -29,13 +30,14 @@ class BaseApplication : Application() {
         super.onCreate()
 
         // Initialize Koin for dependency injection
+        //register all di into base application
         startKoin {
             androidLogger()
             androidContext(this@BaseApplication)
 //            workManagerFactory()
-            modules(appModule, scheduleModule, portalModule, resultModule, networkModule, notificationModule, noticeModule)
+            modules(appModule, scheduleModule, portalModule, resultModule, networkModule, notificationModule, noticeModule,rentModule
+            )
         }
-
     }
 }
 

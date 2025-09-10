@@ -15,6 +15,7 @@ import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
 import com.reyaz.core.auth.domain.repository.GoogleSignIn
@@ -23,7 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class GoogleSignInImpl: GoogleSignIn {
+class GoogleSignInImpl(private val firebaseAuth: FirebaseAuth): GoogleSignIn {
     override fun googleSignIn(
         context: Context,
         scope: CoroutineScope,
@@ -49,7 +50,7 @@ class GoogleSignInImpl: GoogleSignIn {
                             val authCredential =
                                 GoogleAuthProvider.getCredential(googleTokenId, null)
                             val user =
-                                Firebase.auth.signInWithCredential(authCredential).await().user
+                                firebaseAuth.signInWithCredential(authCredential).await().user
                             user?.let {
                                 if (it.isAnonymous.not()) {
                                     login.invoke()
@@ -83,5 +84,10 @@ class GoogleSignInImpl: GoogleSignIn {
             .setAutoSelectEnabled(false)
             .setServerClientId(WebClientId.API_KEY)
             .build()
+    }
+
+    //has to be implemented
+    override fun googleSignOut(){
+
     }
 }

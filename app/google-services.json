@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "759891781981",
+    "project_id": "millia-connect",
+    "storage_bucket": "millia-connect.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:759891781981:android:b1daadaeaa47b2a8f220b4",
+        "android_client_info": {
+          "package_name": "com.reyaz.milliaconnect1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "759891781981-n7o84ojlvphku06l7gipqd7d6jscnnlo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.reyaz.milliaconnect1",
+            "certificate_hash": "f0bb456d6c68c7c64280d4a531709bff75f6dc32"
+          }
+        },
+        {
+          "client_id": "759891781981-82uprgakln0njp8b4me3m08ijni75v0o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDED4RpkD60gl3Wp8bnq-ac3BpD9nAKjjg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "759891781981-82uprgakln0njp8b4me3m08ijni75v0o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

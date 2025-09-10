@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.services)
+    //kotlin symbol processing
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -35,6 +37,8 @@ android {
 }
 
 dependencies {
+    //letting this module know about auth module
+    implementation(project(":core:auth"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -56,4 +60,21 @@ dependencies {
     //firebase firestore storage dependency
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
+
+    //koin dependency injection
+    //you can use BOM-version to manage all Koin library versions. When using the BOM in your app, you don't need to add any version to the Koin library dependencies themselves. When you update the BOM version, all the libraries that you're using are automatically updated to their new versions.
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+//    implementation(libs.koin.core.coroutines) //not used i think
+
+
+    //implementation("io.insert-koin:koin-androidx-startup")
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.compose.navigation)
+
+    // ViewModel and Navigation
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.navigation.compose)
 }

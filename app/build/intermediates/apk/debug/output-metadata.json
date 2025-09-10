@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.reyaz.milliaconnect1.debug",
+  "applicationId": "com.reyaz.milliaconnect1",
   "variantName": "debug",
   "elements": [
     {
@@ -12,7 +12,7 @@
       "filters": [],
       "attributes": [],
       "versionCode": 12,
-      "versionName": "2.0.3-debug",
+      "versionName": "2.0.3",
       "outputFile": "app-debug.apk"
     }
   ],

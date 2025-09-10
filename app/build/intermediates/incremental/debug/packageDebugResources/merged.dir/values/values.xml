@@ -16,6 +16,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="white">#FFFFFFFF</color>
     <string name="app_name">Debug MilliaConnect</string>
+    <string name="default_web_client_id" translatable="false">759891781981-82uprgakln0njp8b4me3m08ijni75v0o.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">759891781981</string>
+    <string name="google_api_key" translatable="false">AIzaSyDED4RpkD60gl3Wp8bnq-ac3BpD9nAKjjg</string>
+    <string name="google_app_id" translatable="false">1:759891781981:android:b1daadaeaa47b2a8f220b4</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDED4RpkD60gl3Wp8bnq-ac3BpD9nAKjjg</string>
+    <string name="google_storage_bucket" translatable="false">millia-connect.firebasestorage.app</string>
+    <string name="project_id" translatable="false">millia-connect</string>
     <style name="Theme.SplashScreen.Splash" parent="Theme.SplashScreen">
         
         <item name="android:windowSplashScreenBackground">@color/white</item>

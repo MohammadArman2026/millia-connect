@@ -11,6 +11,7 @@ sealed class NavigationRoute(val route: String) {
     data object AttendanceGraph : NavigationRoute("attendance_graph")
     data object ResultGraph : NavigationRoute("result_graph")
     data object Notice : NavigationRoute("notice_graph")
+    data object PropertyGraph : NavigationRoute("property_graph")
 
 
     // Attendance Feature Routes
@@ -59,7 +60,11 @@ sealed class NavigationRoute(val route: String) {
 //    data object Notifications : NavigationRoute("profile/notifications")
 //    data object About : NavigationRoute("profile/about")
 
-
+    // Property Feature Routes
+    data object PropertyFeed : NavigationRoute("property/feed")
+    data class PropertyDetails(val propertyId: String) : NavigationRoute("property/details"){
+        fun createRoute(propertyId: String) = "property/details/$propertyId"
+    }
     companion object {
 
         const val DEEPLINK_BASE = "reyaz://milliaconnect"

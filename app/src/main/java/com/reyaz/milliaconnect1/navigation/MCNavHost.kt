@@ -20,6 +20,7 @@ import com.reyaz.feature.notice.presentation.NoticeViewModel
 import com.reyaz.feature.portal.presentation.PortalScreen
 import com.reyaz.feature.portal.presentation.PortalViewModel
 import com.reyaz.milliaconnect1.navigation.graph.attendanceNavGraph
+import com.reyaz.milliaconnect1.navigation.graph.propertyNavGraph
 import com.reyaz.milliaconnect1.navigation.graph.resultNavGraph
 import org.koin.androidx.compose.koinViewModel
 
@@ -39,7 +40,8 @@ fun MCNavHost(
         startDestination =
 //            NavigationRoute.AttendanceGraph.route,
 //            NavigationRoute.Portal.route,
-            constants.NavigationRoute.ResultGraph.route,
+//            constants.NavigationRoute.ResultGraph.route,
+            constants.NavigationRoute.PropertyGraph.route,
 //        NavigationRoute.Notice.route,
         modifier = modifier.fillMaxSize()
     ) {
@@ -75,6 +77,13 @@ fun MCNavHost(
             startDestination = constants.NavigationRoute.Result.route
         ) {
             resultNavGraph(navController, snackbarHostState)
+        }
+        // Property Graph
+        navigation(
+            route = constants.NavigationRoute.PropertyGraph.route,
+            startDestination = constants.NavigationRoute.PropertyFeed.route
+        ) {
+            propertyNavGraph(navController, snackbarHostState)
         }
 
         // Notice

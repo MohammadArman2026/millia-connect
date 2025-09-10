@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.reyaz.milliaconnect1.app-mergeDebugResources-77:/values-v30/values-v30.xml",
+            "outputFile": "com.reyaz.milliaconnect1.app-mergeDebugResources-87:/values-v30/values-v30.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\arman\\.gradle\\caches\\8.10.2\\transforms\\23ba6267e661502d979f91e83a8dc28e\\transformed\\material3-release\\res\\values-v30\\values-v30.xml",
+                    "source": "C:\\Users\\arman\\.gradle\\caches\\8.10.2\\transforms\\b59ce2722586c6bfa36b35e31e19dfe3\\transformed\\material3-release\\res\\values-v30\\values-v30.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

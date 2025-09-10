@@ -14,4 +14,6 @@ interface GoogleSignIn{
         launcher: ManagedActivityResultLauncher<Intent, ActivityResult>?,
         login:()->Unit
     )
+    //for signout from google
+    fun googleSignOut()
 }

@@ -4,7 +4,7 @@
     "type": "COMPATIBLE_SCREEN_MANIFEST",
     "kind": "Directory"
   },
-  "applicationId": "com.reyaz.milliaconnect1.debug",
+  "applicationId": "com.reyaz.milliaconnect1",
   "variantName": "debug",
   "elements": []
 }
