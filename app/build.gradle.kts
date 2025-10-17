@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    //google services plugin
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -19,10 +21,11 @@ android {
     }
 
     buildTypes {
-        debug {
+        // todo
+        /*debug {
             applicationIdSuffix =  ".debug"
             versionNameSuffix = "-debug"
-        }
+        }*/
         release {
             isDebuggable = false
             isShrinkResources = false
@@ -56,6 +59,11 @@ dependencies {
     implementation(project(":feature:portal"))
     implementation(project(":feature:result"))
     implementation(project(":feature:notice"))
+
+    //let app module know the rent module
+    implementation(project(":feature:rent"))
+    implementation(project(":core:auth"))
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

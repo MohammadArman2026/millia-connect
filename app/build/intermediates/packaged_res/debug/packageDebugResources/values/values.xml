@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
+    <color name="ic_splash_background">#FFFFFF</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="splash_background">@color/splash_background_light</color>
+    <color name="splash_background_dark">#121212</color>
+    <color name="splash_background_light">#FFFFFF</color>
+    <color name="splash_icon_color">@color/splash_icon_color_light</color>
+    <color name="splash_icon_color_dark">#64B5F6</color>
+    <color name="splash_icon_color_light">#1976D2</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="app_name">Debug MilliaConnect</string>
+    <string name="default_web_client_id" translatable="false">759891781981-82uprgakln0njp8b4me3m08ijni75v0o.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">759891781981</string>
+    <string name="google_api_key" translatable="false">AIzaSyDED4RpkD60gl3Wp8bnq-ac3BpD9nAKjjg</string>
+    <string name="google_app_id" translatable="false">1:759891781981:android:b1daadaeaa47b2a8f220b4</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDED4RpkD60gl3Wp8bnq-ac3BpD9nAKjjg</string>
+    <string name="google_storage_bucket" translatable="false">millia-connect.firebasestorage.app</string>
+    <string name="project_id" translatable="false">millia-connect</string>
+    <style name="Theme.SplashScreen.Splash" parent="Theme.SplashScreen">
+        
+        <item name="android:windowSplashScreenBackground">@color/white</item>
+
+        
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash_foreground</item>
+
+        
+        
+
+        
+        <item name="postSplashScreenTheme">@style/Theme.WifiAutoConnect</item>
+    </style>
+    <style name="Theme.WifiAutoConnect" parent="android:Theme.Material.Light.NoActionBar"/>
+</resources>

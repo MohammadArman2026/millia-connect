@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="splash_background">@color/splash_background_dark</color>
+    <color name="splash_icon_color">@color/splash_icon_color_dark</color>
+    <style name="Theme.SplashScreen.Splash" parent="Theme.SplashScreen.IconBackground">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+
+        <item name="postSplashScreenTheme">@style/Theme.WifiAutoConnect</item>
+    </style>
+</resources>

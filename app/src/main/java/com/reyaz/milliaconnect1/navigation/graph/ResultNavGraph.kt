@@ -37,5 +37,4 @@ fun NavGraphBuilder.resultNavGraph(
             snackbarHostState = snackbarHostState
         )
     }
-
 }

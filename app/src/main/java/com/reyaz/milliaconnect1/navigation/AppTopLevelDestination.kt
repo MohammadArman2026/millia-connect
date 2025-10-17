@@ -1,6 +1,5 @@
 package com.reyaz.milliaconnect1.navigation
 
-import constants.NavigationRoute
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.filled.School
@@ -38,7 +37,7 @@ object TopLevelDestinations {
     )
 
     val NOTICE = AppTopLevelDestination(
-        route = constants.NavigationRoute.Notice,
+        route = constants.NavigationRoute.NoticeGraph,
         selectedIcon = Icons.Filled.Newspaper,
         unselectedIcon = Icons.Outlined.Newspaper,
         titleResourceId = "Notice",

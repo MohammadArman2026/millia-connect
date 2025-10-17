@@ -3,7 +3,6 @@ package com.reyaz.milliaconnect1.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.outlined.CalendarToday
-import constants.NavigationRoute
 
 /**
  * Represents a top-level destination in the app with bottom navigation support
@@ -33,7 +32,7 @@ object AppDestinations {
 //            titleResourceId = "Home"
 //        ),
         AppTopLevelDestination(
-            route = constants.NavigationRoute.Notice,
+            route = constants.NavigationRoute.NoticeGraph,
             selectedIcon = Icons.Filled.CalendarToday,
             unselectedIcon = Icons.Outlined.CalendarToday,
             titleResourceId = "Attendance"
@@ -167,7 +166,7 @@ fun constants.NavigationRoute.getTopLevelDestination(): AppTopLevelDestination? 
  */
 fun constants.NavigationRoute.getAppBarTitle(): String {
     return when (this) {
-        constants.NavigationRoute.Notice -> "Attendance"
+        constants.NavigationRoute.NoticeGraph -> "Attendance"
         constants.NavigationRoute.Schedule -> "Schedule"
         constants.NavigationRoute.AttendanceHistory -> "Attendance History"
 //        NavigationRoute.AttendanceDetails -> "Attendance Details"
